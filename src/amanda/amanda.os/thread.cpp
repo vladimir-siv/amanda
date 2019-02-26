@@ -4,7 +4,6 @@
 #include "schedulers/fifo.h"
 #include "thread.h"
 
-template<> Scheduler<Thread>* Scheduler<Thread>::instance = new Scheduler<Thread>(10);
 unsigned long Thread::idGen = 0;
 Thread Thread::loop;
 Thread* Thread::running = &Thread::loop;
@@ -25,15 +24,13 @@ extern "C" void __attribute__((signal, __INTR_ATTRS)) __attribute__((naked)) TIM
 		if (!Thread::running->isInState((Thread::State)(Thread::ABORTING | Thread::FINISHED)))
 		{
 			Thread::running->sp = SP;
-			Scheduler<Thread>::I()->put(Thread::running);
+			System::scheduler()->put(Thread::running);
 			if (Thread::running->isInState(Thread::RUNNING)) Thread::running->setState(Thread::READY);
 		}
 
-		Thread::running = Scheduler<Thread>::I()->get();
+		Thread::running = System::scheduler()->get();
 		Thread::running->setState(Thread::RUNNING);
 		SP = Thread::running->sp;
-
-		Thread::running->quantum = Thread::_DEFAULT_QUANTUM;
 	}
 
 	__pop_context__();
@@ -51,15 +48,13 @@ void __attribute__((naked)) __attribute__((noinline)) dispatch()
 		if (!Thread::running->isInState((Thread::State)(Thread::ABORTING | Thread::FINISHED)))
 		{
 			Thread::running->sp = SP;
-			Scheduler<Thread>::I()->put(Thread::running);
+			System::scheduler()->put(Thread::running);
 			if (Thread::running->isInState(Thread::RUNNING)) Thread::running->setState(Thread::READY);
 		}
 
-		Thread::running = Scheduler<Thread>::I()->get();
+		Thread::running = System::scheduler()->get();
 		Thread::running->setState(Thread::RUNNING);
 		SP = Thread::running->sp;
-
-		Thread::running->quantum = Thread::_DEFAULT_QUANTUM;
 	}
 
 	inSwitching = false;
@@ -103,7 +98,7 @@ Thread::Thread(ThreadDelegate delegate, unsigned long stackSize = 128) : Thread(
 	stack[stackSize - 9] = 0x80; // status register (I bit set is 0x80)
 
 	this->sp = (uintptr_t)(stack + stackSize - 43);
-	Scheduler<Thread>::I()->put(this);
+	System::scheduler()->put(this);
 }
 
 Thread::~Thread()
@@ -122,14 +117,13 @@ void  __attribute__((naked)) __attribute__((noinline)) Thread::finalize()
 {
 	System::lock();
 	
-	Thread* next = Scheduler<Thread>::I()->get();
+	Thread* next = System::scheduler()->get();
 	SP = next->sp;
 
 	Thread::running->clear();
 	Thread::running = next;
 
 	Thread::running->setState(Thread::RUNNING);
-	Thread::running->quantum = Thread::_DEFAULT_QUANTUM;
 
 	__pop_context__();
 

@@ -1,8 +1,10 @@
 #include <Arduino.h>
 #include "system.h"
+#include "schedulers/fifo.h"
 
 volatile unsigned long System::_lock = 0;
 volatile unsigned long System::_millis = 0;
+Scheduler* System::_scheduler = new FIFOScheduler(32);
 
 void System::init()
 {
@@ -23,6 +25,11 @@ void System::init()
 unsigned long System::millis()
 {
 	return _millis;
+}
+
+Scheduler* System::scheduler()
+{
+	return _scheduler;
 }
 
 void System::lock()

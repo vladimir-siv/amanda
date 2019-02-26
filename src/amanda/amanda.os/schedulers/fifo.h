@@ -1,37 +1,38 @@
 #pragma once
 
-template<typename T>
-class Scheduler final
+#include "scheduler.h"
+
+class FIFOScheduler : public Scheduler
 {
-	private: static Scheduler<T>* instance;
-	public: static Scheduler<T>* I() { return instance; }
+	friend class System;
+
+	protected: Thread** threads;
+	protected: unsigned int capacity, size;
+	protected: unsigned int head, tail;
 	
-	private: T** items;
-	private: unsigned int capacity, size;
-	private: unsigned int head, tail;
+	protected: explicit FIFOScheduler(unsigned int capacity) : threads(new Thread*[capacity]), capacity(capacity), size(0), head(0), tail(0) { }
+	public: virtual ~FIFOScheduler() override { delete[] threads; threads = nullptr; capacity = size = 0; head = tail = 0; }
 	
-	private: explicit Scheduler(unsigned int capacity) : items(new T*[capacity]), capacity(capacity), size(0), head(0), tail(0) { }
-	public: ~Scheduler() { delete[] this->items; this->items = nullptr; this->capacity = this->size = 0; this->head = this->tail = 0; }
-	public: Scheduler(const Scheduler& scheduler) = delete;
-	public: Scheduler(Scheduler&& scheduler) = delete;
-	public: Scheduler& operator=(const Scheduler& scheduler) = delete;
-	public: Scheduler& operator=(Scheduler&& scheduler) = delete;
+	public: FIFOScheduler(const FIFOScheduler& scheduler) = delete;
+	public: FIFOScheduler(FIFOScheduler&& scheduler) = delete;
+	public: FIFOScheduler& operator=(const FIFOScheduler& scheduler) = delete;
+	public: FIFOScheduler& operator=(FIFOScheduler&& scheduler) = delete;
 	
-	public: void put(T* item)
+	public: virtual void put(Thread* thread) override
 	{
-		if (this->size == this->capacity) return; // throw SchedulerFullException
-		this->items[this->tail] = item;
-		if (++this->tail == this->capacity) this->tail = 0;
-		++this->size;
+		if (size == capacity) return; // throw SchedulerFullException
+		threads[tail] = thread;
+		if (++tail == capacity) tail = 0;
+		++size;
 		return;
 	}
-	
-	public: T* get()
+	public: virtual Thread* get() override
 	{
-		if (this->size == 0) return nullptr;
-		T* item = this->items[this->head];
-		if (++this->head == this->capacity) this->head = 0;
-		--this->size;
-		return item;
+		if (size == 0) return nullptr;
+		Thread* thread = threads[head];
+		if (++head == capacity) head = 0;
+		--size;
+		setDefaultQuantum(thread);
+		return thread;
 	}
 };

@@ -4,7 +4,7 @@
 
 const byte N = 10;
 Thread** t = nullptr;
-state pin13state = LOW;
+pinstate pin13state = LOW;
 
 void thread(...);
 
