@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Label="Globals">
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <ItemsProjectGuid>{01d4ff88-c7b9-49cb-8907-ea4d89efdeed}</ItemsProjectGuid>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory)</AdditionalIncludeDirectories>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ProjectCapability Include="SourceItemsFromImports" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="$(MSBuildThisFileDirectory)library.properties" />
+  </ItemGroup>
+  <ItemGroup>
+    <!-- <ClInclude Include="$(MSBuildThisFileDirectory)amanda.os.h" /> -->
+    <ClCompile Include="$(MSBuildThisFileDirectory)scheduler.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)system.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)thread.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="$(MSBuildThisFileDirectory)scheduler.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)system.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)thread.h" />
+  </ItemGroup>
+</Project>
