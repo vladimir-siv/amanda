@@ -4,13 +4,23 @@
     <Text Include="$(MSBuildThisFileDirectory)library.properties" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="$(MSBuildThisFileDirectory)scheduler.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)system.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)thread.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)schedulers\fifo.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)exceptions\exception.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)exceptions.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)structures\qbuffer.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)exceptions\insufficientstacksizeexception.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)patterns\singleton.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="$(MSBuildThisFileDirectory)scheduler.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)system.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)thread.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)schedulers\fifo.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)exceptions\exception.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)structures\qbuffer.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)exceptions.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)exceptions\insufficientstacksizeexception.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)patterns\singleton.h" />
   </ItemGroup>
 </Project>

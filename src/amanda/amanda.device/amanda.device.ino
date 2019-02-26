@@ -1,7 +1,8 @@
 #include <system.h>
 #include <thread.h>
+#include <exceptions.h>
 
-const byte N = 5;
+const byte N = 10;
 Thread** t = nullptr;
 state pin13state = LOW;
 
@@ -19,8 +20,20 @@ void setup()
 	if (N > 0)
 	{
 		t = new Thread*[N];
+
+		System::lock();
+
 		for (byte i = 0; i < N; ++i)
-			t[i] = new Thread(&thread);
+		{
+			t[i] = new Thread(&thread, 121 + i);
+
+			int ex = Exceptions::Count();
+			Serial.print(ex);
+			Serial.print(" -> ");
+			Serial.println(ex > 0 ? Exceptions::Fetch()->what() : "<no exception thrown>");
+		}
+
+		System::unlock();
 	}
 }
 

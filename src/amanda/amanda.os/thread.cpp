@@ -1,6 +1,7 @@
 #include <Arduino.h>
 #include "system.h"
-#include "scheduler.h"
+#include "exceptions.h"
+#include "schedulers/fifo.h"
 #include "thread.h"
 
 template<> Scheduler<Thread>* Scheduler<Thread>::instance = new Scheduler<Thread>(10);
@@ -81,26 +82,28 @@ Thread::Thread(ThreadDelegate delegate, unsigned long stackSize = 128) : Thread(
 {
 	this->state = State::READY;
 
-	if (stackSize >= 64)
+	if (stackSize < 128)
 	{
-		stack = new byte[stackSize];
-
-		const uint_farptr_t _delegate = (uint_farptr_t)delegate;
-		const uint_farptr_t _finalize = (uint_farptr_t)(&finalize);
-		stack[stackSize - 1] = (byte)(_finalize >> 0);
-		stack[stackSize - 2] = (byte)(_finalize >> 8);
-		stack[stackSize - 3] = (byte)(_finalize >> 16);
-		stack[stackSize - 4] = (byte)(_delegate >> 0);
-		stack[stackSize - 5] = (byte)(_delegate >> 8);
-		stack[stackSize - 6] = (byte)(_delegate >> 16);
-		stack[stackSize - 7] = 0x00; // r1
-		stack[stackSize - 8] = 0x00; // r0
-		stack[stackSize - 9] = 0x80; // status register (I bit set is 0x80)
-
-		this->sp = (uintptr_t)(stack + stackSize - 43);
-		Scheduler<Thread>::I()->put(this);
+		Exceptions::Throw<InsufficientStackSizeException>();
+		return;
 	}
-	// else throw InsufficientStackSizeException();
+
+	stack = new byte[stackSize];
+
+	const uint_farptr_t _delegate = (uint_farptr_t)delegate;
+	const uint_farptr_t _finalize = (uint_farptr_t)(&finalize);
+	stack[stackSize - 1] = (byte)(_finalize >> 0);
+	stack[stackSize - 2] = (byte)(_finalize >> 8);
+	stack[stackSize - 3] = (byte)(_finalize >> 16);
+	stack[stackSize - 4] = (byte)(_delegate >> 0);
+	stack[stackSize - 5] = (byte)(_delegate >> 8);
+	stack[stackSize - 6] = (byte)(_delegate >> 16);
+	stack[stackSize - 7] = 0x00; // r1
+	stack[stackSize - 8] = 0x00; // r0
+	stack[stackSize - 9] = 0x80; // status register (I bit set is 0x80)
+
+	this->sp = (uintptr_t)(stack + stackSize - 43);
+	Scheduler<Thread>::I()->put(this);
 }
 
 Thread::~Thread()
