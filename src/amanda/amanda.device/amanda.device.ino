@@ -27,10 +27,21 @@ void setup()
 		{
 			t[i] = new Thread(&thread, 121 + i);
 
-			int ex = Exceptions::Count();
-			Serial.print(ex);
-			Serial.print(" -> ");
-			Serial.println(ex > 0 ? Exceptions::Fetch()->what() : "<no exception thrown>");
+			Serial.print(Exceptions::Count());
+			Serial.print(" ->");
+			
+			if (Exceptions::Count() > 0)
+			{
+				while (Exceptions::Count() > 0)
+				{
+					Serial.print(" { ");
+					Serial.print(Exceptions::Fetch()->what());
+					Serial.print(" }");
+				}
+
+				Serial.println();
+			}
+			else Serial.println(" <no exception thrown>");
 		}
 
 		System::unlock();

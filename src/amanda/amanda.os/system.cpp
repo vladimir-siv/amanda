@@ -4,7 +4,7 @@
 
 volatile unsigned long System::_lock = 0;
 volatile unsigned long System::_millis = 0;
-Scheduler* System::_scheduler = new FIFOScheduler(32);
+Scheduler* System::_scheduler = new FIFOScheduler(4);
 
 void System::init()
 {

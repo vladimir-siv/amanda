@@ -1,6 +1,7 @@
 #pragma once
 
 #include "scheduler.h"
+#include "../exceptions.h"
 
 class FIFOScheduler : public Scheduler
 {
@@ -20,7 +21,7 @@ class FIFOScheduler : public Scheduler
 	
 	public: virtual void put(Thread* thread) override
 	{
-		if (size == capacity) return; // throw SchedulerFullException
+		if (size == capacity) { Exceptions::Throw<SchedulerFullException>(); return; }
 		threads[tail] = thread;
 		if (++tail == capacity) tail = 0;
 		++size;

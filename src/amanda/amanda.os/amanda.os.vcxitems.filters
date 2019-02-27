@@ -12,6 +12,8 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)structures\qbuffer.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)exceptions\insufficientstacksizeexception.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)patterns\singleton.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)schedulers\scheduler.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)exceptions\schedulerfullexception.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)system.h" />
@@ -22,5 +24,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)exceptions.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)exceptions\insufficientstacksizeexception.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)patterns\singleton.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)schedulers\scheduler.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)exceptions\schedulerfullexception.h" />
   </ItemGroup>
 </Project>
