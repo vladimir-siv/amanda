@@ -3,7 +3,9 @@
 #include "patterns/singleton.h"
 #include "exceptions/exception.h"
 #include "exceptions/insufficientstacksizeexception.h"
-#include "exceptions/schedulerfullexception.h"
+#include "exceptions/collectionfullexception.h"
+#include "exceptions/collectionemptyexception.h"
+#include "exceptions/indexoutofboundsexception.h"
 
 #define MAX_EXCEPTIONS 3
 

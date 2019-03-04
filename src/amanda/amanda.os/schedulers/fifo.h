@@ -21,7 +21,7 @@ class FIFOScheduler : public Scheduler
 	
 	public: virtual void put(Thread* thread) override
 	{
-		if (size == capacity) { Exceptions::Throw<SchedulerFullException>(); return; }
+		if (size == capacity) { Exceptions::Throw<CollectionFullException>(); return; }
 		threads[tail] = thread;
 		if (++tail == capacity) tail = 0;
 		++size;

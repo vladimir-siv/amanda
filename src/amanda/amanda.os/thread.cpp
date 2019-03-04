@@ -24,7 +24,7 @@ extern "C" void __attribute__((signal, __INTR_ATTRS)) __attribute__((naked)) TIM
 		if (!Thread::running->isInState((Thread::State)(Thread::ABORTING | Thread::FINISHED)))
 		{
 			Thread::running->sp = SP;
-			System::scheduler()->put(Thread::running);
+			if (!Thread::running->isInState(Thread::WAITING)) System::scheduler()->put(Thread::running);
 			if (Thread::running->isInState(Thread::RUNNING)) Thread::running->setState(Thread::READY);
 		}
 
@@ -48,7 +48,7 @@ void __attribute__((naked)) __attribute__((noinline)) dispatch()
 		if (!Thread::running->isInState((Thread::State)(Thread::ABORTING | Thread::FINISHED)))
 		{
 			Thread::running->sp = SP;
-			System::scheduler()->put(Thread::running);
+			if (!Thread::running->isInState(Thread::WAITING)) System::scheduler()->put(Thread::running);
 			if (Thread::running->isInState(Thread::RUNNING)) Thread::running->setState(Thread::READY);
 		}
 

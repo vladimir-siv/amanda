@@ -10,6 +10,7 @@ class Thread final
 	friend void TIMER1_COMPA_vect(void);
 	friend void dispatch();
 	friend class Scheduler;
+	friend class Semaphore;
 
 	public: enum State
 	{

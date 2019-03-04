@@ -25,7 +25,7 @@ class QBuffer final
 		this->_data = buffer._data;
 		buffer._data = nullptr;
 	}
-	private: void clear()
+	private: void clean()
 	{
 		delete[] _data;
 		_data = nullptr;
@@ -38,25 +38,30 @@ class QBuffer final
 	public: explicit QBuffer(unsigned int capacity) : _capacity(capacity), _data(new T[capacity]) { }
 	public: QBuffer(const QBuffer& buffer) : _capacity(0) { copy(buffer); }
 	public: QBuffer(QBuffer&& buffer) { move(buffer); }
-	public: ~QBuffer() { clear(); }
+	public: ~QBuffer() { clean(); }
 	
 	public: QBuffer& operator=(const QBuffer& buffer)
 	{
-		if (this != &buffer) { clear(); copy(buffer); }
+		if (this != &buffer) { clean(); copy(buffer); }
 		return *this;
 	}
 	public: QBuffer& operator=(QBuffer&& buffer)
 	{
-		if (this != &buffer) { clear(); move(buffer); }
+		if (this != &buffer) { clean(); move(buffer); }
 		return *this;
 	}
 	
 	public: unsigned int capacity() const { return _capacity; }
 	public: unsigned int size() const { return _size; }
 	
-	public: void push(T obj)
+	public: void clear()
 	{
-		_data[_top] = obj;
+		_size = _top = 0;
+	}
+	
+	public: void push(T _value)
+	{
+		_data[_top] = _value;
 		if (++_top == _capacity) _top = 0;
 		if (++_size > _capacity) _size = _capacity;
 	}
@@ -70,8 +75,8 @@ class QBuffer final
 
 		return _data[_top];
 	}
-	public: T peek()
+	public: T peek() const
 	{
-		return _data[_top];
+		return _data[_top == 0 ? _capacity - 1 : _top - 1];
 	}
 };

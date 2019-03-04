@@ -13,7 +13,12 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)exceptions\insufficientstacksizeexception.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)patterns\singleton.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)schedulers\scheduler.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)exceptions\schedulerfullexception.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)synchronization\semaphore.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)structures\vector.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)exceptions\indexoutofboundsexception.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)exceptions\collectionfullexception.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)exceptions\collectionemptyexception.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)structures\list.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)system.h" />
@@ -25,6 +30,12 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)exceptions\insufficientstacksizeexception.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)patterns\singleton.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)schedulers\scheduler.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)exceptions\schedulerfullexception.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)synchronization\semaphore.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)structures\vector.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)exceptions\indexoutofboundsexception.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)exceptions\collectionfullexception.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)exceptions\collectionemptyexception.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)structures\list.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)types\type_traits.h" />
   </ItemGroup>
 </Project>

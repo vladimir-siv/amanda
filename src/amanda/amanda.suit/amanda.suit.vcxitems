@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Label="Globals">
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <ItemsProjectGuid>{8aef3798-47f6-4dea-87ec-ac9606283fc2}</ItemsProjectGuid>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory)</AdditionalIncludeDirectories>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ProjectCapability Include="SourceItemsFromImports" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="$(MSBuildThisFileDirectory)suit\assert.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)suit\outputcomparer.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)suit\suit.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)units\coord.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="$(MSBuildThisFileDirectory)suit\assert.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)suit\def.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)suit\outputcomparer.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)units\coord.h" />
+  </ItemGroup>
+</Project>
