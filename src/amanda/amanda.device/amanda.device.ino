@@ -1,6 +1,6 @@
+#include <exceptions.h>
 #include <system.h>
 #include <thread.h>
-#include <exceptions.h>
 
 const byte N = 10;
 Thread** t = nullptr;

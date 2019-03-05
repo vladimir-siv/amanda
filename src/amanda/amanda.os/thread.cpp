@@ -1,6 +1,6 @@
 #include <Arduino.h>
+#include <exceptions.h>
 #include "system.h"
-#include "exceptions.h"
 #include "schedulers/fifo.h"
 #include "thread.h"
 

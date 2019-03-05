@@ -1,7 +1,7 @@
 #include <suit/assert.h>
 
-#include "../../amanda.os/exceptions.h"
-#include "../../amanda.os/structures/list.h"
+#include <exceptions.h>
+#include <structures/list.h>
 
 void _list_int()
 {
@@ -38,8 +38,10 @@ void _list_int()
 
 	list.clear();
 	list.push_front(7);		// 7
+	list.push_front(77); list.remove_front();
 	list.push_front(4);		// 4
 	list.push_back(value);	// 5
+	list.push_front(73); list.remove_front();
 
 	// list: { 4, 7, 5 }
 	assert::areEqual(list.size(), 3, "[A12] Size is not equal to 3");

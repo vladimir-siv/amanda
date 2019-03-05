@@ -1,6 +1,6 @@
 #include <suit/assert.h>
 
-#include "../../amanda.os/structures/qbuffer.h"
+#include <structures/specialized/qbuffer.h>
 
 void _qbuffer_int()
 {

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../structures/vector.h"
+#include <structures/vector.h>
 #include "../thread.h"
 
 class Semaphore final

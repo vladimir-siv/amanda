@@ -15,7 +15,7 @@ class Vector final
 		this->_capacity = vector._capacity;
 		this->_size = vector._size;
 		this->_data = new T[vector._capacity];
-		for (int i = 0; i < vector._capacity; ++i)
+		for (unsigned int i = 0; i < vector._capacity; ++i)
 			this->_data[i] = vector._data[i];
 	}
 	private: void move(Vector& vector)
@@ -39,8 +39,8 @@ class Vector final
 	public: Vector(Vector&& vector) { move(vector); }
 	public: ~Vector() { clean(); }
 	
-	public: const T& operator[](int i) const { return const_cast<Vector&>(*this)[i]; }
-	public: T& operator[](int i)
+	public: const T& operator[](unsigned int i) const { return const_cast<Vector&>(*this)[i]; }
+	public: T& operator[](unsigned int i)
 	{
 		if (i < 0 || _capacity <= i)
 		{
@@ -88,7 +88,7 @@ class Vector final
 			return;
 		}
 
-		_data[_size++] = type_traits::move(value);
+		_data[_size++] = std::move(value);
 	}
 	public: T& pop()
 	{

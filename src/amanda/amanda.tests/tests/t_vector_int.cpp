@@ -1,7 +1,7 @@
 #include <suit/assert.h>
 
-#include "../../amanda.os/exceptions.h"
-#include "../../amanda.os/structures/vector.h"
+#include <exceptions.h>
+#include <structures/vector.h>
 
 void _vector_int()
 {

@@ -11,7 +11,7 @@ class List final
 		T value;
 		Node* next;
 		Node(const T& value, Node* next = nullptr) : value(value), next(next) { }
-		Node(T&& value, Node* next = nullptr) : value(type_traits::forward<T>(value)), next(next) { }
+		Node(T&& value, Node* next = nullptr) : value(std::forward<T>(value)), next(next) { }
 	};
 	
 	private: unsigned int _size = 0;
@@ -71,7 +71,7 @@ class List final
 	}
 	public: void push_front(T&& value)
 	{
-		_first = new Node(type_traits::forward<T>(value), _first);
+		_first = new Node(std::forward<T>(value), _first);
 		if (_size++ == 0) _last = _first;
 	}
 	public: T pop_front()
@@ -85,9 +85,22 @@ class List final
 		Node* temp = _first;
 		_first = _first->next;
 		if (--_size == 0) _last = nullptr;
-		T value = type_traits::move(temp->value);
+		T value = std::move(temp->value);
 		delete temp;
 		return value;
+	}
+	public: void remove_front()
+	{
+		if (_size == 0)
+		{
+			Exceptions::Throw<CollectionEmptyException>();
+			return;
+		}
+
+		Node* temp = _first;
+		_first = _first->next;
+		if (--_size == 0) _last = nullptr;
+		delete temp;
 	}
 	public: T& peek_front() const
 	{
@@ -102,7 +115,7 @@ class List final
 	}
 	public: void push_back(T&& value)
 	{
-		Node* node = new Node(type_traits::forward<T>(value));
+		Node* node = new Node(std::forward<T>(value));
 		if (_size == 0) _first = _last = node;
 		else _last = _last->next = node;
 		++_size;

@@ -1,11 +1,10 @@
-#include <string>
-#include <event_system/delegate.h>
-
 #include <suit/assert.h>
 #include <suit/outputcomparer.h>
 #include <units/coord.h>
 
-#include "../../amanda.os/types/type_traits.h"
+#include <types/type_traits.h>
+#include <event_system/delegate.h>
+#include <string>
 
 template <typename T> void processor(T arg) { }
 template <typename T> void forwarder(T&& arg)

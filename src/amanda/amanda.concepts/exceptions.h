@@ -15,6 +15,16 @@ namespace Exceptions
 	Exception* Fetch();
 	Exception* Check();
 	unsigned int Count();
-	// Singleton of Exception type :: Instance()
-	template<class T> void Throw() { Throw(&S<T>::I()); }
+	void Clear();
+	template <class T> void LThrow()
+	{
+		Throw(&S<T>::I());
+	}
+	template <class T> void Throw()
+	{
+		LThrow<T>();
+#ifdef __THROW_EX__
+		throw S<T>::I();
+#endif
+	}
 }

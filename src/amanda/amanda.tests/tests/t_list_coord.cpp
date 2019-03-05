@@ -1,11 +1,11 @@
-#include <string>
-
 #include <suit/assert.h>
 #include <suit/outputcomparer.h>
 #include <units/coord.h>
 
-#include "../../amanda.os/exceptions.h"
-#include "../../amanda.os/structures/list.h"
+#include <exceptions.h>
+#include <structures/list.h>
+
+#include <string>
 
 void eval_list()
 {

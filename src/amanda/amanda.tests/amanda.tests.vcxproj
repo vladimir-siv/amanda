@@ -80,6 +80,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
+      <PreprocessorDefinitions>_MBCS;%(PreprocessorDefinitions);__CPP_STD__;__THROW_EX__</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -92,6 +93,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
+      <PreprocessorDefinitions>_MBCS;%(PreprocessorDefinitions);__CPP_STD__;__THROW_EX__</PreprocessorDefinitions>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -118,13 +120,15 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="program.cpp" />
-    <ClCompile Include="tests\exceptions.cpp" />
-    <ClCompile Include="tests\list_coord.cpp" />
-    <ClCompile Include="tests\list_int.cpp" />
-    <ClCompile Include="tests\qbuffer_int.cpp" />
-    <ClCompile Include="tests\type_traits.cpp" />
-    <ClCompile Include="tests\vector_coord.cpp" />
-    <ClCompile Include="tests\vector_int.cpp" />
+    <ClCompile Include="tests\t_events.cpp" />
+    <ClCompile Include="tests\t_exceptions.cpp" />
+    <ClCompile Include="tests\t_list_coord.cpp" />
+    <ClCompile Include="tests\t_list_int.cpp" />
+    <ClCompile Include="tests\t_qbuffer_int.cpp" />
+    <ClCompile Include="tests\t_raii.cpp" />
+    <ClCompile Include="tests\t_type_traits.cpp" />
+    <ClCompile Include="tests\t_vector_coord.cpp" />
+    <ClCompile Include="tests\t_vector_int.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

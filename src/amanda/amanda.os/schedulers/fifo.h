@@ -1,7 +1,7 @@
 #pragma once
 
+#include <exceptions.h>
 #include "scheduler.h"
-#include "../exceptions.h"
 
 class FIFOScheduler : public Scheduler
 {

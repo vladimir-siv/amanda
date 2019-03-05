@@ -1,5 +1,11 @@
 #pragma once
 
+#ifdef __CPP_STD__
+#include <iostream>
+#else
+#include "../types/type_traits.h"
+#endif
+
 template <typename Tout = void, typename... Args> using executable = Tout(*)(Args...);
 template <typename T, typename Tout = void, typename... Args> using callback = Tout(T::*)(Args...);
 

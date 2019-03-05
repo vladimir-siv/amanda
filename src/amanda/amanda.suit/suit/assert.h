@@ -63,7 +63,7 @@ namespace assert
 	void doesThrow(callback cb, const char* message = "Given exception was not thrown")
 	{
 		try { cb(); }
-		catch (const T& ex) { return; }
+		catch (const T&) { return; }
 		catch (...) {  }
 		throw AssertException(message);
 	}
@@ -71,7 +71,7 @@ namespace assert
 	void doesNotThrow(callback cb, const char* message = "Given exception was thrown")
 	{
 		try { cb(); return; }
-		catch (const T& ex) { }
+		catch (const T&) { }
 		catch (...) { return; }
 		throw AssertException(message);
 	}

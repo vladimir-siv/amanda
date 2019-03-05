@@ -14,7 +14,7 @@ class QBuffer final
 		this->_size = buffer._size;
 		this->_top = buffer._top;
 		this->_data = new T[buffer._capacity];
-		for (int i = 0; i < buffer._capacity; ++i)
+		for (unsigned int i = 0; i < buffer._capacity; ++i)
 			this->_data[i] = buffer._data[i];
 	}
 	private: void move(QBuffer& buffer)
