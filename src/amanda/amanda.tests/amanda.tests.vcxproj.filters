@@ -12,4 +12,7 @@
     <ClCompile Include="tests\t_vector_int.cpp" />
     <ClCompile Include="tests\t_raii.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="test.bat" />
+  </ItemGroup>
 </Project>

@@ -1,5 +1,4 @@
 #include <iostream>
-#include <cstdlib>
 #include <string>
 #include <list>
 #include "def.h"
@@ -29,6 +28,5 @@ int main(void)
 	}
 
 	std::cout << "Tests finished" << std::endl;
-	system("pause");
 	return 0;
 }
