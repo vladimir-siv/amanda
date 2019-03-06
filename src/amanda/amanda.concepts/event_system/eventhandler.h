@@ -3,12 +3,14 @@
 #include "delegate.h"
 #include "eventargs.h"
 
+template <typename T> class Event;
+
 template <class T>
 class EventHandler
 {
-	//friend class Event<EventHandler<T>>;
-
 	private: static inline void __constraint__() { EventArgs* e = static_cast<T*>(nullptr); }
+	
+	friend class Event<EventHandler<T>>;
 	
 	protected: IDelegate<void, void*, T>* ptr;
 	

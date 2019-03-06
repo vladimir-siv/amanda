@@ -36,4 +36,13 @@ class Coord
 	public: virtual ~Coord();
 	public: Coord& operator=(const Coord& coord);
 	public: Coord& operator=(Coord&& coord);
+	
+	public: friend bool operator==(const Coord& c1, const Coord& c2)
+	{
+		return c1.x == c2.x && c1.y == c2.y;
+	}
+	public: friend bool operator!=(const Coord& c1, const Coord& c2)
+	{
+		return !(c1 == c2);
+	}
 };

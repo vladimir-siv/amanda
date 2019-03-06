@@ -28,6 +28,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)RAII\generic.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)structures\list.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)structures\specialized\qbuffer.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)structures\tuple.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)structures\vector.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -45,7 +46,9 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)RAII\generic.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)structures\list.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)structures\specialized\qbuffer.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)structures\tuple.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)structures\vector.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)types\def.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)types\type_traits.h" />
   </ItemGroup>
   <ItemGroup>

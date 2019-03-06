@@ -135,6 +135,7 @@
     <ClCompile Include="tests\t_qbuffer_int.cpp" />
     <ClCompile Include="tests\t_raii.cpp" />
     <ClCompile Include="tests\t_type_traits.cpp" />
+    <ClCompile Include="tests\t_tuple.cpp" />
     <ClCompile Include="tests\t_vector_coord.cpp" />
     <ClCompile Include="tests\t_vector_int.cpp" />
   </ItemGroup>
