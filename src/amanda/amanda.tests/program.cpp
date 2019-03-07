@@ -8,6 +8,7 @@ extern void _vector_int();
 extern void _vector_coord();
 extern void _list_int();
 extern void _list_coord();
+extern void _enumerators();
 extern void _tuple();
 extern void _events();
 
@@ -21,6 +22,7 @@ void setup()
 	suit::add("vector_coord", &_vector_coord);
 	suit::add("list_int", &_list_int);
 	suit::add("list_coord", &_list_coord);
+	suit::add("enumerators", &_enumerators);
 	suit::add("tuple", &_tuple);
 	suit::add("events", &_events);
 }

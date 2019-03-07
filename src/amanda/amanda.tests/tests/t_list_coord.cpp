@@ -36,6 +36,9 @@ void eval_list()
 	assert::areEqual(list3.pop_front()->id, 0, "[A4] Front pop is not equal to 0");
 	assert::areEqual(list3.pop_front()->id, 1, "[A5] Front pop is not equal to 2");
 
+	Executable<void, Coord&> exec([](Coord& coord) -> void { });
+	list1.traverse(&exec);
+
 	list2.clear();
 	list1.clear();
 }

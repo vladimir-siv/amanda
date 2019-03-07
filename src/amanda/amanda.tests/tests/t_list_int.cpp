@@ -64,4 +64,32 @@ void _list_int()
 	assert::areEqual(list.size(), 3, "[A19] Size is not equal to 3");
 	assert::areEqual(list.peek_back(), 6, "[A20] Back peek not equal to 6");
 	assert::areEqual(list.peek_front(), 4, "[A21] Front peek not equal to 4");
+
+	list.push_back(5);
+	list.push_back(3);
+	list.push_back(7);
+	list.push_back(4);
+	list.remove_last(5);
+	list.remove_last(7);
+	list.remove_last(1);
+
+	// list: { 4, 5, 6, 3, 4 }
+
+	Executable<void, int&> exec([](int& val) -> void
+	{
+		static int k = 0;
+		
+		switch (k)
+		{
+			case 0: assert::areEqual(val, 4, "[A22] Element not equal to 4"); break;
+			case 1: assert::areEqual(val, 5, "[A23] Element not equal to 5"); break;
+			case 2: assert::areEqual(val, 6, "[A24] Element not equal to 6"); break;
+			case 3: assert::areEqual(val, 3, "[A25] Element not equal to 3"); break;
+			case 4: assert::areEqual(val, 4, "[A26] Element not equal to 4"); break;
+		}
+
+		++k;
+	});
+
+	list.traverse(&exec);
 }

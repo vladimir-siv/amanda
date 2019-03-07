@@ -128,6 +128,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="program.cpp" />
+    <ClCompile Include="tests\t_enumerators.cpp" />
     <ClCompile Include="tests\t_events.cpp" />
     <ClCompile Include="tests\t_exceptions.cpp" />
     <ClCompile Include="tests\t_list_coord.cpp" />
