@@ -7,7 +7,7 @@ Thread** t = nullptr;
 pinstate pin13state = LOW;
 bool firstCycle = true;
 
-void thread(...);
+void thread();
 
 void setup()
 {
@@ -103,10 +103,47 @@ void loop()
 	digitalWrite(13, pin13state);
 
 	static int k = 0;
-	if (++k == 5) Thread::current()->abort();
+	if (++k == 5)
+	{
+		for (int i = 0; i < N; ++i) delete t[i];
+		Serial.println();
+		run();
+		Serial.println("End.");
+		Thread::current()->abort();
+	}
 }
 
-void thread(...)
+void thread()
 {
 	job(8);
+}
+
+// ============== TEST 2 ============== //
+
+#include <synchronization/mutex.h>
+#include <synchronization/lock.h>
+
+mutex mtx;
+
+void print(const char* str)
+{
+	static int i = 0;
+	//lock lck(mtx);
+
+	Serial.print("[");
+	Serial.print(++i);
+	Serial.print("] ");
+	Serial.println(str);
+}
+
+void noncriticalcode()
+{
+	for (volatile int i = 0; i < 1000; i++)
+		for (volatile int j = 0; j < 1000; j++)
+			;
+}
+
+void run()
+{
+
 }

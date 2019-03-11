@@ -2,7 +2,7 @@
 
 #include <structures/list.h>
 
-using ThreadDelegate = void(*)(...);
+using ThreadDelegate = void(*)(void);
 extern void dispatch();
 
 extern "C" void TIMER1_COMPA_vect(void);
@@ -11,7 +11,6 @@ class Thread final
 {
 	friend void TIMER1_COMPA_vect(void);
 	friend void dispatch();
-	friend void __idle__(...);
 	friend class System;
 	friend class Scheduler;
 	friend class mutex;

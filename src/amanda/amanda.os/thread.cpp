@@ -4,14 +4,6 @@
 #include "schedulers/fifo.h"
 #include "thread.h"
 
-void __idle__(...)
-{
-	while (true)
-	{
-		if (Thread::dispatch_idle) dispatch();
-	}
-}
-
 unsigned long Thread::idGen = 0;
 Thread Thread::loop;
 Thread* Thread::running = &Thread::loop;
@@ -25,7 +17,13 @@ volatile bool inSwitching = false;
 
 void Thread::init()
 {
-	idle = new Thread(&__idle__);
+	idle = new Thread([](void) -> void
+	{
+		while (true)
+		{
+			if (Thread::dispatch_idle) dispatch();
+		}
+	});
 }
 
 extern "C" void __attribute__((signal, __INTR_ATTRS)) __attribute__((naked)) TIMER1_COMPA_vect(void)

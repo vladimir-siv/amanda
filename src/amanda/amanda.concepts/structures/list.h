@@ -20,8 +20,6 @@ class list final
 		Node(T&& value, Node* next = nullptr) : value(std::forward<T>(value)), next(next) { }
 	};
 	
-	private: static list_enumerator<T> _end;
-	
 	private: unsigned int _size = 0;
 	private: Node* _first = nullptr; Node* _last = nullptr;
 	
@@ -168,8 +166,11 @@ class list final
 		}
 	}
 	
-	public: list_enumerator<T> begin() const { return list_enumerator<T>(_first); }
-	public: list_enumerator<T>& end() const { return _end; }
+	public: list_enumerator<T> begin() { return list_enumerator<T>(*this, _first); }
+	public: list_enumerator<T> end() { return list_enumerator<T>(*this, nullptr); }
+	
+	public: const list_enumerator<T> cbegin() const { return list_enumerator<T>(const_cast<list<T>&>(*this), _first); }
+	public: const list_enumerator<T> cend() const { return list_enumerator<T>(const_cast<list<T>&>(*this), nullptr); }
 };
 
 template <typename T>
@@ -177,8 +178,9 @@ class list_enumerator final : public enumerator<T>
 {
 	friend class list<T>;
 
-	private: typename list<T>::Node* ptr;
-	private: list_enumerator(typename list<T>::Node* ptr) : ptr(ptr) { }
+	protected: list<T>& lst;
+	protected: typename list<T>::Node* ptr;
+	protected: list_enumerator(list<T>& lst, typename list<T>::Node* ptr) : lst(lst), ptr(ptr) { }
 	
 	public: virtual T& operator*() const override { return ptr->value; }
 	public: virtual T& operator->() const override { return ptr->value; }
@@ -190,7 +192,7 @@ class list_enumerator final : public enumerator<T>
 	}
 	public: virtual list_enumerator<T> operator++(int)
 	{
-		list_enumerator clone(ptr);
+		list_enumerator clone(lst, ptr);
 		++(*this);
 		return clone;
 	}
@@ -200,11 +202,35 @@ class list_enumerator final : public enumerator<T>
 	{
 		const list_enumerator* oth = dynamic_cast<const list_enumerator*>(&other);
 		if (oth == nullptr) return false;
-		return ptr == oth->ptr;
+		return &lst == &(oth->lst) && ptr == oth->ptr;
 	}
 	
 	public: virtual ~list_enumerator() override { }
-	public: virtual list_enumerator* clone() const override { return new list_enumerator(ptr); }
-};
+	public: virtual list_enumerator* clone() const override { return new list_enumerator(lst, ptr); }
+	
+	public: virtual void begin()
+	{
+		ptr = lst._first;
+	}
+	
+	public: virtual bool insertAfter(const T& value)
+	{
+		if (ptr == nullptr) return false;
 
-template <typename T> list_enumerator<T> list<T>::_end(nullptr);
+		ptr->next = new typename list<T>::Node(value, ptr->next);
+		if (lst._last == ptr) lst._last = ptr->next;
+		++lst._size;
+
+		return true;
+	}
+	public: virtual bool insertAfter(T&& value)
+	{
+		if (ptr == nullptr) return false;
+
+		ptr->next = new typename list<T>::Node(std::forward<T>(value), ptr->next);
+		if (lst._last == ptr) lst._last = ptr->next;
+		++lst._size;
+
+		return true;
+	}
+};

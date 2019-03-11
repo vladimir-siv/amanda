@@ -27,7 +27,8 @@ class Event final
 	public: template <typename... EArgs>
 	void fire(EArgs&&... arg) const
 	{
-		for (auto i = subscriptions.begin(); i != subscriptions.end(); ++i)
+		auto end = subscriptions.cend();
+		for (auto i = subscriptions.cbegin(); i != end; ++i)
 		{
 			i->invoke(std::forward<EArgs>(arg)...);
 		}

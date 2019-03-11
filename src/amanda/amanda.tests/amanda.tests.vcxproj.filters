@@ -12,7 +12,7 @@
     <ClCompile Include="tests\t_vector_int.cpp" />
     <ClCompile Include="tests\t_raii.cpp" />
     <ClCompile Include="tests\t_tuple.cpp" />
-    <ClCompile Include="tests\t_enumerators.cpp" />
+    <ClCompile Include="tests\t_list_enumerator.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="test.bat" />
