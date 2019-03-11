@@ -9,8 +9,8 @@
 
 void eval_list()
 {
-	List<Coord> list1;
-	List<Coord*> list2;
+	list<Coord> list1;
+	list<Coord*> list2;
 
 	Coord c0(8, 2);					// ctor
 	Coord& c0r = c0;				// ...
@@ -28,7 +28,7 @@ void eval_list()
 	list2.push_back(&c1);
 	list2.push_front(&c2);
 
-	List<Coord*> list3 = list2;
+	list<Coord*> list3 = list2;
 	assert::areEqual(list3.size(), 4, "[A1] Size not equal to 4");
 		
 	assert::areEqual(list3.pop_front()->id, 2, "[A2] Front pop is not equal to 3");

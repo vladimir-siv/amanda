@@ -9,7 +9,7 @@ void _list_int()
 	int& lref = value;	// 5
 	int&& rref = 4;		// 4
 
-	List<int> list;
+	list<int> list;
 
 	list.push_back(3);		// 3
 	list.push_back(value);	// 5

@@ -5,7 +5,7 @@
 
 void _vector_int()
 {
-	Vector<int> vec1(6);
+	vector<int> vec1(6);
 	
 	vec1.push(3);
 	vec1.push(4);
@@ -31,7 +31,7 @@ void _vector_int()
 	vec1.push(3);
 	vec1.push(5);
 
-	Vector<int> vec2 = vec1;
+	vector<int> vec2 = vec1;
 	vec2.clear();
 	vec2[5] = vec1[1];
 
@@ -53,7 +53,7 @@ void _vector_int()
 	assert::areEqual(vec2[4], 5, "[A23] Element not equal to 5");
 	assert::areEqual(vec2[5], 2, "[A24] Element not equal to 2");
 
-	Vector<int> vec3 = vec1;
+	vector<int> vec3 = vec1;
 	
 	// vec3: { 9, 2, 8, 3*, 5, x }
 	assert::areEqual(vec3.size(), 3, "[A25] Size not equal to 3");

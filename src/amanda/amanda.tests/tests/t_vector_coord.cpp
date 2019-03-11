@@ -9,8 +9,8 @@
 
 void eval_vector()
 {
-	Vector<Coord> vec1(7);
-	Vector<Coord*> vec2(5);
+	vector<Coord> vec1(7);
+	vector<Coord*> vec2(5);
 
 	Coord c0(8, 2);					// ctor
 	Coord& c0r = c0;				// ...
@@ -30,7 +30,7 @@ void eval_vector()
 	vec2.push(&c1);
 	vec2.push(&c2);
 
-	Vector<Coord*> vec3 = vec2;
+	vector<Coord*> vec3 = vec2;
 	assert::areEqual(vec3.size(), 4, "[A1] Size not equal to 4");
 
 	assert::areEqual(vec3.pop()->id, 9, "[A2] Pop is not equal to 2");

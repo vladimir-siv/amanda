@@ -6,6 +6,7 @@
 #include "exceptions/collectionfullexception.h"
 #include "exceptions/collectionemptyexception.h"
 #include "exceptions/indexoutofboundsexception.h"
+#include "exceptions/argumentexception.h"
 
 #define MAX_EXCEPTIONS 3
 

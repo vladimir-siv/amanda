@@ -1,5 +1,7 @@
 #pragma once
 
+#include <structures/list.h>
+
 using ThreadDelegate = void(*)(...);
 extern void dispatch();
 
@@ -9,8 +11,12 @@ class Thread final
 {
 	friend void TIMER1_COMPA_vect(void);
 	friend void dispatch();
+	friend void __idle__(...);
+	friend class System;
 	friend class Scheduler;
-	friend class Semaphore;
+	friend class mutex;
+	friend class condition;
+	friend class semaphore;
 
 	public: enum State
 	{
@@ -27,7 +33,10 @@ class Thread final
 	private: static unsigned long idGen;
 	private: static Thread loop;
 	private: static Thread* running;
+	private: static bool dispatch_idle;
+	private: static Thread* idle;
 	
+	private: static void init();
 	public: static Thread* current();
 	
 	private: unsigned long id;
@@ -35,15 +44,25 @@ class Thread final
 	private: volatile uintptr_t sp;
 	private: volatile unsigned int quantum;
 	private: State state;
+	private: list<Thread*> complete;
 	
 	private: Thread();
 	public: explicit Thread(ThreadDelegate delegate, unsigned long stackSize = 128);
+	public: Thread(const Thread& thread) = delete;
+	public: Thread(Thread&& thread) = delete;
 	public: ~Thread();
-	private: void clear();
+	
+	public: Thread& operator=(const Thread& thread) = delete;
+	public: Thread& operator=(Thread&& thread) = delete;
+	
+	private: void finish();
 	private: static void finalize();
 	
 	public: unsigned long ID() const;
 	
 	public: bool isInState(State state) const;
 	private: void setState(State state);
+	
+	public: void waitToComplete();
+	public: void abort();
 };

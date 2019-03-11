@@ -1,10 +1,11 @@
 #include <Arduino.h>
 #include "system.h"
 #include "schedulers/fifo.h"
+#include "thread.h"
 
 volatile unsigned long System::_lock = 0;
 volatile unsigned long System::_millis = 0;
-Scheduler* System::_scheduler = new FIFOScheduler(4);
+Scheduler* System::scheduler = new FIFOScheduler(5);
 
 void System::init()
 {
@@ -19,17 +20,14 @@ void System::init()
 	TCNT1 = 0;
 	TIMSK1 |= _BV(OCIE1A);
 
+	Thread::init();
+
 	sei();
 }
 
 unsigned long System::millis()
 {
 	return _millis;
-}
-
-Scheduler* System::scheduler()
-{
-	return _scheduler;
 }
 
 void System::lock()

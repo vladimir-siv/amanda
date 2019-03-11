@@ -5,12 +5,12 @@
 #include "../exceptions.h"
 #include "../patterns/enumerator.h"
 
-template <typename T> class ListEnumerator;
+template <typename T> class list_enumerator;
 
 template <typename T>
-class List final
+class list final
 {
-	friend class ListEnumerator<T>;
+	friend class list_enumerator<T>;
 
 	private: struct Node final
 	{
@@ -20,19 +20,19 @@ class List final
 		Node(T&& value, Node* next = nullptr) : value(std::forward<T>(value)), next(next) { }
 	};
 	
-	private: static ListEnumerator<T> _end;
+	private: static list_enumerator<T> _end;
 	
 	private: unsigned int _size = 0;
 	private: Node* _first = nullptr; Node* _last = nullptr;
 	
-	private: void copy(const List& list)
+	private: void copy(const list& list)
 	{
 		for (Node* i = list._first; i != nullptr; i = i->next)
 		{
 			push_back(i->value);
 		}
 	}
-	private: void move(List& list)
+	private: void move(list& list)
 	{
 		this->_size = list._size;
 		this->_first = list._first;
@@ -52,17 +52,17 @@ class List final
 		_first = _last = nullptr;
 	}
 	
-	public: explicit List() { }
-	public: List(const List& list) { copy(list); }
-	public: List(List&& list) { move(list); }
-	public: ~List() { clean(); }
+	public: explicit list() { }
+	public: list(const list& list) { copy(list); }
+	public: list(list&& list) { move(list); }
+	public: ~list() { clean(); }
 	
-	public: List& operator=(const List& list)
+	public: list& operator=(const list& list)
 	{
 		if (this != &list) { clean(); copy(list); }
 		return *this;
 	}
-	public: List& operator=(List&& list)
+	public: list& operator=(list&& list)
 	{
 		if (this != &list) { clean(); move(list); }
 		return *this;
@@ -168,43 +168,43 @@ class List final
 		}
 	}
 	
-	public: ListEnumerator<T> begin() const { return ListEnumerator<T>(_first); }
-	public: ListEnumerator<T>& end() const { return _end; }
+	public: list_enumerator<T> begin() const { return list_enumerator<T>(_first); }
+	public: list_enumerator<T>& end() const { return _end; }
 };
 
 template <typename T>
-class ListEnumerator final : public Enumerator<T>
+class list_enumerator final : public enumerator<T>
 {
-	friend class List<T>;
+	friend class list<T>;
 
-	private: typename List<T>::Node* ptr;
-	private: ListEnumerator(typename List<T>::Node* ptr) : ptr(ptr) { }
+	private: typename list<T>::Node* ptr;
+	private: list_enumerator(typename list<T>::Node* ptr) : ptr(ptr) { }
 	
 	public: virtual T& operator*() const override { return ptr->value; }
 	public: virtual T& operator->() const override { return ptr->value; }
 	
-	public: virtual ListEnumerator<T>& operator++() override
+	public: virtual list_enumerator<T>& operator++() override
 	{
 		if (ptr != nullptr) ptr = ptr->next;
 		return *this;
 	}
-	public: virtual ListEnumerator<T> operator++(int)
+	public: virtual list_enumerator<T> operator++(int)
 	{
-		ListEnumerator clone(ptr);
+		list_enumerator clone(ptr);
 		++(*this);
 		return clone;
 	}
 	
-	public: virtual bool operator!=(const Enumerator<T>& other) const override { return !(*this == other); }
-	public: virtual bool operator==(const Enumerator<T>& other) const override
+	public: virtual bool operator!=(const enumerator<T>& other) const override { return !(*this == other); }
+	public: virtual bool operator==(const enumerator<T>& other) const override
 	{
-		const ListEnumerator* oth = dynamic_cast<const ListEnumerator*>(&other);
+		const list_enumerator* oth = dynamic_cast<const list_enumerator*>(&other);
 		if (oth == nullptr) return false;
 		return ptr == oth->ptr;
 	}
 	
-	public: virtual ~ListEnumerator() override { }
-	public: virtual ListEnumerator* clone() const override { return new ListEnumerator(ptr); }
+	public: virtual ~list_enumerator() override { }
+	public: virtual list_enumerator* clone() const override { return new list_enumerator(ptr); }
 };
 
-template <typename T> ListEnumerator<T> List<T>::_end(nullptr);
+template <typename T> list_enumerator<T> list<T>::_end(nullptr);

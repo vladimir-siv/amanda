@@ -19,6 +19,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)event_system\eventargs.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)event_system\eventhandler.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)exceptions.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)exceptions\argumentexception.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)exceptions\collectionemptyexception.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)exceptions\collectionfullexception.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)exceptions\exception.cpp" />
@@ -38,6 +39,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)event_system\eventargs.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)event_system\eventhandler.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)exceptions.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)exceptions\argumentexception.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)exceptions\collectionemptyexception.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)exceptions\collectionfullexception.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)exceptions\exception.h" />

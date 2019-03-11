@@ -25,6 +25,7 @@ class FIFOScheduler : public Scheduler
 		threads[tail] = thread;
 		if (++tail == capacity) tail = 0;
 		++size;
+		stop_idle();
 		return;
 	}
 	public: virtual Thread* get() override

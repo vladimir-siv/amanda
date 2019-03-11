@@ -4,6 +4,7 @@
 
 class Scheduler
 {
+	protected: static void stop_idle() { Thread::dispatch_idle = true; }
 	public: virtual ~Scheduler() { }
 	public: virtual void put(Thread* thread) = 0;
 	public: virtual Thread* get() = 0;

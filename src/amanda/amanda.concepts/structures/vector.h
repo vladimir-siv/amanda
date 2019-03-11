@@ -4,13 +4,13 @@
 #include "../exceptions.h"
 
 template <typename T>
-class Vector final
+class vector final
 {
 	private: unsigned int _capacity;
 	private: unsigned int _size = 0;
 	private: T* _data = nullptr;
 	
-	private: void copy(const Vector& vector)
+	private: void copy(const vector& vector)
 	{
 		this->_capacity = vector._capacity;
 		this->_size = vector._size;
@@ -18,7 +18,7 @@ class Vector final
 		for (unsigned int i = 0; i < vector._capacity; ++i)
 			this->_data[i] = vector._data[i];
 	}
-	private: void move(Vector& vector)
+	private: void move(vector& vector)
 	{
 		this->_capacity = vector._capacity;
 		this->_size = vector._size;
@@ -34,12 +34,12 @@ class Vector final
 		_size = 0;
 	}
 	
-	public: explicit Vector(unsigned int capacity) : _capacity(capacity), _data(new T[capacity]) { }
-	public: Vector(const Vector& vector) : _capacity(0) { copy(vector); }
-	public: Vector(Vector&& vector) { move(vector); }
-	public: ~Vector() { clean(); }
+	public: explicit vector(unsigned int capacity) : _capacity(capacity), _data(new T[capacity]) { }
+	public: vector(const vector& vector) : _capacity(0) { copy(vector); }
+	public: vector(vector&& vector) { move(vector); }
+	public: ~vector() { clean(); }
 	
-	public: const T& operator[](unsigned int i) const { return const_cast<Vector&>(*this)[i]; }
+	public: const T& operator[](unsigned int i) const { return const_cast<vector&>(*this)[i]; }
 	public: T& operator[](unsigned int i)
 	{
 		if (i < 0 || _capacity <= i)
@@ -51,12 +51,12 @@ class Vector final
 		return _data[i];
 	}
 	
-	public: Vector& operator=(const Vector& vector)
+	public: vector& operator=(const vector& vector)
 	{
 		if (this != &vector) { clean(); copy(vector); }
 		return *this;
 	}
-	public: Vector& operator=(Vector&& vector)
+	public: vector& operator=(vector&& vector)
 	{
 		if (this != &vector) { clean(); move(vector); }
 		return *this;

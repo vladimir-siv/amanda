@@ -9,7 +9,7 @@ void _enumerators()
 	const int N = 7;
 	int data[N] = { 3, 7, 4, 1, 9, 0, 2 };
 
-	List<int> lst;
+	list<int> lst;
 
 	std::string message = "[Ax] Data not equal";
 

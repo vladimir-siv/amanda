@@ -1,14 +1,14 @@
 #pragma once
 
 template <typename T>
-class Enumerator
+class enumerator
 {
 	public: virtual T& operator*() const = 0;
 	public: virtual T& operator->() const = 0;
-	public: virtual Enumerator& operator++() = 0;
-	public: virtual Enumerator& operator--() { return *this; };
-	public: virtual bool operator==(const Enumerator& other) const = 0;
-	public: virtual bool operator!=(const Enumerator& other) const = 0;
-	public: virtual ~Enumerator() { }
-	public: virtual Enumerator* clone() const { return nullptr; }
+	public: virtual enumerator& operator++() = 0;
+	public: virtual enumerator& operator--() { return *this; };
+	public: virtual bool operator==(const enumerator& other) const = 0;
+	public: virtual bool operator!=(const enumerator& other) const = 0;
+	public: virtual ~enumerator() { }
+	public: virtual enumerator* clone() const { return nullptr; }
 };

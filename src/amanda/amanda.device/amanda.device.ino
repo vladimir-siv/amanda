@@ -5,6 +5,7 @@
 const byte N = 10;
 Thread** t = nullptr;
 pinstate pin13state = LOW;
+bool firstCycle = true;
 
 void thread(...);
 
@@ -66,15 +67,43 @@ void job(int id)
 		for (volatile int i = 0; i < 1000 / (N > 0 ? N : 1); i++)
 			for (volatile int j = 0; j < 1000; j++)
 				;
+
+		System::lock();
+
+		if (i == 3 && Thread::current() == t[8])
+		{
+			Serial.print("Aborting t[7]: ");
+			Serial.println(t[7]->ID());
+			t[7]->abort();
+		}
+
+		System::unlock();
 	}
 }
 
 void loop()
 {
+	if (firstCycle)
+	{
+		for (int i = 0; i < N; ++i)
+		{
+			System::lock();
+			Serial.print("Waiting for: ");
+			Serial.println(t[i]->ID());
+			System::unlock();
+			t[i]->waitToComplete();
+		}
+
+		firstCycle = false;
+	}
+
 	job(7);
 
 	pin13state = !pin13state;
 	digitalWrite(13, pin13state);
+
+	static int k = 0;
+	if (++k == 5) Thread::current()->abort();
 }
 
 void thread(...)
