@@ -3,9 +3,9 @@
 #include "schedulers/fifo.h"
 #include "thread.h"
 
-volatile unsigned long System::_lock = 0;
-volatile unsigned long System::_millis = 0;
-Scheduler* System::scheduler = new FIFOScheduler(5);
+volatile unsigned long long System::_lock = 0;
+volatile unsigned long long System::_millis = 0;
+Scheduler* System::scheduler = new FIFOScheduler(10); // should be 4: 2 threads, loop & idle (or 3)
 
 void System::init()
 {
@@ -25,7 +25,7 @@ void System::init()
 	sei();
 }
 
-unsigned long System::millis()
+Time System::millis()
 {
 	return _millis;
 }

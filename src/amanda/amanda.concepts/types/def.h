@@ -6,13 +6,12 @@
 
 #else
 
-namespace std
-{
-	using size_t = unsigned int;
-}
+using size_t = unsigned int;
 
 #endif
 
+using byte = unsigned char;
+using sbyte = char;
 using position_t = unsigned int;
 
 template <position_t i, typename Type, typename... Types>

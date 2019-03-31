@@ -1,18 +1,23 @@
 #pragma once
 
-#include <structures/vector.h>
-#include <exceptions.h>
 #include "../system.h"
 #include "../thread.h"
+#include "mutex.h"
+#include "lock.h"
+#include "condition.h"
+
+#include <structures/vector.h>
+#include <exceptions.h>
 
 class semaphore final
 {
-	private: vector<Thread*> _blocked;
+	private: mutex _mtx;
+	private: condition _cnd;
 	private: int _value;
 	
-	public: explicit semaphore(unsigned int capacity, int _value = 0) : _blocked(capacity), _value(_value)
+	public: explicit semaphore(unsigned int capacity, int value = 0) : _cnd(capacity), _value(value)
 	{
-		if (_value < 0) Exceptions::Throw<ArgumentException>();
+		if (value < 0) Exceptions::Throw<ArgumentException>();
 	}
 	
 	public: int value() const
@@ -21,63 +26,39 @@ class semaphore final
 	}
 	public: void set_value(int value)
 	{
+		lock lck(_mtx);
 		if (_value >= 0 && value >= 0) _value = value;
 	}
 	
 	public: void wait()
 	{
-		System::lock();
+		lock lck(_mtx);
 
-		if (-_value >= _blocked.capacity())
+		if (-_value >= _cnd.capacity())
 		{
 			Exceptions::Throw<CollectionFullException>();
-			System::unlock();
 			return;
 		}
 
 		--_value;
 
-		if (_value < 0)
-		{
-			Thread* current = Thread::current();
-			current->setState(Thread::WAITING);
-			_blocked.push(current);
-
-			System::unlock();
-			dispatch();
-			return;
-		}
-
-		System::unlock();
+		if (_value < 0) _cnd.wait(&lck);
 	}
 	public: void notify()
 	{
-		System::lock();
+		lock lck(_mtx);
 
-		if (_value < 0)
-		{
-			Thread* thread = _blocked.pop();
-			thread->setState(Thread::READY);
-			System::scheduler->put(thread);
-		}
-
+		if (_value < 0) _cnd.notify();
 		++_value;
-
-		System::unlock();
 	}
 	public: void notify_all()
 	{
-		System::lock();
+		lock lck(_mtx);
 
-		while (_blocked.size() > 0)
+		if (_value < 0)
 		{
-			Thread* thread = _blocked.pop();
-			thread->setState(Thread::READY);
-			System::scheduler->put(thread);
+			_cnd.notify_all();
+			_value = 0;
 		}
-
-		_value = 0;
-
-		System::unlock();
 	}
 };

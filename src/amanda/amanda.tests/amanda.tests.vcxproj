@@ -85,7 +85,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <PreprocessorDefinitions>_MBCS;%(PreprocessorDefinitions);__CPP_STD__;__THROW_EX__</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_MBCS;%(PreprocessorDefinitions);__CPP_STD__;__THROW_EX__;__USE_RTTI__</PreprocessorDefinitions>
       <DebugInformationFormat />
     </ClCompile>
     <Link>
@@ -101,7 +101,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <PreprocessorDefinitions>_MBCS;%(PreprocessorDefinitions);__CPP_STD__;__THROW_EX__</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_MBCS;%(PreprocessorDefinitions);__CPP_STD__;__THROW_EX__;__USE_RTTI__</PreprocessorDefinitions>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -128,17 +128,24 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="program.cpp" />
+    <ClCompile Include="tests\t_bitvector.cpp" />
     <ClCompile Include="tests\t_list_enumerator.cpp" />
     <ClCompile Include="tests\t_events.cpp" />
     <ClCompile Include="tests\t_exceptions.cpp" />
     <ClCompile Include="tests\t_list_coord.cpp" />
     <ClCompile Include="tests\t_list_int.cpp" />
+    <ClCompile Include="tests\t_object_allocator.cpp" />
     <ClCompile Include="tests\t_qbuffer_int.cpp" />
+    <ClCompile Include="tests\t_queue_coord.cpp" />
+    <ClCompile Include="tests\t_queue_int.cpp" />
     <ClCompile Include="tests\t_raii.cpp" />
     <ClCompile Include="tests\t_type_traits.cpp" />
     <ClCompile Include="tests\t_tuple.cpp" />
     <ClCompile Include="tests\t_vector_coord.cpp" />
     <ClCompile Include="tests\t_vector_int.cpp" />
+    <ClCompile Include="tests\t_vlist_coord.cpp" />
+    <ClCompile Include="tests\t_vlist_enumerator.cpp" />
+    <ClCompile Include="tests\t_vlist_int.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="test.bat" />

@@ -1,10 +1,10 @@
 #pragma once
 
+#include "def.h"
 #include "schedulers/scheduler.h"
 
 extern "C" void TIMER1_COMPA_vect(void);
 
-using byte = unsigned char;
 using pinstate = int;
 
 class System final
@@ -16,14 +16,14 @@ class System final
 	friend void TIMER1_COMPA_vect(void);
 	friend void dispatch();
 
-	private: static volatile unsigned long _lock;
-	private: static volatile unsigned long _millis;
+	private: static volatile unsigned long long _lock;
+	private: static volatile unsigned long long _millis;
 	
 	private: static Scheduler* scheduler;
 	
 	public: static void init();
 	
-	public: static unsigned long millis();
+	public: static Time millis();
 	public: static void lock();
 	public: static void unlock();
 	public: static bool locked();

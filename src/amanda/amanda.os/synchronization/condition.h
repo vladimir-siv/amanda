@@ -1,20 +1,27 @@
 #pragma once
 
-#include <structures/list.h>
 #include "../system.h"
 #include "../thread.h"
+#include "lock.h"
+
+#include <structures/queue.h>
 
 class condition final
 {
-	private: list<Thread*> _blocked;
+	private: queue<Thread*> _blocked;
 	
-	public: void wait()
+	public: condition(unsigned int capacity = 10) : _blocked(queue<Thread*>(capacity)) { }
+	
+	public: unsigned int capacity() const { return _blocked.capacity(); }
+	
+	public: void wait(lock* lck = nullptr)
 	{
 		System::lock();
 
 		Thread* current = Thread::current();
 		current->setState(Thread::WAITING);
-		_blocked.push_back(current);
+		_blocked.enqueue(current);
+		if (lck) lck->mtx.unlock();
 
 		System::unlock();
 		dispatch();
@@ -25,7 +32,7 @@ class condition final
 
 		if (_blocked.size() > 0)
 		{
-			Thread* thread = _blocked.pop_front();
+			Thread* thread = _blocked.dequeue();
 			thread->setState(Thread::READY);
 			System::scheduler->put(thread);
 		}
@@ -38,7 +45,7 @@ class condition final
 
 		while (_blocked.size() > 0)
 		{
-			Thread* thread = _blocked.pop_front();
+			Thread* thread = _blocked.dequeue();
 			thread->setState(Thread::READY);
 			System::scheduler->put(thread);
 		}

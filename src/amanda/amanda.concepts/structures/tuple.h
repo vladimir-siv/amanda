@@ -37,7 +37,7 @@ struct Tuple final : public TupleImpl<0, Types...>
 	public: template <typename... Parameters>
 	Tuple(Parameters&&... value) : TupleImpl<0, Types...>(std::forward<Parameters>(value)...) { }
 	
-	public: template <typename position_t i>
+	public: template <position_t i>
 	variadic_arg<i, Types...>& e()
 	{
 		return this->TupleLeaf<i, variadic_arg<i, Types...>>::value;

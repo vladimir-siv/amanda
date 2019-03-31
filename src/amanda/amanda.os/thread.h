@@ -1,6 +1,9 @@
 #pragma once
 
-#include <structures/list.h>
+#include "def.h"
+
+#include <structures/specialized/vlist.h>
+#include <structures/tuple.h>
 
 using ThreadDelegate = void(*)(void);
 extern void dispatch();
@@ -34,16 +37,19 @@ class Thread final
 	private: static Thread* running;
 	private: static bool dispatch_idle;
 	private: static Thread* idle;
+	private: static vlist<Tuple<Time, Thread*>> sleeping;
 	
 	private: static void init();
+	public: static inline void tick();
 	public: static Thread* current();
+	public: static void sleep(Time millis);
 	
 	private: unsigned long id;
 	private: byte* stack;
 	private: volatile uintptr_t sp;
 	private: volatile unsigned int quantum;
 	private: State state;
-	private: list<Thread*> complete;
+	private: vlist<Thread> complete;
 	
 	private: Thread();
 	public: explicit Thread(ThreadDelegate delegate, unsigned long stackSize = 128);

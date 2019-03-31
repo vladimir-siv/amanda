@@ -3,56 +3,56 @@
 #include <units/coord.h>
 
 #include <exceptions.h>
-#include <structures/vector.h>
+#include <structures/queue.h>
 
 #include <string>
 
-void eval_vector()
+void eval_queue()
 {
-	vector<Coord> vec1(7);
-	vector<Coord*> vec2(5);
+	queue<Coord> que1(7);
+	queue<Coord*> que2(5);
 
 	Coord c0(8, 2);					// ctor
 	Coord& c0r = c0;				// ...
 	Coord&& c1 = Coord(7, 5);		// ctor
 	Coord c2 = Coord(4, 6);			// ctor
 
-	vec1.push(Coord(3, 2));			// ctor -> move= -> dtor
-	vec1.push(c0);					// copy=
-	vec1.push(c0r);					// copy=
-	vec1.push(c1);					// copy=
-	vec1.push(c2);					// copy=
-	vec1[5] = c0r;					// copy=
-	vec1[6] = Coord(0, 1);			// ctor -> move= -> dtor
+	que1.enqueue(Coord(3, 2));		// ctor -> move= -> dtor
+	que1.enqueue(c0);				// copy=
+	que1.enqueue(c0r);				// copy=
+	que1.enqueue(c1);				// copy=
+	que1.enqueue(c2);				// copy=
+	que1[5] = c0r;					// copy=
+	que1[6] = Coord(0, 1);			// ctor -> move= -> dtor
 
-	vec2.push(&c0);
-	vec2.push(&c0r);
-	vec2.push(&c1);
-	vec2.push(&c2);
+	que2.enqueue(&c0);
+	que2.enqueue(&c0r);
+	que2.enqueue(&c1);
+	que2.enqueue(&c2);
 
-	vector<Coord*> vec3 = vec2;
-	assert::areEqual(vec3.size(), 4, "[A1] Size not equal to 4");
+	queue<Coord*> que3 = que2;
+	assert::areEqual(que3.size(), 4, "[A1] Size not equal to 4");
 
-	assert::areEqual(vec3.pop()->id, 9, "[A2] Pop is not equal to 9");
-	assert::areEqual(vec3.pop()->id, 8, "[A3] Pop is not equal to 8");
-	assert::areEqual(vec3.pop()->id, 7, "[A4] Pop is not equal to 7");
-	assert::areEqual(vec3.pop()->id, 7, "[A5] Pop is not equal to 7");
+	assert::areEqual(que3.dequeue()->id, 7, "[A2] Pop is not equal to 7");
+	assert::areEqual(que3.dequeue()->id, 7, "[A3] Pop is not equal to 7");
+	assert::areEqual(que3.dequeue()->id, 8, "[A4] Pop is not equal to 8");
+	assert::areEqual(que3.dequeue()->id, 9, "[A5] Pop is not equal to 9");
 
-	vec2.clear();
-	vec1.clear();
+	que2.clear();
+	que1.clear();
 }
 
-void _vector_coord()
+void _queue_coord()
 {
 	OutputComparer<std::string> o;
 	Coord::Subscription sub = o.appender();
 	Coord::reset_ids();
 
-	eval_vector();
+	eval_queue();
 
 	assert::areEqual(o.size(), 31, "[A6] Output size not equal to 31");
 
-	// local vector creation
+	// local queue creation
 	o.next("Coord<0>(0, 0)::ctor", "[A7]");
 	o.next("Coord<1>(0, 0)::ctor", "[A8]");
 	o.next("Coord<2>(0, 0)::ctor", "[A9]");
@@ -71,7 +71,7 @@ void _vector_coord()
 	o.next("Coord<0>(3, 2)::move=", "[A18]");
 	o.next("Coord<10>(3, 2)::dtor", "[A19]");
 
-	// copy on push
+	// copy on enqueue
 	o.next("Coord<1>(8, 2)::copy=", "[A20]");
 	o.next("Coord<2>(8, 2)::copy=", "[A21]");
 	o.next("Coord<3>(7, 5)::copy=", "[A22]");
@@ -90,7 +90,7 @@ void _vector_coord()
 	o.next("Coord<8>(7, 5)::dtor", "[A29]");
 	o.next("Coord<7>(8, 2)::dtor", "[A30]");
 
-	// local vector destruction
+	// local queue destruction
 	o.next("Coord<6>(0, 1)::dtor", "[A31]");
 	o.next("Coord<5>(8, 2)::dtor", "[A32]");
 	o.next("Coord<4>(4, 6)::dtor", "[A33]");

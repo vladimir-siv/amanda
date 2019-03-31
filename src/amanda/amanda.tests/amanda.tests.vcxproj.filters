@@ -13,6 +13,13 @@
     <ClCompile Include="tests\t_raii.cpp" />
     <ClCompile Include="tests\t_tuple.cpp" />
     <ClCompile Include="tests\t_list_enumerator.cpp" />
+    <ClCompile Include="tests\t_queue_int.cpp" />
+    <ClCompile Include="tests\t_queue_coord.cpp" />
+    <ClCompile Include="tests\t_vlist_int.cpp" />
+    <ClCompile Include="tests\t_vlist_coord.cpp" />
+    <ClCompile Include="tests\t_vlist_enumerator.cpp" />
+    <ClCompile Include="tests\t_bitvector.cpp" />
+    <ClCompile Include="tests\t_object_allocator.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="test.bat" />

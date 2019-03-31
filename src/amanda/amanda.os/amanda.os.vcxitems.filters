@@ -22,5 +22,6 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)synchronization\lock.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)system.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)thread.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)def.h" />
   </ItemGroup>
 </Project>

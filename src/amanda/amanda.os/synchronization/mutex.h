@@ -1,17 +1,21 @@
 #pragma once
 
-#include <structures/list.h>
+#include "../system.h"
+#include "../thread.h"
 
-class Thread;
+#include <structures/queue.h>
 
 class mutex final
 {
 	private: Thread* _owner = nullptr;
 	private: unsigned int _lock_count = 0;
-	private: list<Thread*> _blocked;
+	private: queue<Thread*> _blocked;
+	
+	public: mutex(unsigned int capacity = 10) : _blocked(queue<Thread*>(capacity)) { }
 	
 	public: Thread* owningThread() const { return _owner; }
 	public: unsigned int lock_count() const { return _lock_count; }
+	public: unsigned int capacity() const { return _blocked.capacity(); }
 	
 	public: void lock()
 	{
@@ -29,7 +33,7 @@ class mutex final
 		else
 		{
 			current->setState(Thread::WAITING);
-			_blocked.push_back(current);
+			_blocked.enqueue(current);
 
 			System::unlock();
 			dispatch();
@@ -70,8 +74,7 @@ class mutex final
 			{
 				if (_blocked.size() > 0)
 				{
-					current = _blocked.pop_front();
-
+					current = _blocked.dequeue();
 					_owner = current;
 					++_lock_count;
 

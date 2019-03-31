@@ -5,6 +5,10 @@
 #include "../exceptions.h"
 #include "../patterns/enumerator.h"
 
+#ifndef __USE_RTTI__
+#include "../rtti/type.h"
+#endif
+
 template <typename T> class list_enumerator;
 
 template <typename T>
@@ -16,6 +20,7 @@ class list final
 	{
 		T value;
 		Node* next;
+
 		Node(const T& value, Node* next = nullptr) : value(value), next(next) { }
 		Node(T&& value, Node* next = nullptr) : value(std::forward<T>(value)), next(next) { }
 	};
@@ -158,6 +163,7 @@ class list final
 			else remove_front();
 		}
 	}
+	
 	public: void traverse(IDelegate<void, T&>* del)
 	{
 		for (Node* i = _first; i != nullptr; i = i->next)
@@ -166,21 +172,26 @@ class list final
 		}
 	}
 	
-	public: list_enumerator<T> begin() { return list_enumerator<T>(*this, _first); }
-	public: list_enumerator<T> end() { return list_enumerator<T>(*this, nullptr); }
+	public: list_enumerator<T> begin() { return list_enumerator<T>(this, _first); }
+	public: list_enumerator<T> end() { return list_enumerator<T>(this, nullptr); }
 	
-	public: const list_enumerator<T> cbegin() const { return list_enumerator<T>(const_cast<list<T>&>(*this), _first); }
-	public: const list_enumerator<T> cend() const { return list_enumerator<T>(const_cast<list<T>&>(*this), nullptr); }
+	public: const list_enumerator<T> cbegin() const { return list_enumerator<T>(const_cast<list<T>*>(this), _first); }
+	public: const list_enumerator<T> cend() const { return list_enumerator<T>(const_cast<list<T>*>(this), nullptr); }
 };
 
 template <typename T>
-class list_enumerator final : public enumerator<T>
+class list_enumerator : public enumerator<T>
 {
+	__RTTI__
+	
 	friend class list<T>;
 
-	protected: list<T>& lst;
+	protected: list<T>* lst;
 	protected: typename list<T>::Node* ptr;
-	protected: list_enumerator(list<T>& lst, typename list<T>::Node* ptr) : lst(lst), ptr(ptr) { }
+	protected: list_enumerator(list<T>* lst, typename list<T>::Node* ptr) : lst(lst), ptr(ptr) { }
+	
+	public: virtual ~list_enumerator() override { }
+	public: virtual list_enumerator* clone() const override { return new list_enumerator(lst, ptr); }
 	
 	public: virtual T& operator*() const override { return ptr->value; }
 	public: virtual T& operator->() const override { return ptr->value; }
@@ -197,20 +208,16 @@ class list_enumerator final : public enumerator<T>
 		return clone;
 	}
 	
-	public: virtual bool operator!=(const enumerator<T>& other) const override { return !(*this == other); }
-	public: virtual bool operator==(const enumerator<T>& other) const override
+	public: virtual bool equals(const enumerator<T>& other) const override
 	{
-		const list_enumerator* oth = dynamic_cast<const list_enumerator*>(&other);
-		if (oth == nullptr) return false;
-		return &lst == &(oth->lst) && ptr == oth->ptr;
+		if (typeid(*this) != typeid(other)) return false;
+		const list_enumerator<T>& oth = (const list_enumerator<T>&)other;
+		return lst == oth.lst && ptr == oth.ptr;
 	}
-	
-	public: virtual ~list_enumerator() override { }
-	public: virtual list_enumerator* clone() const override { return new list_enumerator(lst, ptr); }
 	
 	public: virtual void begin()
 	{
-		ptr = lst._first;
+		ptr = lst->_first;
 	}
 	
 	public: virtual bool insertAfter(const T& value)
@@ -218,8 +225,8 @@ class list_enumerator final : public enumerator<T>
 		if (ptr == nullptr) return false;
 
 		ptr->next = new typename list<T>::Node(value, ptr->next);
-		if (lst._last == ptr) lst._last = ptr->next;
-		++lst._size;
+		if (lst->_last == ptr) lst->_last = ptr->next;
+		++lst->_size;
 
 		return true;
 	}
@@ -228,9 +235,11 @@ class list_enumerator final : public enumerator<T>
 		if (ptr == nullptr) return false;
 
 		ptr->next = new typename list<T>::Node(std::forward<T>(value), ptr->next);
-		if (lst._last == ptr) lst._last = ptr->next;
-		++lst._size;
+		if (lst->_last == ptr) lst->_last = ptr->next;
+		++lst->_size;
 
 		return true;
 	}
+	
+	public: virtual T& next() const { return ptr->next->value; }
 };
