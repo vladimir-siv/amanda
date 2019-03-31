@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.28307.421
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "amanda.os", "amanda.os\amanda.os.vcxitems", "{01D4FF88-C7B9-49CB-8907-EA4D89EFDEED}"
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "amanda.device", "amanda.device\amanda.device.vcxproj", "{C5F80730-F44F-4478-BDAE-6634EFC2CA88}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "amanda.tests", "amanda.tests\amanda.tests.vcxproj", "{4F9FCFC0-1F81-4123-A9F9-483B9460C92E}"
@@ -13,15 +11,17 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "amanda.concepts", "amanda.c
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "amanda.suit", "amanda.suit\amanda.suit.vcxitems", "{8AEF3798-47F6-4DEA-87EC-AC9606283FC2}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "amanda.core", "amanda.core\amanda.core.vcxitems", "{36479474-7F7E-4A27-B89B-BCC75F804EA9}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
-		amanda.os\amanda.os.vcxitems*{01d4ff88-c7b9-49cb-8907-ea4d89efdeed}*SharedItemsImports = 9
+		amanda.core\amanda.core.vcxitems*{36479474-7f7e-4a27-b89b-bcc75f804ea9}*SharedItemsImports = 9
 		amanda.concepts\amanda.concepts.vcxitems*{4f9fcfc0-1f81-4123-a9f9-483b9460c92e}*SharedItemsImports = 4
 		amanda.suit\amanda.suit.vcxitems*{4f9fcfc0-1f81-4123-a9f9-483b9460c92e}*SharedItemsImports = 4
 		amanda.suit\amanda.suit.vcxitems*{8aef3798-47f6-4dea-87ec-ac9606283fc2}*SharedItemsImports = 9
 		amanda.concepts\amanda.concepts.vcxitems*{9f09b42a-a1e4-4559-893e-0481f5f1134e}*SharedItemsImports = 9
 		amanda.concepts\amanda.concepts.vcxitems*{c5f80730-f44f-4478-bdae-6634efc2ca88}*SharedItemsImports = 4
-		amanda.os\amanda.os.vcxitems*{c5f80730-f44f-4478-bdae-6634efc2ca88}*SharedItemsImports = 4
+		amanda.core\amanda.core.vcxitems*{c5f80730-f44f-4478-bdae-6634efc2ca88}*SharedItemsImports = 4
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
