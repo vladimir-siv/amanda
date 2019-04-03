@@ -16,7 +16,7 @@ void _sd_xml(void)
 	if (!SD.begin(_SD_CS))
 	{
 		Serial.println(F(" Initialization failed!"));
-		while (1);
+		while (1) ;
 	}
 	Serial.println(F(" Initialization done."));
 
