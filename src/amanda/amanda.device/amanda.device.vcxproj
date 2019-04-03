@@ -95,7 +95,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\amanda.device;$(ProjectDir)..\..\..\..\..\..\systems\arduino\hardware\arduino\avr\libraries\SPI\src;$(ProjectDir)..\..\..\..\..\..\systems\arduino\libraries\SD\src;$(ProjectDir)..\amanda.core;$(ProjectDir)..\..\..\..\..\..\systems\arduino\libraries\UIPEthernet;$(ProjectDir)..\..\..\..\..\..\systems\arduino\libraries\UIPEthernet\utility;$(ProjectDir)..\..\..\..\..\..\systems\arduino\libraries\SD\src\utility;$(ProjectDir)..\amanda.concepts;$(ProjectDir)..\..\..\..\..\..\systems\arduino\libraries;$(ProjectDir)..\..\..\..\..\..\systems\arduino\hardware\arduino\avr\libraries;C:\Users\vladi\Documents\Arduino\libraries;$(ProjectDir)..\..\..\..\..\..\systems\arduino\hardware\arduino\avr\cores\arduino;$(ProjectDir)..\..\..\..\..\..\systems\arduino\hardware\arduino\avr\variants\mega;$(ProjectDir)..\amanda.concepts\event_system;$(ProjectDir)..\amanda.concepts\exceptions;$(ProjectDir)..\amanda.concepts\memory_management;$(ProjectDir)..\amanda.concepts\patterns;$(ProjectDir)..\amanda.concepts\RAII;$(ProjectDir)..\amanda.concepts\rtti;$(ProjectDir)..\amanda.concepts\structures;$(ProjectDir)..\amanda.concepts\structures\specialized;$(ProjectDir)..\amanda.concepts\types;$(ProjectDir)..\amanda.core\schedulers;$(ProjectDir)..\amanda.core\synchronization;$(ProjectDir)..\..\..\..\..\..\systems\arduino\hardware\tools\avr\avr\include;$(ProjectDir)..\..\..\..\..\..\systems\arduino\hardware\tools\avr\avr\include\avr;$(ProjectDir)..\..\..\..\..\..\systems\arduino\hardware\tools\avr\lib\gcc\avr\4.8.1\include;$(ProjectDir)..\..\..\..\..\..\systems\arduino\hardware\tools\avr\lib\gcc\avr\4.9.2\include;$(ProjectDir)..\..\..\..\..\..\systems\arduino\hardware\tools\avr\lib\gcc\avr\4.9.3\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\amanda.device;$(ProjectDir)..\amanda.core;$(ProjectDir)..\amanda.concepts;$(ProjectDir)..\..\..\..\..\..\systems\arduino\libraries;$(ProjectDir)..\..\..\..\..\..\systems\arduino\hardware\arduino\avr\libraries;C:\Users\vladi\Documents\Arduino\libraries;$(ProjectDir)..\..\..\..\..\..\systems\arduino\hardware\arduino\avr\cores\arduino;$(ProjectDir)..\..\..\..\..\..\systems\arduino\hardware\arduino\avr\variants\mega;$(ProjectDir)..\amanda.concepts\event_system;$(ProjectDir)..\amanda.concepts\exceptions;$(ProjectDir)..\amanda.concepts\memory_management;$(ProjectDir)..\amanda.concepts\patterns;$(ProjectDir)..\amanda.concepts\RAII;$(ProjectDir)..\amanda.concepts\rtti;$(ProjectDir)..\amanda.concepts\structures;$(ProjectDir)..\amanda.concepts\structures\specialized;$(ProjectDir)..\amanda.concepts\types;$(ProjectDir)..\amanda.core\schedulers;$(ProjectDir)..\amanda.core\synchronization;$(ProjectDir)..\..\..\..\..\..\systems\arduino\hardware\tools\avr\avr\include;$(ProjectDir)..\..\..\..\..\..\systems\arduino\hardware\tools\avr\avr\include\avr;$(ProjectDir)..\..\..\..\..\..\systems\arduino\hardware\tools\avr\lib\gcc\avr\4.8.1\include;$(ProjectDir)..\..\..\..\..\..\systems\arduino\hardware\tools\avr\lib\gcc\avr\4.9.2\include;$(ProjectDir)..\..\..\..\..\..\systems\arduino\hardware\tools\avr\lib\gcc\avr\4.9.3\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <ForcedIncludeFiles>$(ProjectDir)__vm\.amanda.device.vsarduino.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
       <WholeProgramOptimization>false</WholeProgramOptimization>
       <PreprocessorDefinitions>__AVR_ATmega2560__;F_CPU=16000000L;ARDUINO=10808;ARDUINO_AVR_MEGA2560;ARDUINO_ARCH_AVR;__cplusplus=201103L;_VMICRO_INTELLISENSE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -114,8 +114,6 @@
   </PropertyGroup>
   <ItemGroup>
     <None Include="amanda.device.ino" />
-    <None Include="tests\ethernet_server.ino" />
-    <None Include="tests\sd_xml.ino" />
     <None Include="xml\Makefile" />
   </ItemGroup>
   <ItemGroup>
@@ -124,7 +122,6 @@
     <ClInclude Include="__vm\.amanda.device.vsarduino.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="tests\sd_check.ino" />
     <ClCompile Include="xml\tinystr.cpp" />
     <ClCompile Include="xml\tinyxml.cpp" />
     <ClCompile Include="xml\tinyxmlerror.cpp" />

@@ -7,12 +7,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="amanda.device.ino" />
-    <None Include="tests\ethernet_server.ino" />
     <None Include="xml\Makefile" />
-    <None Include="tests\sd_xml.ino" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="tests\sd_check.ino" />
     <ClCompile Include="xml\tinystr.cpp" />
     <ClCompile Include="xml\tinyxml.cpp" />
     <ClCompile Include="xml\tinyxmlerror.cpp" />
