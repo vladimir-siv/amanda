@@ -3,6 +3,7 @@
 #include "hardware/components/lmp.h"
 #include "hardware/components/buzz.h"
 #include "hardware/components/pot.h"
+#include "hardware/components/lm35.h"
 
 #include <system.h>
 
@@ -15,6 +16,7 @@ LMP* lmp1;
 BUZZ* buzz1;
 BUZZ* buzz2;
 POT* pot1;
+LM35* lm351;
 
 void setup()
 {
@@ -42,6 +44,8 @@ void setup()
 
 	pot1 = new POT(A7);
 
+	lm351 = new LM35(A10);
+
 	System::unlock();
 
 	led1->execute(F("<?xml version=\"1.0\" encoding=\"UTF-8\"?><command name=\"blink\"><arg>1000</arg></command>"));
@@ -64,6 +68,10 @@ void loop()
 	Serial.print(F("pot1: "));
 	Serial.print(pot1->read());
 	Serial.println(pot1->unit());
+
+	Serial.print(F("lm351: "));
+	Serial.print(lm351->read());
+	Serial.println(lm351->unit());
 
 	Serial.println();
 
