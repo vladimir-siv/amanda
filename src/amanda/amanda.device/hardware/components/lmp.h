@@ -24,28 +24,31 @@ class BlinkingLMP : public LMP
 	public: virtual CommandResult execute(const String& command) override
 	{
 		TiXmlDocument doc = xml::to_document(command);
-
 		TiXmlElement* root = doc.RootElement();
-		String cmdname = root->Value();
 
-		if (cmdname == "") { }
-		else if (cmdname == "blink")
+		if (String(root->Value()) == "command")
 		{
-			if (!root->NoChildren())
+			String cmdname = root->Attribute("name");
+
+			if (cmdname == "") { }
+			else if (cmdname == "blink")
 			{
-				TiXmlElement* arg = root->FirstChildElement();
-				if (arg != nullptr && String(arg->Value()) == "arg")
+				if (!root->NoChildren())
 				{
-					Time freq = String(arg->GetText()).toInt();
-					blink(freq);
+					TiXmlElement* arg = root->FirstChildElement();
+					if (arg != nullptr && String(arg->Value()) == "arg")
+					{
+						Time freq = String(arg->GetText()).toInt();
+						blink(freq);
+					}
 				}
 			}
-		}
-		else if (cmdname == "stop")
-		{
-			if (root->NoChildren())
+			else if (cmdname == "stop")
 			{
-				stop();
+				if (root->NoChildren())
+				{
+					stop();
+				}
 			}
 		}
 

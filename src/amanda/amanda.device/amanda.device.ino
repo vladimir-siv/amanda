@@ -1,6 +1,7 @@
 ﻿#include "hardware/components/btn.h"
 #include "hardware/components/led.h"
 #include "hardware/components/lmp.h"
+#include "hardware/components/buzz.h"
 
 #include <system.h>
 
@@ -10,6 +11,8 @@ LED* led1;
 LED* led2;
 LED* led3;
 LMP* lmp1;
+BUZZ* buzz1;
+BUZZ* buzz2;
 
 void setup()
 {
@@ -32,13 +35,18 @@ void setup()
 
 	lmp1 = new BlinkingLMP(7);
 
-	led1->execute("<?xml version=\"1.0\" encoding=\"UTF-8\"?><blink><arg>1000</arg></blink>");
-	led2->execute("<?xml version=\"1.0\" encoding=\"UTF-8\"?><blink><arg>1000</arg></blink>");
-	led3->execute("<?xml version=\"1.0\" encoding=\"UTF-8\"?><blink><arg>1000</arg></blink>");
-
-	lmp1->execute("<?xml version=\"1.0\" encoding=\"UTF-8\"?><blink><arg>10000</arg></blink>");
+	buzz1 = new BUZZ(33);
+	buzz2 = new BUZZ(35);
 
 	System::unlock();
+
+	led1->execute("<?xml version=\"1.0\" encoding=\"UTF-8\"?><command name=\"blink\"><arg>1000</arg></command>");
+	led2->execute("<?xml version=\"1.0\" encoding=\"UTF-8\"?><command name=\"blink\"><arg>1000</arg></command>");
+	led3->execute("<?xml version=\"1.0\" encoding=\"UTF-8\"?><command name=\"blink\"><arg>1000</arg></command>");
+
+	lmp1->execute("<?xml version=\"1.0\" encoding=\"UTF-8\"?><command name=\"blink\"><arg>10000</arg></command>");
+
+	buzz1->play(523);
 }
 
 void loop()

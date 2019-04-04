@@ -11,6 +11,7 @@
     <ClInclude Include="hardware\components\btn.h" />
     <ClInclude Include="hardware\components\led.h" />
     <ClInclude Include="hardware\components\lmp.h" />
+    <ClInclude Include="hardware\components\buzz.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="amanda.device.ino" />
@@ -28,5 +29,6 @@
     <ClCompile Include="hardware\components\led.cpp" />
     <ClCompile Include="xml\api.cpp" />
     <ClCompile Include="hardware\components\lmp.cpp" />
+    <ClCompile Include="hardware\components\buzz.cpp" />
   </ItemGroup>
 </Project>

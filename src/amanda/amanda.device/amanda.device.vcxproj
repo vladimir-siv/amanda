@@ -121,6 +121,7 @@
     <ClInclude Include="hardware\components\abstraction\element.h" />
     <ClInclude Include="hardware\components\abstraction\sensor.h" />
     <ClInclude Include="hardware\components\btn.h" />
+    <ClInclude Include="hardware\components\buzz.h" />
     <ClInclude Include="hardware\components\led.h" />
     <ClInclude Include="hardware\components\lmp.h" />
     <ClInclude Include="xml\api.h" />
@@ -133,6 +134,7 @@
     <ClCompile Include="hardware\components\abstraction\element.cpp" />
     <ClCompile Include="hardware\components\abstraction\sensor.cpp" />
     <ClCompile Include="hardware\components\btn.cpp" />
+    <ClCompile Include="hardware\components\buzz.cpp" />
     <ClCompile Include="hardware\components\led.cpp" />
     <ClCompile Include="hardware\components\lmp.cpp" />
     <ClCompile Include="xml\api.cpp" />
