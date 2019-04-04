@@ -44,15 +44,19 @@ class Thread final
 	public: static Thread* current();
 	public: static void sleep(Time millis);
 	
+	public: template<typename T> static T current_context() { return (T)running->context; }
+	
 	private: unsigned long id;
 	private: byte* stack;
 	private: volatile uintptr_t sp;
 	private: volatile unsigned int quantum;
 	private: State state;
 	private: vlist<Thread> complete;
+	private: void* context;
 	
 	private: Thread();
-	public: explicit Thread(ThreadDelegate delegate, unsigned long stackSize = 128);
+	public: Thread(ThreadDelegate delegate, unsigned long stackSize);
+	public: explicit Thread(ThreadDelegate delegate, void* context = nullptr, unsigned long stackSize = 128);
 	public: Thread(const Thread& thread) = delete;
 	public: Thread(Thread&& thread) = delete;
 	public: ~Thread();

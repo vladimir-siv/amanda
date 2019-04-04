@@ -189,8 +189,16 @@ Thread::Thread() : id(idGen++), stack(nullptr), sp(0), quantum(Thread::_DEFAULT_
 
 }
 
-Thread::Thread(ThreadDelegate delegate, unsigned long stackSize) : Thread()
+Thread::Thread(ThreadDelegate delegate, unsigned long stackSize) : Thread(delegate, nullptr, stackSize)
 {
+
+}
+
+Thread::Thread(ThreadDelegate delegate, void* context, unsigned long stackSize) : Thread()
+{
+	System::lock();
+
+	this->context = context;
 	this->state = State::READY;
 
 	if (stackSize < 128)
@@ -216,6 +224,8 @@ Thread::Thread(ThreadDelegate delegate, unsigned long stackSize) : Thread()
 
 	this->sp = (uintptr_t)(stack + stackSize - 43);
 	System::scheduler->put(this);
+
+	System::unlock();
 }
 
 Thread::~Thread()

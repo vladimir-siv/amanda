@@ -117,11 +117,25 @@
     <None Include="xml\Makefile" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="hardware\components\abstraction\component.h" />
+    <ClInclude Include="hardware\components\abstraction\element.h" />
+    <ClInclude Include="hardware\components\abstraction\sensor.h" />
+    <ClInclude Include="hardware\components\btn.h" />
+    <ClInclude Include="hardware\components\led.h" />
+    <ClInclude Include="hardware\components\lmp.h" />
+    <ClInclude Include="xml\api.h" />
     <ClInclude Include="xml\tinystr.h" />
     <ClInclude Include="xml\tinyxml.h" />
     <ClInclude Include="__vm\.amanda.device.vsarduino.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="hardware\components\abstraction\component.cpp" />
+    <ClCompile Include="hardware\components\abstraction\element.cpp" />
+    <ClCompile Include="hardware\components\abstraction\sensor.cpp" />
+    <ClCompile Include="hardware\components\btn.cpp" />
+    <ClCompile Include="hardware\components\led.cpp" />
+    <ClCompile Include="hardware\components\lmp.cpp" />
+    <ClCompile Include="xml\api.cpp" />
     <ClCompile Include="xml\tinystr.cpp" />
     <ClCompile Include="xml\tinyxml.cpp" />
     <ClCompile Include="xml\tinyxmlerror.cpp" />
