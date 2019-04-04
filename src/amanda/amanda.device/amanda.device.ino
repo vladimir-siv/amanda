@@ -2,6 +2,7 @@
 #include "hardware/components/led.h"
 #include "hardware/components/lmp.h"
 #include "hardware/components/buzz.h"
+#include "hardware/components/pot.h"
 
 #include <system.h>
 
@@ -13,6 +14,7 @@ LED* led3;
 LMP* lmp1;
 BUZZ* buzz1;
 BUZZ* buzz2;
+POT* pot1;
 
 void setup()
 {
@@ -38,23 +40,32 @@ void setup()
 	buzz1 = new BUZZ(33);
 	buzz2 = new BUZZ(35);
 
+	pot1 = new POT(A7);
+
 	System::unlock();
 
-	led1->execute("<?xml version=\"1.0\" encoding=\"UTF-8\"?><command name=\"blink\"><arg>1000</arg></command>");
-	led2->execute("<?xml version=\"1.0\" encoding=\"UTF-8\"?><command name=\"blink\"><arg>1000</arg></command>");
-	led3->execute("<?xml version=\"1.0\" encoding=\"UTF-8\"?><command name=\"blink\"><arg>1000</arg></command>");
+	led1->execute(F("<?xml version=\"1.0\" encoding=\"UTF-8\"?><command name=\"blink\"><arg>1000</arg></command>"));
+	led2->execute(F("<?xml version=\"1.0\" encoding=\"UTF-8\"?><command name=\"blink\"><arg>1000</arg></command>"));
+	led3->execute(F("<?xml version=\"1.0\" encoding=\"UTF-8\"?><command name=\"blink\"><arg>1000</arg></command>"));
 
-	lmp1->execute("<?xml version=\"1.0\" encoding=\"UTF-8\"?><command name=\"blink\"><arg>10000</arg></command>");
+	lmp1->execute(F("<?xml version=\"1.0\" encoding=\"UTF-8\"?><command name=\"blink\"><arg>10000</arg></command>"));
 
 	buzz1->play(523);
 }
 
 void loop()
 {
-	Serial.print("btn1: ");
+	Serial.print(F("btn1: "));
 	Serial.println(btn1->read() == HIGH ? F("HIGH") : F("LOW"));
-	Serial.print("btn2: ");
+
+	Serial.print(F("btn2: "));
 	Serial.println(btn2->read() == HIGH ? F("HIGH") : F("LOW"));
+
+	Serial.print(F("pot1: "));
+	Serial.print(pot1->read());
+	Serial.println(pot1->unit());
+
+	Serial.println();
 
 	Thread::sleep(1000);
 }

@@ -4,7 +4,7 @@
 
 using CID = const unsigned long long;
 using DigitalState = int;
-using AnalogValue = int;
+using AnalogValue = double;
 
 class CommandResult
 {

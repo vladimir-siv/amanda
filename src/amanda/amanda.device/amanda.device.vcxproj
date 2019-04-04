@@ -124,6 +124,7 @@
     <ClInclude Include="hardware\components\buzz.h" />
     <ClInclude Include="hardware\components\led.h" />
     <ClInclude Include="hardware\components\lmp.h" />
+    <ClInclude Include="hardware\components\pot.h" />
     <ClInclude Include="xml\api.h" />
     <ClInclude Include="xml\tinystr.h" />
     <ClInclude Include="xml\tinyxml.h" />
@@ -137,6 +138,7 @@
     <ClCompile Include="hardware\components\buzz.cpp" />
     <ClCompile Include="hardware\components\led.cpp" />
     <ClCompile Include="hardware\components\lmp.cpp" />
+    <ClCompile Include="hardware\components\pot.cpp" />
     <ClCompile Include="xml\api.cpp" />
     <ClCompile Include="xml\tinystr.cpp" />
     <ClCompile Include="xml\tinyxml.cpp" />

@@ -50,6 +50,6 @@ class AnalogSensor : public ISensor
 	public: virtual Type ctype() const final override { return (Type)(ISensor::ctype() | Type::ANALOG); }
 	public: virtual byte pin() const final override { return _pin; }
 	
-	public: virtual AnalogValue read() const { return analogRead(_pin); }
+	public: virtual AnalogValue read() const { return (AnalogValue)analogRead(_pin); }
 	public: virtual const char* const unit() const { return nullptr; };
 };

@@ -12,6 +12,7 @@
     <ClInclude Include="hardware\components\led.h" />
     <ClInclude Include="hardware\components\lmp.h" />
     <ClInclude Include="hardware\components\buzz.h" />
+    <ClInclude Include="hardware\components\pot.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="amanda.device.ino" />
@@ -30,5 +31,6 @@
     <ClCompile Include="xml\api.cpp" />
     <ClCompile Include="hardware\components\lmp.cpp" />
     <ClCompile Include="hardware\components\buzz.cpp" />
+    <ClCompile Include="hardware\components\pot.cpp" />
   </ItemGroup>
 </Project>
