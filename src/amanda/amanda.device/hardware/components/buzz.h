@@ -7,7 +7,7 @@ class BUZZ : AnalogElement
 {
 	protected: static BUZZ* _playing;
 	
-	public: BUZZ(byte pin) : AnalogElement(pin) { }
+	public: explicit BUZZ(byte pin) : AnalogElement(pin) { }
 	
 	public: virtual void write(AnalogValue value) const override { }
 	

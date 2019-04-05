@@ -5,6 +5,7 @@
 #include "hardware/components/pot.h"
 #include "hardware/components/lm35.h"
 #include "hardware/components/ldr.h"
+#include "hardware/components/pir.h"
 
 #include <system.h>
 
@@ -19,6 +20,7 @@ BUZZ* buzz2;
 POT* pot1;
 LM35* lm351;
 LDR* ldr1;
+PIR* pir1;
 
 void setup()
 {
@@ -44,19 +46,21 @@ void setup()
 	buzz1 = new BUZZ(33);
 	buzz2 = new BUZZ(35);
 
-	//pot1 = new POT(A7);
+	/*pot1 = new POT(A7);
 
-	//lm351 = new LM35(A10);
+	lm351 = new LM35(A10);
 
-	ldr1 = new LDR(A15);
+	ldr1 = new LDR(A15);*/
+
+	pir1 = new PIR(36);
 
 	System::unlock();
 
-	led1->execute(F("<?xml version=\"1.0\" encoding=\"UTF-8\"?><command name=\"blink\"><arg>1000</arg></command>"));
-	led2->execute(F("<?xml version=\"1.0\" encoding=\"UTF-8\"?><command name=\"blink\"><arg>1000</arg></command>"));
-	led3->execute(F("<?xml version=\"1.0\" encoding=\"UTF-8\"?><command name=\"blink\"><arg>1000</arg></command>"));
+	//led1->execute(F("<?xml version=\"1.0\" encoding=\"UTF-8\"?><command name=\"blink\"><arg>1000</arg></command>"));
+	//led2->execute(F("<?xml version=\"1.0\" encoding=\"UTF-8\"?><command name=\"blink\"><arg>1000</arg></command>"));
+	//led3->execute(F("<?xml version=\"1.0\" encoding=\"UTF-8\"?><command name=\"blink\"><arg>1000</arg></command>"));
 
-	lmp1->execute(F("<?xml version=\"1.0\" encoding=\"UTF-8\"?><command name=\"blink\"><arg>10000</arg></command>"));
+	//lmp1->execute(F("<?xml version=\"1.0\" encoding=\"UTF-8\"?><command name=\"blink\"><arg>10000</arg></command>"));
 
 	buzz1->play(523);
 }
@@ -71,15 +75,18 @@ void loop()
 
 	/*Serial.print(F("pot1: "));
 	Serial.print(pot1->read());
-	Serial.println(pot1->unit());*/
+	Serial.println(pot1->unit());
 
-	/*Serial.print(F("lm351: "));
+	Serial.print(F("lm351: "));
 	Serial.print(lm351->read());
-	Serial.println(lm351->unit());*/
+	Serial.println(lm351->unit());
 
 	Serial.print(F("ldr1: "));
 	Serial.print(ldr1->read());
-	Serial.println(ldr1->unit());
+	Serial.println(ldr1->unit());*/
+
+	Serial.print(F("pir1: "));
+	Serial.println(pir1->read() == HIGH ? F("HIGH") : F("LOW"));
 
 	Serial.println();
 

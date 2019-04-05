@@ -8,7 +8,7 @@
 
 class LED : public DigitalElement
 {
-	public: LED(byte pin) : DigitalElement(pin) { }
+	public: explicit LED(byte pin) : DigitalElement(pin) { }
 };
 
 class BlinkingLED : public LED
@@ -18,7 +18,7 @@ class BlinkingLED : public LED
 	protected: semaphore _sync = semaphore(1);
 	protected: Thread* _blinker = new Thread(_delegate, this);
 	
-	public: BlinkingLED(byte pin) : LED(pin) { }
+	public: explicit BlinkingLED(byte pin) : LED(pin) { }
 	
 	public: virtual String commands() const override { return "|blink|stop|"; }
 	public: virtual CommandResult execute(const String& command) override

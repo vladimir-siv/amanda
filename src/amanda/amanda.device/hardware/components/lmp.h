@@ -8,7 +8,7 @@
 
 class LMP : public DigitalElement
 {
-	public: LMP(byte pin) : DigitalElement(pin) { }
+	public: explicit LMP(byte pin) : DigitalElement(pin) { }
 };
 
 class BlinkingLMP : public LMP
@@ -18,7 +18,7 @@ class BlinkingLMP : public LMP
 	protected: semaphore _sync = semaphore(1);
 	protected: Thread* _blinker = new Thread(_delegate, this);
 	
-	public: BlinkingLMP(byte pin) : LMP(pin) { }
+	public: explicit BlinkingLMP(byte pin) : LMP(pin) { }
 	
 	public: virtual String commands() const override { return "|blink|stop|"; }
 	public: virtual CommandResult execute(const String& command) override

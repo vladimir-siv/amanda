@@ -28,7 +28,7 @@ class LM35 : public AnalogSensor
 		return temperature;
 	}
 	
-	public: LM35(byte pin) : AnalogSensor(pin) { }
+	public: explicit LM35(byte pin) : AnalogSensor(pin) { }
 	public: virtual AnalogValue read() const { return const_cast<LM35* const>(this)->measure() / 2.046 /*2.15*/; }
 	public: virtual const char* const unit() const override { return "*C"/*"°C"*/; };
 };

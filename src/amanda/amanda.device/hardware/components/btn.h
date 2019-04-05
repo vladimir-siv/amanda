@@ -4,5 +4,5 @@
 
 class BTN : public DigitalSensor
 {
-	public: BTN(byte pin) : DigitalSensor(pin) { }
+	public: explicit BTN(byte pin) : DigitalSensor(pin) { }
 };
