@@ -14,6 +14,7 @@
     <ClInclude Include="hardware\components\buzz.h" />
     <ClInclude Include="hardware\components\pot.h" />
     <ClInclude Include="hardware\components\lm35.h" />
+    <ClInclude Include="hardware\components\ldr.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="amanda.device.ino" />
@@ -34,5 +35,6 @@
     <ClCompile Include="hardware\components\buzz.cpp" />
     <ClCompile Include="hardware\components\pot.cpp" />
     <ClCompile Include="hardware\components\lm35.cpp" />
+    <ClCompile Include="hardware\components\ldr.cpp" />
   </ItemGroup>
 </Project>

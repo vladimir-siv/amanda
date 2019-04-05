@@ -4,6 +4,7 @@
 #include "hardware/components/buzz.h"
 #include "hardware/components/pot.h"
 #include "hardware/components/lm35.h"
+#include "hardware/components/ldr.h"
 
 #include <system.h>
 
@@ -17,6 +18,7 @@ BUZZ* buzz1;
 BUZZ* buzz2;
 POT* pot1;
 LM35* lm351;
+LDR* ldr1;
 
 void setup()
 {
@@ -42,9 +44,11 @@ void setup()
 	buzz1 = new BUZZ(33);
 	buzz2 = new BUZZ(35);
 
-	pot1 = new POT(A7);
+	//pot1 = new POT(A7);
 
-	lm351 = new LM35(A10);
+	//lm351 = new LM35(A10);
+
+	ldr1 = new LDR(A15);
 
 	System::unlock();
 
@@ -65,13 +69,17 @@ void loop()
 	Serial.print(F("btn2: "));
 	Serial.println(btn2->read() == HIGH ? F("HIGH") : F("LOW"));
 
-	Serial.print(F("pot1: "));
+	/*Serial.print(F("pot1: "));
 	Serial.print(pot1->read());
-	Serial.println(pot1->unit());
+	Serial.println(pot1->unit());*/
 
-	Serial.print(F("lm351: "));
+	/*Serial.print(F("lm351: "));
 	Serial.print(lm351->read());
-	Serial.println(lm351->unit());
+	Serial.println(lm351->unit());*/
+
+	Serial.print(F("ldr1: "));
+	Serial.print(ldr1->read());
+	Serial.println(ldr1->unit());
 
 	Serial.println();
 
