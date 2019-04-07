@@ -130,6 +130,7 @@
     <ClInclude Include="hardware\components\pir.h" />
     <ClInclude Include="hardware\components\pot.h" />
     <ClInclude Include="hardware\hardware_controller.h" />
+    <ClInclude Include="lib\string_builder.h" />
     <ClInclude Include="xml\api.h" />
     <ClInclude Include="xml\tinystr.h" />
     <ClInclude Include="xml\tinyxml.h" />
@@ -148,6 +149,7 @@
     <ClCompile Include="hardware\components\pir.cpp" />
     <ClCompile Include="hardware\components\pot.cpp" />
     <ClCompile Include="hardware\hardware_controller.cpp" />
+    <ClCompile Include="lib\string_builder.cpp" />
     <ClCompile Include="xml\api.cpp" />
     <ClCompile Include="xml\tinystr.cpp" />
     <ClCompile Include="xml\tinyxml.cpp" />
