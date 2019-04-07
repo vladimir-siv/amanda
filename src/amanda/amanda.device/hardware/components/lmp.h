@@ -9,6 +9,7 @@
 class LMP : public DigitalElement
 {
 	public: explicit LMP(byte pin) : DigitalElement(pin) { }
+	public: virtual const char* description() const override { return "Lamp"; }
 };
 
 class BlinkingLMP : public LMP
@@ -16,11 +17,11 @@ class BlinkingLMP : public LMP
 	protected: static ThreadDelegate _delegate;
 	protected: Time _freq = 0;
 	protected: semaphore _sync = semaphore(1);
-	protected: Thread* _blinker = new Thread(_delegate, this);
+	protected: Thread _blinker;
 	
-	public: explicit BlinkingLMP(byte pin) : LMP(pin) { }
+	public: explicit BlinkingLMP(byte pin) : LMP(pin), _blinker(_delegate, this) { }
 	
-	public: virtual String commands() const override { return "|blink|stop|"; }
+	public: virtual const char* commands() const override { return "|blink|stop|"; }
 	public: virtual CommandResult execute(const String& command) override
 	{
 		TiXmlDocument doc = xml::to_document(command);

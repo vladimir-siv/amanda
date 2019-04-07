@@ -117,6 +117,7 @@
     <None Include="xml\Makefile" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="hardware\components.h" />
     <ClInclude Include="hardware\components\abstraction\component.h" />
     <ClInclude Include="hardware\components\abstraction\element.h" />
     <ClInclude Include="hardware\components\abstraction\sensor.h" />
@@ -128,6 +129,7 @@
     <ClInclude Include="hardware\components\lmp.h" />
     <ClInclude Include="hardware\components\pir.h" />
     <ClInclude Include="hardware\components\pot.h" />
+    <ClInclude Include="hardware\hardware_controller.h" />
     <ClInclude Include="xml\api.h" />
     <ClInclude Include="xml\tinystr.h" />
     <ClInclude Include="xml\tinyxml.h" />
@@ -145,6 +147,7 @@
     <ClCompile Include="hardware\components\lmp.cpp" />
     <ClCompile Include="hardware\components\pir.cpp" />
     <ClCompile Include="hardware\components\pot.cpp" />
+    <ClCompile Include="hardware\hardware_controller.cpp" />
     <ClCompile Include="xml\api.cpp" />
     <ClCompile Include="xml\tinystr.cpp" />
     <ClCompile Include="xml\tinyxml.cpp" />

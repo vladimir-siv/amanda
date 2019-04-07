@@ -12,6 +12,7 @@ namespace xml
 	String to_string(const TiXmlDocument& doc)
 	{
 		TiXmlPrinter printer;
+		printer.SetStreamPrinting();
 		doc.Accept(&printer);
 		String str = printer.CStr();
 		return str;

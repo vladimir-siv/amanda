@@ -3,15 +3,16 @@
 #include "abstraction/element.h"
 #include "../../xml/api.h"
 
-class BUZZ : AnalogElement
+class BUZZ : public AnalogElement
 {
 	protected: static BUZZ* _playing;
 	
 	public: explicit BUZZ(byte pin) : AnalogElement(pin) { }
+	public: virtual const char* description() const override { return "buzzer"; }
 	
 	public: virtual void write(AnalogValue value) const override { }
 	
-	public: virtual String commands() const override { return "|play|stop|"; }
+	public: virtual const char* commands() const override { return "|play|stop|"; }
 	public: virtual CommandResult execute(const String& command) override
 	{
 		TiXmlDocument doc = xml::to_document(command);

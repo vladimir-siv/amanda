@@ -184,7 +184,7 @@ void Thread::sleep(Time millis)
 	else System::unlock();
 }
 
-Thread::Thread() : id(idGen++), stack(nullptr), sp(0), quantum(Thread::_DEFAULT_QUANTUM), state((State)(State::RUNNING | State::LOOP))
+Thread::Thread() : id(idGen++), /*stack(nullptr),*/ sp(0), quantum(Thread::_DEFAULT_QUANTUM), state((State)(State::RUNNING | State::LOOP))
 {
 
 }
@@ -201,6 +201,7 @@ Thread::Thread(ThreadDelegate delegate, void* context, unsigned long stackSize) 
 	this->context = context;
 	this->state = State::READY;
 
+#ifndef _FIXED_STACK_SIZE_
 	if (stackSize < 128)
 	{
 		this->setState(FINISHED);
@@ -209,6 +210,9 @@ Thread::Thread(ThreadDelegate delegate, void* context, unsigned long stackSize) 
 	}
 
 	stack = new byte[stackSize];
+#else
+	stackSize = _STACK_SIZE;
+#endif
 
 	const uint_farptr_t _delegate = (uint_farptr_t)delegate;
 	const uint_farptr_t _finalize = (uint_farptr_t)(&finalize);
@@ -235,8 +239,10 @@ Thread::~Thread()
 
 void Thread::finish()
 {
+#ifndef _FIXED_STACK_SIZE_
 	delete[] this->stack;
 	this->stack = nullptr;
+#endif
 	this->setState(Thread::FINISHED);
 
 	while (complete.size() > 0)

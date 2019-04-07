@@ -9,6 +9,7 @@
 class LED : public DigitalElement
 {
 	public: explicit LED(byte pin) : DigitalElement(pin) { }
+	public: virtual const char* description() const override { return "LED"; }
 };
 
 class BlinkingLED : public LED
@@ -16,11 +17,11 @@ class BlinkingLED : public LED
 	protected: static ThreadDelegate _delegate;
 	protected: Time _freq = 0;
 	protected: semaphore _sync = semaphore(1);
-	protected: Thread* _blinker = new Thread(_delegate, this);
+	protected: Thread _blinker;
 	
-	public: explicit BlinkingLED(byte pin) : LED(pin) { }
+	public: explicit BlinkingLED(byte pin) : LED(pin), _blinker(_delegate, this) { }
 	
-	public: virtual String commands() const override { return "|blink|stop|"; }
+	public: virtual const char* commands() const override { return "|blink|stop|"; }
 	public: virtual CommandResult execute(const String& command) override
 	{
 		TiXmlDocument doc = xml::to_document(command);

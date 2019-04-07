@@ -5,6 +5,8 @@
 #include <structures/specialized/vlist.h>
 #include <structures/tuple.h>
 
+#define _FIXED_STACK_SIZE_
+
 using ThreadDelegate = void(*)(void);
 extern void dispatch();
 
@@ -30,6 +32,9 @@ class Thread final
 		LOOP = 32
 	};
 	
+#ifdef _FIXED_STACK_SIZE_
+	private: static const unsigned int _STACK_SIZE = 128;
+#endif
 	private: static const unsigned int _DEFAULT_QUANTUM = 50;
 	
 	private: static unsigned long idGen;
@@ -47,7 +52,11 @@ class Thread final
 	public: template<typename T> static T current_context() { return (T)running->context; }
 	
 	private: unsigned long id;
-	private: byte* stack;
+#ifdef _FIXED_STACK_SIZE_
+	private: byte stack[_STACK_SIZE];
+#else
+	private: byte* stack = nullptr;
+#endif
 	private: volatile uintptr_t sp;
 	private: volatile unsigned int quantum;
 	private: State state;
