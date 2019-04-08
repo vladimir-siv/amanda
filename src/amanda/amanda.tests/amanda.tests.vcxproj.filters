@@ -20,6 +20,7 @@
     <ClCompile Include="tests\t_vlist_enumerator.cpp" />
     <ClCompile Include="tests\t_bitvector.cpp" />
     <ClCompile Include="tests\t_object_allocator.cpp" />
+    <ClCompile Include="tests\t_xml_parser.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="test.bat" />

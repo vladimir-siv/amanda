@@ -146,6 +146,7 @@
     <ClCompile Include="tests\t_vlist_coord.cpp" />
     <ClCompile Include="tests\t_vlist_enumerator.cpp" />
     <ClCompile Include="tests\t_vlist_int.cpp" />
+    <ClCompile Include="tests\t_xml_parser.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="test.bat" />

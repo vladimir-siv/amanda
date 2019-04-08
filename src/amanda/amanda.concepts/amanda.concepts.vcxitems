@@ -27,6 +27,9 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)exceptions\insufficientstacksizeexception.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)memory_management\allocator.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)memory_management\object_allocator.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)networking\xml\constant_parser.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)networking\xml\xml_event_dispatcher.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)networking\xml\xml_parser.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)patterns\enumerator.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)patterns\singleton.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)RAII\generic.cpp" />
@@ -53,6 +56,9 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)exceptions\insufficientstacksizeexception.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)memory_management\allocator.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)memory_management\object_allocator.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)networking\xml\constant_parser.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)networking\xml\xml_event_dispatcher.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)networking\xml\xml_parser.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)patterns\enumerator.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)patterns\singleton.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)RAII\generic.h" />

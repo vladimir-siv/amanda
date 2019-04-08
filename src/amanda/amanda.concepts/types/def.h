@@ -28,3 +28,6 @@ struct variadic_expand<0, Type, Types...>
 
 template <position_t i, typename... Types>
 using variadic_arg = typename variadic_expand<i, Types...>::type;
+
+inline bool is_alphanumeric(char c) { return ('0' <= c && c <= '9' || 'A' <= c && c <= 'Z' || 'a' <= c && c <= 'z'); }
+inline bool is_whitespace(char c) { return (c == ' ' || c == '\t' || c == '\r' || c == '\n'); }
