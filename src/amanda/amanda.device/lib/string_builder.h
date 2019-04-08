@@ -88,6 +88,7 @@ class StringBuilder final
 		return true;
 	}
 	
+	// TOO EXPENSIVE! TRY NOT TO USE!
 	public: String to_string() const
 	{
 		String str;

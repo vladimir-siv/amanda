@@ -13,45 +13,32 @@ class BUZZ : public AnalogElement
 	public: virtual void write(AnalogValue value) const override { }
 	
 	public: virtual const char* commands() const override { return "|play|stop|"; }
-	public: virtual CommandResult execute(const String& command) override
+	public: virtual CommandResult execute(const Command& command) override
 	{
-		TiXmlDocument doc = xml::to_document(command);
-		TiXmlElement* root = doc.RootElement();
-
-		if (String(root->Value()) == "command")
+		if (command.name == "") { }
+		else if (command.name == "play")
 		{
-			String cmdname = root->Attribute("name");
-
-			if (cmdname == "") { }
-			else if (cmdname == "play")
+			if (!command.args[0].empty())
 			{
-				if (!root->NoChildren())
+				int freq = atoi(command.args[0].c_str());
+				unsigned long dur = 0ul; // optional parameter
+
+				if (!command.args[1].empty())
 				{
-					TiXmlElement* arg1 = root->FirstChildElement();
-					TiXmlElement* arg2 = arg1 != nullptr ? arg1->NextSiblingElement() : nullptr;
-
-					if (arg1 != nullptr && String(arg1->Value()) == "arg")
-					{
-						int freq = String(arg1->GetText()).toInt();
-						unsigned long dur = 0ul; // optional parameter
-
-						if (arg2 != nullptr && String(arg2->Value()) == "arg")
-						{
-							dur = String(arg2->GetText()).toInt();
-						}
-
-						play(freq, dur);
-					}
+					dur = atol(command.args[1].c_str());
 				}
-			}
-			else if (cmdname == "stop")
-			{
-				if (root->NoChildren())
-				{
-					stop();
-				}
+
+				play(freq, dur);
 			}
 		}
+		else if (command.name == "stop")
+		{
+			if (command.args[0].empty())
+			{
+				stop();
+			}
+		}
+		else { }
 
 		return CommandResult::null();
 	};

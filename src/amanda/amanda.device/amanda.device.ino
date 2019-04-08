@@ -3,6 +3,8 @@
 #include "hardware/components.h"
 #include "hardware/hardware_controller.h"
 
+#include "server/commands/command_parser.h"
+
 HardwareController controller(12);
 
 void setup()
@@ -39,9 +41,21 @@ void setup()
 
 	System::unlock();
 
-	//controller[2]->execute(F("<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"no\"?><command name=\"blink\"><arg>1000</arg></command>"));
-	//controller[3]->execute(F("<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"no\"?><command name=\"blink\"><arg>1000</arg></command>"));
-	//controller[4]->execute(F("<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"no\"?><command name=\"blink\"><arg>1000</arg></command>"));
+	/*const Command* cmd;
+	
+	cmd = CommandParser::parse("<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"no\"?><command name=\"blink\"><arg>1000</arg></command>");
+	if (cmd != nullptr)
+	{
+		controller[2]->execute(*cmd);
+		controller[3]->execute(*cmd);
+		controller[4]->execute(*cmd);
+	}
+
+	cmd = CommandParser::parse("<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"no\"?><command name=\"blink\"><arg>10000</arg></command>");
+	if (cmd != nullptr)
+	{
+		controller[5]->execute(*cmd);
+	}*/
 }
 
 void loop()

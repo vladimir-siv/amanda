@@ -114,7 +114,6 @@
   </PropertyGroup>
   <ItemGroup>
     <None Include="amanda.device.ino" />
-    <None Include="xml\Makefile" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="hardware\components.h" />
@@ -130,10 +129,10 @@
     <ClInclude Include="hardware\components\pir.h" />
     <ClInclude Include="hardware\components\pot.h" />
     <ClInclude Include="hardware\hardware_controller.h" />
+    <ClInclude Include="lib\string64.h" />
     <ClInclude Include="lib\string_builder.h" />
+    <ClInclude Include="server\commands\command_parser.h" />
     <ClInclude Include="xml\api.h" />
-    <ClInclude Include="xml\tinystr.h" />
-    <ClInclude Include="xml\tinyxml.h" />
     <ClInclude Include="__vm\.amanda.device.vsarduino.h" />
   </ItemGroup>
   <ItemGroup>
@@ -149,12 +148,10 @@
     <ClCompile Include="hardware\components\pir.cpp" />
     <ClCompile Include="hardware\components\pot.cpp" />
     <ClCompile Include="hardware\hardware_controller.cpp" />
+    <ClCompile Include="lib\string64.cpp" />
     <ClCompile Include="lib\string_builder.cpp" />
+    <ClCompile Include="server\commands\command_parser.cpp" />
     <ClCompile Include="xml\api.cpp" />
-    <ClCompile Include="xml\tinystr.cpp" />
-    <ClCompile Include="xml\tinyxml.cpp" />
-    <ClCompile Include="xml\tinyxmlerror.cpp" />
-    <ClCompile Include="xml\tinyxmlparser.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

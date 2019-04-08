@@ -1,10 +1,21 @@
 #pragma once
 
 #include <Arduino.h>
+#include "../../../lib/string64.h"
 
 using VID = const unsigned long;
 using DigitalState = int;
 using AnalogValue = float;
+
+// struct-like class
+class Command final
+{
+	public: String64 name;
+	public: String64 args[5];
+	
+	public: explicit Command(const char* name = nullptr, const char* arg1 = nullptr, const char* arg2 = nullptr, const char* arg3 = nullptr, const char* arg4 = nullptr, const char* arg5 = nullptr) : name(name), args { arg1, arg2, arg3, arg4, arg5 } {  }
+	public: Command(const char* name, const char* args[5]) : Command(name, args[0], args[1], args[2], args[3], args[4]) { }
+};
 
 // struct-like class
 class CommandResult
@@ -86,5 +97,5 @@ class IComponent
 	}
 	
 	public: virtual const char* commands() const { return "||"; }
-	public: virtual CommandResult execute(const String& command) { return CommandResult::null(); };
+	public: virtual CommandResult execute(const Command& command) { return CommandResult::null(); };
 };

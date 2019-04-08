@@ -2,8 +2,6 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <ClInclude Include="__vm\.amanda.device.vsarduino.h" />
-    <ClInclude Include="xml\tinystr.h" />
-    <ClInclude Include="xml\tinyxml.h" />
     <ClInclude Include="xml\api.h" />
     <ClInclude Include="hardware\components\abstraction\component.h" />
     <ClInclude Include="hardware\components\abstraction\element.h" />
@@ -19,16 +17,13 @@
     <ClInclude Include="hardware\hardware_controller.h" />
     <ClInclude Include="hardware\components.h" />
     <ClInclude Include="lib\string_builder.h" />
+    <ClInclude Include="lib\string64.h" />
+    <ClInclude Include="server\commands\command_parser.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="xml\Makefile" />
     <None Include="amanda.device.ino" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="xml\tinystr.cpp" />
-    <ClCompile Include="xml\tinyxml.cpp" />
-    <ClCompile Include="xml\tinyxmlerror.cpp" />
-    <ClCompile Include="xml\tinyxmlparser.cpp" />
     <ClCompile Include="hardware\components\abstraction\component.cpp" />
     <ClCompile Include="hardware\components\abstraction\element.cpp" />
     <ClCompile Include="hardware\components\abstraction\sensor.cpp" />
@@ -43,5 +38,7 @@
     <ClCompile Include="hardware\components\pir.cpp" />
     <ClCompile Include="hardware\hardware_controller.cpp" />
     <ClCompile Include="lib\string_builder.cpp" />
+    <ClCompile Include="lib\string64.cpp" />
+    <ClCompile Include="server\commands\command_parser.cpp" />
   </ItemGroup>
 </Project>

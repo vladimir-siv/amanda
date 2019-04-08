@@ -173,11 +173,11 @@ void _xml_parser()
 
 	XmlParser parser;
 	
-	parser.events.SetTagOpenedEventHandler(_tag_opened);
-	parser.events.SetAttributeSpecEventHandler(_attribute_spec);
-	parser.events.SetAttributeSpecEventEndHandler(_attribute_spec_end);
-	parser.events.SetTextValueEventHandler(_text_value);
-	parser.events.SetTagClosedEventHandler(_tag_closed);
+	parser.events.SetTagOpenedEventHandler(&_tag_opened);
+	parser.events.SetAttributeSpecEventHandler(&_attribute_spec);
+	parser.events.SetAttributeSpecEventEndHandler(&_attribute_spec_end);
+	parser.events.SetTextValueEventHandler(&_text_value);
+	parser.events.SetTagClosedEventHandler(&_tag_closed);
 
 	const char* current = nullptr;
 	std::string message = "[Axx]";

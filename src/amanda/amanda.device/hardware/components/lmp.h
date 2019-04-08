@@ -22,36 +22,25 @@ class BlinkingLMP : public LMP
 	public: explicit BlinkingLMP(byte pin) : LMP(pin), _blinker(_delegate, this) { }
 	
 	public: virtual const char* commands() const override { return "|blink|stop|"; }
-	public: virtual CommandResult execute(const String& command) override
+	public: virtual CommandResult execute(const Command& command) override
 	{
-		TiXmlDocument doc = xml::to_document(command);
-		TiXmlElement* root = doc.RootElement();
-
-		if (String(root->Value()) == "command")
+		if (command.name == "") { }
+		else if (command.name == "blink")
 		{
-			String cmdname = root->Attribute("name");
-
-			if (cmdname == "") { }
-			else if (cmdname == "blink")
+			if (!command.args[0].empty() && command.args[1].empty())
 			{
-				if (!root->NoChildren())
-				{
-					TiXmlElement* arg = root->FirstChildElement();
-					if (arg != nullptr && String(arg->Value()) == "arg")
-					{
-						Time freq = String(arg->GetText()).toInt();
-						blink(freq);
-					}
-				}
-			}
-			else if (cmdname == "stop")
-			{
-				if (root->NoChildren())
-				{
-					stop();
-				}
+				Time freq = atol(command.args[0].c_str());
+				blink(freq);
 			}
 		}
+		else if (command.name == "stop")
+		{
+			if (command.args[0].empty())
+			{
+				stop();
+			}
+		}
+		else { }
 
 		return CommandResult::null();
 	};

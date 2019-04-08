@@ -1,20 +1,23 @@
 #include "api.h"
 
+XmlParser parser;
+
 namespace xml
 {
-	TiXmlDocument to_document(String&& str) { return to_document(str); }
-	TiXmlDocument to_document(const String& str)
+	bool parse(const char* xml, const XmlEventDispatcher& events, bool* cancelToken)
 	{
-		TiXmlDocument doc;
-		doc.Parse(str.c_str(), 0, TIXML_ENCODING_UTF8);
-		return doc;
-	}
-	String to_string(const TiXmlDocument& doc)
-	{
-		TiXmlPrinter printer;
-		printer.SetStreamPrinting();
-		doc.Accept(&printer);
-		String str = printer.CStr();
-		return str;
+		if (cancelToken != nullptr && *cancelToken) return false;
+
+		parser.reset();
+
+		parser.events = events;
+
+		while (*xml != 0)
+		{
+			if (!parser.nextchar(*(xml++))) return false;
+			if (cancelToken != nullptr && *cancelToken) return false;
+		}
+
+		return true;
 	}
 }
