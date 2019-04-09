@@ -6,7 +6,6 @@
 #include "lock.h"
 #include "condition.h"
 
-#include <structures/vector.h>
 #include <exceptions.h>
 
 class semaphore final

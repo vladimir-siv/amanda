@@ -1,7 +1,6 @@
 #pragma once
 
 #include <Arduino.h>
-#include <structures/vector.h>
 
 template <byte _capacity = 32>
 class StringBuilder final

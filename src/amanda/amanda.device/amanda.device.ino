@@ -1,11 +1,9 @@
 ﻿#include <system.h>
 
-#include "hardware/components.h"
 #include "hardware/hardware_controller.h"
-
 #include "server/commands/command_parser.h"
 
-HardwareController controller(12);
+HardwareController controller;
 
 void setup()
 {
