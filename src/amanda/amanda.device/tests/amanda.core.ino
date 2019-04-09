@@ -12,6 +12,7 @@ void thread();
 void setup()
 {
 	Serial.begin(9600);
+	while (!Serial) ;
 	Serial.flush();
 
 	pinMode(13, OUTPUT);
@@ -424,7 +425,7 @@ void test4()
 
 #include <synchronization/semaphore.h>
 
-semaphore sem(5);
+semaphore sem;
 
 void test5()
 {

@@ -12,7 +12,7 @@
 #include "../../rtti/type.h"
 #endif
 
-#define _VLIST_ALLOCATOR_SIZE_ 32
+#define _VLIST_ALLOCATOR_SIZE_ 64
 
 class vlist_allocator
 {

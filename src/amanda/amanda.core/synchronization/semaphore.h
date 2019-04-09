@@ -15,7 +15,7 @@ class semaphore final
 	private: condition _cnd;
 	private: int _value;
 	
-	public: explicit semaphore(unsigned int capacity, int value = 0) : _cnd(capacity), _value(value)
+	public: explicit semaphore(int value = 0) : _value(value)
 	{
 		if (value < 0) Exceptions::Throw<ArgumentException>();
 	}
@@ -33,12 +33,6 @@ class semaphore final
 	public: void wait()
 	{
 		lock lck(_mtx);
-
-		if (-_value >= _cnd.capacity())
-		{
-			Exceptions::Throw<CollectionFullException>();
-			return;
-		}
 
 		--_value;
 

@@ -4,15 +4,11 @@
 #include "../thread.h"
 #include "lock.h"
 
-#include <structures/queue.h>
+#include <structures/specialized/vlist.h>
 
 class condition final
 {
-	private: queue<Thread*> _blocked;
-	
-	public: condition(unsigned int capacity = 10) : _blocked(queue<Thread*>(capacity)) { }
-	
-	public: unsigned int capacity() const { return _blocked.capacity(); }
+	private: vlist<Thread> _blocked;
 	
 	public: void wait(lock* lck = nullptr)
 	{
@@ -20,7 +16,7 @@ class condition final
 
 		Thread* current = Thread::current();
 		current->setState(Thread::WAITING);
-		_blocked.enqueue(current);
+		_blocked.push_back(current);
 		if (lck) lck->mtx.unlock();
 
 		System::unlock();
@@ -32,7 +28,7 @@ class condition final
 
 		if (_blocked.size() > 0)
 		{
-			Thread* thread = _blocked.dequeue();
+			Thread* thread = _blocked.pop_front();
 			thread->setState(Thread::READY);
 			System::scheduler->put(thread);
 		}
@@ -45,7 +41,7 @@ class condition final
 
 		while (_blocked.size() > 0)
 		{
-			Thread* thread = _blocked.dequeue();
+			Thread* thread = _blocked.pop_front();
 			thread->setState(Thread::READY);
 			System::scheduler->put(thread);
 		}

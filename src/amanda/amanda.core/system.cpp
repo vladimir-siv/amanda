@@ -1,11 +1,12 @@
 #include <Arduino.h>
 #include "system.h"
-#include "schedulers/fifo.h"
 #include "thread.h"
+
+#include "schedulers/fifo.h"
 
 volatile unsigned long long System::_lock = 0;
 volatile unsigned long long System::_millis = 0;
-Scheduler* System::scheduler = new FIFOScheduler(10); // should be 4: 2 threads, loop & idle (or 3)
+Scheduler* System::scheduler = FIFOScheduler::instance();
 
 void System::init()
 {
@@ -19,8 +20,6 @@ void System::init()
 
 	TCNT1 = 0;
 	TIMSK1 |= _BV(OCIE1A);
-
-	Thread::init();
 
 	sei();
 }

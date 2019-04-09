@@ -3,7 +3,7 @@
 #if MAX_EXCEPTIONS > 1
 
 #include "structures/specialized/qbuffer.h"
-QBuffer<Exception*> Context(MAX_EXCEPTIONS);
+QBuffer<Exception*, MAX_EXCEPTIONS> Context;
 
 namespace Exceptions
 {	

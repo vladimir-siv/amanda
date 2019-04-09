@@ -7,6 +7,10 @@
 
 #define _FIXED_STACK_SIZE_
 
+// constraints:
+// - vlist_allocator
+// - tuplespace
+
 using ThreadDelegate = void(*)(void);
 extern void dispatch();
 
@@ -41,10 +45,10 @@ class Thread final
 	private: static Thread loop;
 	private: static Thread* running;
 	private: static bool dispatch_idle;
-	private: static Thread* idle;
+	private: static Thread idle;
 	private: static vlist<Tuple<Time, Thread*>> sleeping;
 	
-	private: static void init();
+	private: static void __idle__(void);
 	public: static inline void tick();
 	public: static Thread* current();
 	public: static void sleep(Time millis);

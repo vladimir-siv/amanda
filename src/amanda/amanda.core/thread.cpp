@@ -9,7 +9,7 @@ unsigned long Thread::idGen = 0;
 Thread Thread::loop;
 Thread* Thread::running = &Thread::loop;
 bool Thread::dispatch_idle = true;
-Thread* Thread::idle = nullptr;
+Thread Thread::idle(&__idle__);
 vlist<Tuple<Time, Thread*>> Thread::sleeping;
 
 #define __push_context__() __asm volatile ("push r1\npush r0\nin r0, 0x3f\npush r0\npush r2\npush r3\npush r4\npush r5\npush r6\npush r7\npush r8\npush r9\npush r10\npush r11\npush r12\npush r13\npush r14\npush r15\npush r16\npush r17\npush r18\npush r19\npush r20\npush r21\npush r22\npush r23\npush r24\npush r25\npush r26\npush r27\npush r28\npush r29\npush r30\npush r31\nin r0, 0x1e\npush r0\nin r0, 0x2a\npush r0\nin r0, 0x2b\npush r0\n")
@@ -32,17 +32,6 @@ volatile bool inSwitching = false;
 volatile bool puttingToSleep = false;
 volatile unsigned long long ticks = 0;
 
-void Thread::init()
-{
-	idle = new Thread([](void) -> void
-	{
-		while (true)
-		{
-			if (Thread::dispatch_idle) dispatch();
-		}
-	});
-}
-
 extern "C" void __attribute__((signal, __INTR_ATTRS)) __attribute__((naked)) TIMER1_COMPA_vect(void)
 {
 	__push_context__();
@@ -59,7 +48,7 @@ extern "C" void __attribute__((signal, __INTR_ATTRS)) __attribute__((naked)) TIM
 			if (!Thread::running->isInState(Thread::FINISHED))
 			{
 				Thread::running->sp = SP;
-				if (!Thread::running->isInState(Thread::WAITING) && Thread::running != Thread::idle) System::scheduler->put(Thread::running);
+				if (!Thread::running->isInState(Thread::WAITING) && Thread::running != &Thread::idle) System::scheduler->put(Thread::running);
 				if (Thread::running->isInState(Thread::RUNNING)) Thread::running->setState(Thread::READY);
 			}
 
@@ -70,7 +59,7 @@ extern "C" void __attribute__((signal, __INTR_ATTRS)) __attribute__((naked)) TIM
 				Thread::running->finish();
 			}
 
-			if (Thread::running == nullptr) { Thread::running = Thread::idle; Thread::dispatch_idle = false; }
+			if (Thread::running == nullptr) { Thread::running = &Thread::idle; Thread::dispatch_idle = false; }
 			Thread::running->setState(Thread::RUNNING);
 			SP = Thread::running->sp;
 		}
@@ -91,7 +80,7 @@ void __attribute__((naked)) __attribute__((noinline)) dispatch()
 		if (!Thread::running->isInState(Thread::FINISHED))
 		{
 			Thread::running->sp = SP;
-			if (!Thread::running->isInState(Thread::WAITING) && Thread::running != Thread::idle) System::scheduler->put(Thread::running);
+			if (!Thread::running->isInState(Thread::WAITING) && Thread::running != &Thread::idle) System::scheduler->put(Thread::running);
 			if (Thread::running->isInState(Thread::RUNNING)) Thread::running->setState(Thread::READY);
 		}
 
@@ -102,7 +91,7 @@ void __attribute__((naked)) __attribute__((noinline)) dispatch()
 			Thread::running->finish();
 		}
 		
-		if (Thread::running == nullptr) { Thread::running = Thread::idle; Thread::dispatch_idle = false; }
+		if (Thread::running == nullptr) { Thread::running = &Thread::idle; Thread::dispatch_idle = false; }
 		Thread::running->setState(Thread::RUNNING);
 		SP = Thread::running->sp;
 	}
@@ -111,6 +100,14 @@ void __attribute__((naked)) __attribute__((noinline)) dispatch()
 
 	__pop_context__();
 	__asm volatile ("reti\n");
+}
+
+void Thread::__idle__(void)
+{
+	while (true)
+	{
+		if (Thread::dispatch_idle) dispatch();
+	}
 }
 
 void Thread::tick()
@@ -206,6 +203,7 @@ Thread::Thread(ThreadDelegate delegate, void* context, unsigned long stackSize) 
 	{
 		this->setState(FINISHED);
 		Exceptions::Throw<InsufficientStackSizeException>();
+		System::unlock();
 		return;
 	}
 
@@ -227,7 +225,7 @@ Thread::Thread(ThreadDelegate delegate, void* context, unsigned long stackSize) 
 	stack[stackSize - 9] = 0x80; // status register (I bit set is 0x80)
 
 	this->sp = (uintptr_t)(stack + stackSize - 43);
-	System::scheduler->put(this);
+	if (this != &idle) System::scheduler->put(this);
 
 	System::unlock();
 }
@@ -266,7 +264,7 @@ void  __attribute__((naked)) __attribute__((noinline)) Thread::finalize()
 		next->finish();
 	}
 
-	if (next == nullptr) { next = idle; dispatch_idle = false; }
+	if (next == nullptr) { next = &idle; dispatch_idle = false; }
 	next->setState(Thread::RUNNING);
 	SP = next->sp;
 

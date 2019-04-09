@@ -4,7 +4,7 @@
 
 void _qbuffer_int()
 {
-	QBuffer<int> qbuffer1(4);
+	QBuffer<int, 4> qbuffer1;
 
 	qbuffer1.push(3);
 	qbuffer1.push(4);
@@ -59,14 +59,14 @@ void _qbuffer_int()
 	int n3 = 3;
 	int n4 = 4;
 
-	QBuffer<int*> qbuffer2(7);
+	QBuffer<int*, 7> qbuffer2;
 
 	qbuffer2.push(&n4);
 	qbuffer2.push(&n1);
 	qbuffer2.push(&n3);
 	qbuffer2.push(&n2);
 
-	QBuffer<int*> qbuffer3 = qbuffer2;
+	QBuffer<int*, 7> qbuffer3 = qbuffer2;
 
 	// qbuffer2: { 4, 1, 3, 2 }
 	// qbuffer3: { 4, 1, 3, 2 }

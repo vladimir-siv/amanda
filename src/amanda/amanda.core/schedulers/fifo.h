@@ -1,39 +1,38 @@
 #pragma once
 
 #include <exceptions.h>
+#include <structures/specialized/vlist.h>
 #include "scheduler.h"
 
 class FIFOScheduler : public Scheduler
 {
 	friend class System;
 
-	protected: Thread** threads;
-	protected: unsigned int capacity, size;
-	protected: unsigned int head, tail;
-	
-	protected: explicit FIFOScheduler(unsigned int capacity) : threads(new Thread*[capacity]), capacity(capacity), size(0), head(0), tail(0) { }
-	public: virtual ~FIFOScheduler() override { delete[] threads; threads = nullptr; capacity = size = 0; head = tail = 0; }
-	
 	public: FIFOScheduler(const FIFOScheduler& scheduler) = delete;
 	public: FIFOScheduler(FIFOScheduler&& scheduler) = delete;
 	public: FIFOScheduler& operator=(const FIFOScheduler& scheduler) = delete;
 	public: FIFOScheduler& operator=(FIFOScheduler&& scheduler) = delete;
 	
+	protected: static FIFOScheduler* instance() { static FIFOScheduler _scheduler; return &_scheduler; }
+	
+	protected: vlist<Thread> threads;
+	
+	protected: FIFOScheduler() { }
+	
+	public: unsigned int size() const { return threads.size(); }
+	public: Thread* next() const { return threads.peek_front(); }
+	public: Thread* last() const { return threads.peek_back(); }
+	
 	public: virtual void put(Thread* thread) override
 	{
-		if (size == capacity) { Exceptions::Throw<CollectionFullException>(); return; }
-		threads[tail] = thread;
-		if (++tail == capacity) tail = 0;
-		++size;
+		threads.push_back(thread);
 		stop_idle();
 		return;
 	}
 	public: virtual Thread* get() override
 	{
-		if (size == 0) return nullptr;
-		Thread* thread = threads[head];
-		if (++head == capacity) head = 0;
-		--size;
+		if (size() == 0) return nullptr;
+		Thread* thread = threads.pop_front();
 		setDefaultQuantum(thread);
 		return thread;
 	}
