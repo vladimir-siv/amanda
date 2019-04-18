@@ -30,7 +30,7 @@ class condition final
 		{
 			Thread* thread = _blocked.pop_front();
 			thread->setState(Thread::READY);
-			System::scheduler->put(thread);
+			System::scheduler.put(thread);
 		}
 
 		System::unlock();
@@ -43,7 +43,7 @@ class condition final
 		{
 			Thread* thread = _blocked.pop_front();
 			thread->setState(Thread::READY);
-			System::scheduler->put(thread);
+			System::scheduler.put(thread);
 		}
 
 		System::unlock();

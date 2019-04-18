@@ -19,6 +19,21 @@ class ObjectAllocator : public Allocator<T>
 	
 	public: ObjectAllocator() { }
 	
+	public: unsigned int available() const
+	{
+		unsigned int avail = 0;
+
+		for (unsigned int i = 0; i < size; ++i)
+		{
+			if (!_usage.isset(i))
+			{
+				++avail;
+			}
+		}
+
+		return avail;
+	}
+	
 	public: virtual T* alloc() override
 	{
 		for (unsigned int i = 0; i < size; ++i)

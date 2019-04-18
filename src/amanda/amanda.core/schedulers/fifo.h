@@ -7,6 +7,7 @@
 class FIFOScheduler : public Scheduler
 {
 	friend class System;
+	friend class SystemScheduler;
 
 	public: FIFOScheduler(const FIFOScheduler& scheduler) = delete;
 	public: FIFOScheduler(FIFOScheduler&& scheduler) = delete;
@@ -26,14 +27,11 @@ class FIFOScheduler : public Scheduler
 	public: virtual void put(Thread* thread) override
 	{
 		threads.push_back(thread);
-		stop_idle();
 		return;
 	}
 	public: virtual Thread* get() override
 	{
 		if (size() == 0) return nullptr;
-		Thread* thread = threads.pop_front();
-		setDefaultQuantum(thread);
-		return thread;
+		return threads.pop_front();
 	}
 };

@@ -10,6 +10,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)synchronization\semaphore.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)schedulers\fifo.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)schedulers\scheduler.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)schedulers\system_scheduler.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)system.cpp" />
@@ -20,6 +21,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)synchronization\semaphore.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)schedulers\fifo.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)schedulers\scheduler.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)schedulers\system_scheduler.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)library.properties" />

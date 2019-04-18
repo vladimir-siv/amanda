@@ -2,11 +2,9 @@
 #include "system.h"
 #include "thread.h"
 
-#include "schedulers/fifo.h"
-
 volatile unsigned long long System::_lock = 0;
 volatile unsigned long long System::_millis = 0;
-Scheduler* System::scheduler = FIFOScheduler::instance();
+SystemScheduler System::scheduler;
 
 void System::init()
 {

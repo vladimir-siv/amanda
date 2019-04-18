@@ -134,6 +134,7 @@
     <ClCompile Include="tests\t_exceptions.cpp" />
     <ClCompile Include="tests\t_list_coord.cpp" />
     <ClCompile Include="tests\t_list_int.cpp" />
+    <ClCompile Include="tests\t_multilist_int.cpp" />
     <ClCompile Include="tests\t_object_allocator.cpp" />
     <ClCompile Include="tests\t_qbuffer_int.cpp" />
     <ClCompile Include="tests\t_queue_coord.cpp" />

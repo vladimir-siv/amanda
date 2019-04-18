@@ -3,13 +3,14 @@
 #include "def.h"
 
 #include <structures/specialized/vlist.h>
+#include <structures/specialized/vmultilist.h>
 #include <structures/tuple.h>
 
-#define _FIXED_STACK_SIZE_
+//#define _FIXED_STACK_SIZE_
 
 // constraints:
 // - vlist_allocator
-// - tuplespace
+// - vsublist_allocator
 
 using ThreadDelegate = void(*)(void);
 extern void dispatch();
@@ -22,6 +23,7 @@ class Thread final
 	friend void dispatch();
 	friend class System;
 	friend class Scheduler;
+	friend class SystemScheduler;
 	friend class mutex;
 	friend class condition;
 	friend class semaphore;
@@ -46,14 +48,14 @@ class Thread final
 	private: static Thread* running;
 	private: static bool dispatch_idle;
 	private: static Thread idle;
-	private: static vlist<Tuple<Time, Thread*>> sleeping;
+	private: static vmultilist<Thread> sleeping;
 	
 	private: static void __idle__(void);
 	public: static inline void tick();
 	public: static Thread* current();
 	public: static void sleep(Time millis);
 	
-	public: template<typename T> static T current_context() { return (T)running->context; }
+	public: template <typename T> static T current_context() { return (T)running->context; }
 	
 	private: unsigned long id;
 #ifdef _FIXED_STACK_SIZE_

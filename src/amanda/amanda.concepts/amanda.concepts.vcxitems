@@ -27,6 +27,8 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)exceptions\insufficientstacksizeexception.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)memory_management\allocator.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)memory_management\object_allocator.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)memory_management\specialized\reinterpreting_allocator.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)memory_management\specialized\tuple_allocator.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)networking\xml\constant_parser.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)networking\xml\xml_event_dispatcher.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)networking\xml\xml_parser.cpp" />
@@ -39,10 +41,13 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)structures\list.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)structures\specialized\qbuffer.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)structures\specialized\vlist.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)structures\specialized\vmultilist.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)structures\tuple.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)structures\vector.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="$(MSBuildThisFileDirectory)assert\static.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)utility.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)event_system\delegate.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)event_system\event.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)event_system\eventargs.h" />
@@ -56,6 +61,8 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)exceptions\insufficientstacksizeexception.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)memory_management\allocator.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)memory_management\object_allocator.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)memory_management\specialized\reinterpreting_allocator.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)memory_management\specialized\tuple_allocator.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)networking\xml\constant_parser.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)networking\xml\xml_event_dispatcher.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)networking\xml\xml_parser.h" />
@@ -69,6 +76,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)structures\list.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)structures\specialized\qbuffer.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)structures\specialized\vlist.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)structures\specialized\vmultilist.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)structures\tuple.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)structures\vector.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)types\def.h" />

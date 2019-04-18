@@ -169,6 +169,13 @@ void print(const char* str)
 	Serial.print(++i);
 	Serial.print(F("] "));
 	Serial.println(str);
+
+	/*if (i == 43)
+	{
+		System::lock();
+		Serial.println(F("LETS TEST THIS HOSSSSSSSSSS"));
+		System::unlock();
+	}*/
 }
 
 void test2()

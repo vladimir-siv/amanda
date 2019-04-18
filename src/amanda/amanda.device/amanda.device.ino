@@ -5,7 +5,7 @@
 
 HardwareController controller;
 
-void setup()
+void setup2()
 {
 	Serial.begin(9600);
 	while (!Serial) ;
@@ -56,10 +56,12 @@ void setup()
 	}*/
 }
 
-void loop()
+void loop2()
 {
-	Serial.print(F("<scan>"));
+	/*Serial.print(F("<scan>"));
 	controller.scan().print_to_serial();
 	Serial.println(F("</scan>"));
-	Thread::sleep(1000);
+	Thread::sleep(1000);*/
+	Serial.println(F("1s"));
+	delay(1000);
 }

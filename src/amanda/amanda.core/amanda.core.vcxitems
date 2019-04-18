@@ -17,6 +17,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)def.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)schedulers\fifo.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)schedulers\scheduler.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)schedulers\system_scheduler.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)synchronization\condition.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)synchronization\lock.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)synchronization\mutex.h" />
@@ -27,6 +28,7 @@
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)schedulers\fifo.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)schedulers\scheduler.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)schedulers\system_scheduler.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)synchronization\condition.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)synchronization\lock.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)synchronization\mutex.cpp" />

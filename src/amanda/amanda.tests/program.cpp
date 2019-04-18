@@ -18,6 +18,7 @@ extern void _vlist_enumerator();
 extern void _tuple();
 extern void _events();
 extern void _object_allocator();
+extern void _vmultilist_int();
 extern void _xml_parser();
 
 void setup()
@@ -40,5 +41,6 @@ void setup()
 	suit::add("tuple", &_tuple);
 	suit::add("events", &_events);
 	suit::add("object_allocator", &_object_allocator);
+	suit::add("vmultilist_int", &_vmultilist_int);
 	suit::add("xml_parser", &_xml_parser);
 }

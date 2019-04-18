@@ -76,7 +76,7 @@ class mutex final
 					++_lock_count;
 
 					current->setState(Thread::READY);
-					System::scheduler->put(current);
+					System::scheduler.put(current);
 				}
 				else _owner = nullptr;
 

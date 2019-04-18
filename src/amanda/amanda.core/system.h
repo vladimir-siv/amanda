@@ -1,7 +1,7 @@
 #pragma once
 
 #include "def.h"
-#include "schedulers/scheduler.h"
+#include "schedulers/system_scheduler.h"
 
 extern "C" void TIMER1_COMPA_vect(void);
 
@@ -19,7 +19,7 @@ class System final
 	private: static volatile unsigned long long _lock;
 	private: static volatile unsigned long long _millis;
 	
-	private: static Scheduler* scheduler;
+	private: static SystemScheduler scheduler;
 	
 	public: static void init();
 	

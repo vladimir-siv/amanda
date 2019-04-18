@@ -21,6 +21,7 @@
     <ClCompile Include="tests\t_bitvector.cpp" />
     <ClCompile Include="tests\t_object_allocator.cpp" />
     <ClCompile Include="tests\t_xml_parser.cpp" />
+    <ClCompile Include="tests\t_multilist_int.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="test.bat" />

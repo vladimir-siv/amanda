@@ -22,6 +22,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="amanda.device.ino" />
+    <None Include="tests\amanda.core.ino" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="hardware\components\abstraction\component.cpp" />

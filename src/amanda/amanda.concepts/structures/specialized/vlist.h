@@ -12,7 +12,7 @@
 #include "../../rtti/type.h"
 #endif
 
-#define _VLIST_ALLOCATOR_SIZE_ 64
+#define _VLIST_ALLOCATOR_SIZE_ 128
 
 class vlist_allocator
 {
@@ -46,7 +46,14 @@ class vlist_allocator
 	}
 	private: static void dealloc(void* object)
 	{
-		usage.unset((Node*)object - nodes);
+		if (object == nullptr) return;
+
+		auto k = (Node*)object - nodes;
+
+		if (0 <= k && k < _VLIST_ALLOCATOR_SIZE_)
+		{
+			usage.unset(k);
+		}
 	}
 	
 	private: template <typename T> static inline T alloc() { return static_cast<T>(alloc()); }
@@ -88,6 +95,7 @@ class vlist final
 		this->_first = list._first;
 		this->_last = list._last;
 		list._first = list._last = nullptr;
+		list._size = 0;
 	}
 	private: void clean()
 	{
@@ -175,7 +183,7 @@ class vlist final
 	{
 		return _last->value;
 	}
-
+	
 	public: void remove_last(const T* value)
 	{
 		Node* before = nullptr;
@@ -210,6 +218,40 @@ class vlist final
 		{
 			del->invoke(i->value);
 		}
+	}
+	
+	public: void merge(vlist& list)
+	{
+		if (list._size == 0) return;
+		
+		if (_size > 0)
+		{
+			_last->next = list._first;
+			_last = list._last;
+			_size += list._size;
+
+			list._first = list._last = nullptr;
+			list._size = 0;
+		}
+		else move(list);
+	}
+	public: T* second() const
+	{
+		if (_size < 2) return nullptr;
+		return _first->next->value;
+	}
+	public: void remove_second()
+	{
+		if (_size < 2) return;
+
+		auto second = _first->next;
+		
+		if (_last == second) _last = _first;
+		_first->next = second->next;
+		--_size;
+
+		// delete second
+		vlist_allocator::dealloc(second);
 	}
 	
 	public: vlist_enumerator<T> begin() { return vlist_enumerator<T>(this, _first); }
