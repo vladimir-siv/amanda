@@ -21,7 +21,6 @@
     <ClInclude Include="hardware\hardware_controller.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="tests\amanda.core.ino" />
     <None Include="amanda.device.ino" />
   </ItemGroup>
   <ItemGroup>
