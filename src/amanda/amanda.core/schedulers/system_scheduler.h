@@ -8,14 +8,17 @@ class SystemScheduler final : public Scheduler
 {
 	friend class System;
 
-	private: Scheduler* _scheduler = FIFOScheduler::instance();
+	private: volatile Scheduler* _scheduler = FIFOScheduler::instance();
 	
-	public: virtual void put(Thread* thread) override
+	public: virtual void __attribute__((noinline)) put(Thread* thread) volatile override
 	{
-		_scheduler->put(thread);
-		stop_idle();
+		if (thread != nullptr)
+		{
+			_scheduler->put(thread);
+			stop_idle();
+		}
 	}
-	public: virtual Thread* get() override
+	public: virtual Thread* __attribute__((noinline)) get() volatile override
 	{
 		Thread* thread = Thread::sleeping.take();
 		if (thread == nullptr) thread = _scheduler->get();

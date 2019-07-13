@@ -8,9 +8,12 @@
 
 class HardwareController
 {
+	private: static NodeAllocator& nodes() { static NodeAllocator _nodes; return _nodes; }
+	
 	protected: vlist<IComponent> _components;
 	protected: StringBuilder<144> _scan_builder;
 	
+	public: HardwareController() : _components(&nodes()) { }
 	public: virtual ~HardwareController() { }
 	
 	public: unsigned int size() const { return _components.size(); }
@@ -26,7 +29,7 @@ class HardwareController
 		_scan_builder.append("\" commands=\"");
 		_scan_builder.append(component->commands());
 		_scan_builder.append("\">");
-		
+
 		if (component->is_any(IComponent::ELEMENT))
 		{
 			_scan_builder.map(_components.size(), _scan_builder.capacity());

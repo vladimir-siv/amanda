@@ -9,10 +9,9 @@
 //#define _FIXED_STACK_SIZE_
 
 // constraints:
-// - vlist_allocator
-// - vsublist_allocator
+// - NodeAllocator
 
-using ThreadDelegate = void(*)(void);
+using ThreadDelegate = void (*)(void);
 extern void dispatch();
 
 extern "C" void TIMER1_COMPA_vect(void);
@@ -43,31 +42,31 @@ class Thread final
 #endif
 	private: static const unsigned int _DEFAULT_QUANTUM = 50;
 	
-	private: static unsigned long idGen;
-	private: static Thread loop;
-	private: static Thread* running;
-	private: static bool dispatch_idle;
-	private: static Thread idle;
-	private: static vmultilist<Thread> sleeping;
+	private: static volatile unsigned long idGen;
+	private: static volatile Thread loop;
+	private: static volatile Thread* running;
+	private: static volatile bool dispatch_idle;
+	private: static volatile Thread idle;
+	private: static volatile vmultilist<Thread> sleeping;
 	
 	private: static void __idle__(void);
-	public: static inline void tick();
+	public: static void tick();
 	public: static Thread* current();
 	public: static void sleep(Time millis);
 	
-	public: template <typename T> static T current_context() { return (T)running->context; }
+	public: template <typename T> static T current_context() { return (T)(running->context); }
 	
 	private: unsigned long id;
 #ifdef _FIXED_STACK_SIZE_
-	private: byte stack[_STACK_SIZE];
+	private: volatile byte stack[_STACK_SIZE];
 #else
-	private: byte* stack = nullptr;
+	private: volatile byte* stack = nullptr;
 #endif
 	private: volatile uintptr_t sp;
 	private: volatile unsigned int quantum;
-	private: State state;
-	private: vlist<Thread> complete;
-	private: void* context;
+	private: volatile State state;
+	private: volatile vlist<Thread> complete;
+	private: volatile void* context;
 	
 	private: Thread();
 	public: Thread(ThreadDelegate delegate, unsigned long stackSize);
@@ -79,14 +78,14 @@ class Thread final
 	public: Thread& operator=(const Thread& thread) = delete;
 	public: Thread& operator=(Thread&& thread) = delete;
 	
-	private: void finish();
+	private: void finish() volatile;
 	private: static void finalize();
 	
-	public: unsigned long ID() const;
+	public: unsigned long ID() volatile const;
 	
-	public: bool isInState(State state) const;
-	private: void setState(State state);
+	public: bool isInState(State state) volatile const;
+	private: void setState(State state) volatile;
 	
-	public: void waitToComplete();
-	public: void abort();
+	public: void waitToComplete() volatile;
+	public: void abort() volatile;
 };

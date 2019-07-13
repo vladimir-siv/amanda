@@ -1,149 +1,303 @@
 ﻿#include <exceptions.h>
 #include <system.h>
 #include <thread.h>
+#include <RAII/generic.h>
 
-const byte N = 10;
-Thread** t = nullptr;
-pinstate pin13state = LOW;
-bool firstCycle = true;
+namespace logging
+{
+	class FLogEntry
+	{
+		public: virtual ~FLogEntry() { }
+		public: virtual size_t print() = 0;
+	};
 
-void thread();
+	class LogEntry
+	{
+		protected: union letype
+		{
+			const __FlashStringHelper* v1;
+			const char* v2;
+			char v3;
+			unsigned char v4;
+			int v5;
+			unsigned int v6;
+			long v7;
+			unsigned long v8;
+			double v9;
+			FLogEntry* v10;
+		};
+		
+		protected: letype content;
+		protected: byte type;
+		
+		public: LogEntry() : type(0) { }
+		public: virtual ~LogEntry() { }
+		
+		public: void set(const __FlashStringHelper* v1) { content.v1 = v1; type = 1; }
+		public: void set(const char v2[]) { content.v2 = v2; type = 2; }
+		public: void set(char v3) { content.v3 = v3; type = 3; }
+		public: void set(unsigned char v4) { content.v4 = v4; type = 4; }
+		public: void set(int v5) { content.v5 = v5; type = 5; }
+		public: void set(unsigned int v6) { content.v6 = v6; type = 6; }
+		public: void set(long v7) { content.v7 = v7; type = 7; }
+		public: void set(unsigned long v8) { content.v8 = v8; type = 8; }
+		public: void set(double v9) { content.v9 = v9; type = 9; }
+		public: void set(FLogEntry* v10) { content.v10 = v10; type = 10; }
+		
+		public: virtual size_t print()
+		{
+			switch (type)
+			{
+				case 1: return Serial.print(content.v1);
+				case 2: return Serial.print(content.v2);
+				case 3: return Serial.print(content.v3);
+				case 4: return Serial.print(content.v4);
+				case 5: return Serial.print(content.v5);
+				case 6: return Serial.print(content.v6);
+				case 7: return Serial.print(content.v7);
+				case 8: return Serial.print(content.v8);
+				case 9: return Serial.print(content.v9);
+				case 10: return content.v10->print();
+			}
+
+			return 0;
+		}
+	};
+
+	class NLLogEntry : public FLogEntry
+	{
+		public: static FLogEntry* instance() { static NLLogEntry inst; return &inst; }
+		private: NLLogEntry() { }
+		public: virtual ~NLLogEntry() { }
+		public: virtual size_t print() override { return Serial.println(); }
+	};
+
+	class Log final
+	{
+		private: Log() { }
+		
+		private: static const unsigned int SIZE = 512;
+		private: static LogEntry logs[SIZE];
+		private: static unsigned int top(bool increment = true)
+		{
+			static unsigned int val = 0;
+			unsigned int v = val;
+			if (increment) ++val;
+			return v;
+		}
+		
+		public: static FLogEntry* endl() { return NLLogEntry::instance(); }
+		
+		private: static bool _add() { return true; }
+		private: template <typename T, typename... Types> static bool _add(T&& value, Types&&... values)
+		{
+			if (top(false) >= SIZE) return false;
+			logs[top()].set(std::forward<T>(value));
+			return _add(std::forward<Types>(values)...);
+		}
+		
+		public: template <typename... Types> static bool add(Types&&... values)
+		{
+			RAII::Light e([] { System::unlock(); }, [] { System::lock(); });
+			return _add(std::forward<Types>(values)...);
+		}
+		public: template <typename... Types> static bool addln(Types&&... values)
+		{
+			RAII::Light e([] { System::unlock(); }, [] { System::lock(); });
+			return _add(std::forward<Types>(values)..., endl());
+		}
+		
+		public: static void print()
+		{
+			for (unsigned int i = 0; i < top(false); ++i)
+			{
+				logs[i].print();
+			}
+		}
+		
+		public: static unsigned int debug() { return top(false); }
+	};
+
+	LogEntry Log::logs[SIZE] = { };
+};
+namespace communication
+{
+	class SerialMonitor final
+	{
+		private: static const bool PRINT = true;
+		
+		private: SerialMonitor() { }
+		
+		public: class Functional final
+		{
+			friend class SerialMonitor;
+			public: using Delegate = void(*)();
+			
+			private: Delegate del;
+			private: Functional(Delegate del) : del(del) { }
+			public: Functional& operator()() { del(); return *this; }
+			public: const Functional& operator()() const { del(); return *this; }
+		};
+		public: static Functional endl;
+		
+		public: static void begin(unsigned long baud = 9600)
+		{
+			Serial.begin(baud);
+			while (!Serial);
+			Serial.flush();
+		}
+		
+		private: template <typename T> static void _print(T&& param) { if (PRINT) Serial.print(std::forward<T>(param)); }
+		private: static void _print(Functional& param) { param(); }
+		
+		private: static void _pass() { }
+		private: template <typename T, typename... Types> static void _pass(T&& param, Types&&... params)
+		{
+			_print(std::forward<T>(param));
+			_pass(std::forward<Types>(params)...);
+		}
+		
+		public: template <typename... Types> static void print(Types&&... params)
+		{
+			System::lock();
+			_pass(std::forward<Types>(params)...);
+			System::unlock();
+		}
+		public: template <typename... Types> static void println(Types&&... params)
+		{
+			System::lock();
+			_pass(std::forward<Types>(params)...);
+			if (PRINT) Serial.println();
+			System::unlock();
+		}
+	};
+
+	SerialMonitor::Functional SerialMonitor::endl([](void) -> void { if (PRINT) Serial.println(); });
+}
+
+using namespace logging;
+using namespace communication;
+
+namespace workers
+{
+	class Workers final
+	{
+		private: Workers() { }
+		
+		private: class Worker final
+		{
+			friend class Workers;
+
+			private: Thread worker;
+			private: volatile bool sync;
+			
+			private: Worker(unsigned int id, unsigned long stackSize) :
+				worker([] { Workers::work(); }, (void*)id, stackSize),
+				sync(false)
+			{ }
+			
+			private: bool isFinished() const
+			{
+				return worker.isInState(Thread::FINISHED);
+			}
+			private: void abort()
+			{
+				worker.abort();
+			}
+			private: void waitToComplete()
+			{
+				worker.waitToComplete();
+			}
+		};
+		
+		private: static Worker worker[];
+		private: static ThreadDelegate job;
+		
+		private: static void work();
+		public: static void apply(ThreadDelegate j);
+		public: static void wait();
+		public: static void stop();
+	};
+	Workers::Worker Workers::worker[]
+	{
+		{ 0, 128 },
+		{ 1, 128 },
+		{ 2, 128 },
+		{ 3, 128 },
+		{ 4, 128 },
+		{ 5, 127 },
+		{ 6, 126 },
+		{ 7, 125 },
+		{ 8, 124 },
+		{ 9, 123 }
+	};
+	ThreadDelegate Workers::job = nullptr;
+
+	void Workers::work()
+	{
+		unsigned int id = Thread::current_context<unsigned int>();
+
+		while (true)
+		{
+			while (!worker[id].sync) ;
+			if (job != nullptr) (*job)();
+			worker[id].sync = false;
+		}
+	}
+	void Workers::apply(ThreadDelegate job)
+	{
+		//wait();
+		Workers::job = job;
+
+		for (unsigned int i = 0; i < sizeof(worker) / sizeof(Worker); ++i)
+		{
+			worker[i].sync = true;
+		}
+	}
+	void Workers::wait()
+	{
+		for (unsigned int i = 0; i < sizeof(worker) / sizeof(Worker); ++i)
+		{
+			if (worker[i].isFinished()) continue;
+			while (worker[i].sync) ;
+		}
+	}
+	void Workers::stop()
+	{
+		for (unsigned int i = 0; i < sizeof(worker) / sizeof(Worker); ++i)
+		{
+			worker[i].abort();
+		}
+
+		for (unsigned int i = 0; i < sizeof(worker) / sizeof(Worker); ++i)
+		{
+			worker[i].waitToComplete();
+		}
+	}
+}
+
+using namespace workers;
 
 void setup()
 {
-	Serial.begin(9600);
-	while (!Serial) ;
-	Serial.flush();
-
+	SerialMonitor::begin(9600);
 	pinMode(13, OUTPUT);
-	
+
+	Log::addln(F("Exceptions #: "), Exceptions::Count());
+	while (Exceptions::Count() > 0) Log::addln(F("{ "), Exceptions::Fetch()->what(), F(" }"));
+
 	System::init();
 
-	t = new Thread*[N];
-	for (byte i = 0; i < N; ++i) t[i] = nullptr;
-
-	if (N > 0)
-	{
-		System::lock();
-
-		for (byte i = 0; i < N; ++i)
-		{
-			t[i] = new Thread(&thread, 121 + i);
-
-			Serial.print(Exceptions::Count());
-			Serial.print(F(" ->"));
-			
-			if (Exceptions::Count() > 0)
-			{
-				while (Exceptions::Count() > 0)
-				{
-					Serial.print(F(" { "));
-					Serial.print(Exceptions::Fetch()->what());
-					Serial.print(F(" }"));
-				}
-
-				Serial.println();
-			}
-			else Serial.println(F(" <no exception thrown>"));
-		}
-
-		System::unlock();
-	}
+	Workers::apply(&job);
+	Workers::wait();
+	Workers::stop();
 }
 
-void job(int id)
+void switch13()
 {
-	for (int i = 0; i < 10; ++i)
-	{
-		System::lock();
-		Serial.print(Thread::current()->ID());
-		Serial.print('[');
-		Serial.print(id);
-		Serial.print(']');
-		Serial.println();
-		System::unlock();
-
-		if (i < 5) dispatch();
-
-		// Non-Critical code
-		for (volatile int i = 0; i < 1000 / (N > 0 ? N : 1); i++)
-			for (volatile int j = 0; j < 1000; j++)
-				;
-
-		System::lock();
-
-		if (i == 3 && Thread::current() == t[8])
-		{
-			Serial.print(F("Aborting t[7]: "));
-			Serial.println(t[7]->ID());
-			t[7]->abort();
-		}
-
-		System::unlock();
-	}
-}
-
-void loop()
-{
-	if (firstCycle)
-	{
-		for (int i = 0; i < N; ++i)
-		{
-			System::lock();
-			Serial.print(F("Waiting for: "));
-			Serial.println(t[i]->ID());
-			System::unlock();
-			if (t[i] != nullptr) t[i]->waitToComplete();
-		}
-
-		firstCycle = false;
-	}
-
-	job(7);
-
+	static pinstate pin13state = LOW;
 	pin13state = !pin13state;
 	digitalWrite(13, pin13state);
-
-	static int k = 0;
-	if (++k == 5)
-	{
-		for (int i = 0; i < N; ++i)
-		{
-			delete t[i];
-			t[i] = nullptr;
-		}
-
-		test2();
-		test3();
-		test4();
-		test5();
-
-		Serial.println();
-		Serial.println(F("========== Finished Tests =========="));
-		Serial.println();
-
-		cli();
-
-		Time msms = System::millis();
-		unsigned long msts = millis();
-
-		sei();
-
-		Serial.print(F("System:  "));
-		Serial.println((unsigned long)msms);
-		Serial.print(F("Arduino: "));
-		Serial.println(msts);
-		
-		Serial.println();
-
-		Serial.println(F("End."));
-		Thread::current()->abort();
-	}
-}
-
-void thread()
-{
-	job(8);
 }
 
 void noncriticalcode(int k = 1)
@@ -153,6 +307,88 @@ void noncriticalcode(int k = 1)
 			;
 }
 
+void job()
+{
+	for (int i = 0; i < 10; ++i)
+	{
+		Log::addln((unsigned long)System::millis(), F("ms: "), Thread::current()->ID());
+		if (i < 5) dispatch();
+		noncriticalcode(10);
+	}
+}
+
+void loop()
+{
+	static int k = 0;
+
+	noncriticalcode();
+	switch13();
+
+	if (++k == 5)
+	{
+		tests();
+		dump();
+		Thread::current()->abort();
+	}
+}
+
+void dump()
+{
+	cli();
+
+	Time msms = System::millis();
+	unsigned long msts = millis();
+
+	Log::print();
+	
+	Serial.println();
+	Serial.print(F("Debug: "));
+	Serial.println(Log::debug());
+
+	Serial.println();
+	Serial.print(F("System: "));
+	Serial.println((unsigned long)msms);
+	Serial.print(F("Arduino: "));
+	Serial.println(msts);
+
+	Serial.println();
+	Serial.println(F("End."));
+
+	sei();
+}
+
+// ============== TESTS ============== //
+
+void tests()
+{
+	test2();
+	test3();
+	test4();
+	test5();
+
+	Log::addln
+	(
+		Log::endl(),
+		F("========== Finished Tests =========="),
+		Log::endl()
+	);
+}
+
+unsigned int val(bool reset = false, bool fastread = false)
+{
+	static unsigned int value = 0;
+
+	if (fastread) return value;
+
+	if (reset) return value = 0;
+	
+	unsigned int read = value;
+	noncriticalcode(100);
+	value = read + 1;
+
+	return value;
+}
+
 // ============== TEST 2 ============== //
 
 #include <synchronization/mutex.h>
@@ -160,192 +396,148 @@ void noncriticalcode(int k = 1)
 
 mutex mtx;
 
-void print(const char* str)
-{
-	lock lck(mtx);
-
-	static int i = 0;
-	Serial.print('[');
-	Serial.print(++i);
-	Serial.print(F("] "));
-	Serial.println(str);
-
-	/*if (i == 43)
-	{
-		System::lock();
-		Serial.println(F("LETS TEST THIS HOSSSSSSSSSS"));
-		System::unlock();
-	}*/
-}
-
 void test2()
 {
-	Serial.println();
-	Serial.println(F("========== Test2 =========="));
-	Serial.println();
+	Log::addln
+	(
+		Log::endl(),
+		F("========== Test2 =========="),
+		Log::endl()
+	);
 
-	auto fast = []() -> void
+	val(true);
+
+	auto t = []() -> void
 	{
-		unsigned long id = Thread::current()->ID();
-		char signature[4] { '0', '0', 'F', 0 };
-		signature[0] += id / 10;
-		signature[1] += id % 10;
-
-		for (int i = 0; i < 10; ++i)
+		for (unsigned int i = 0; i < 10; ++i)
 		{
-			print(signature);
-			print(signature);
-			print(signature);
-			noncriticalcode(500);
+			lock lck(mtx);
+			val();
 		}
-
-		System::lock();
-		Serial.print(id);
-		Serial.println(F(" -> end."));
-		System::unlock();
-	};
-	auto slow = []() -> void
-	{
-		unsigned long id = Thread::current()->ID();
-		char signature[4] { '0', '0', 'S', 0 };
-		signature[0] += id / 10;
-		signature[1] += id % 10;
-
-		for (int i = 0; i < 10; ++i)
-		{
-			print(signature);
-			noncriticalcode(100);
-		}
-
-		System::lock();
-		Serial.print(id);
-		Serial.println(F(" -> end."));
-		System::unlock();
 	};
 
 	System::lock();
 
-	t[0] = new Thread(slow);
-	t[1] = new Thread(slow);
-	t[2] = new Thread(fast);
-	t[3] = new Thread(fast);
-	t[4] = new Thread(fast);
+	Thread t0(t);
+	Thread t1(t);
+	Thread t2(t);
+	Thread t3(t);
+	Thread t4(t);
 
 	System::unlock();
 
-	for (byte i = 0; i < N; ++i)
-	{
-		if (t[i] == nullptr) continue;
-		System::lock();
-		Serial.print(F("Waiting for: "));
-		Serial.println(t[i]->ID());
-		System::unlock();
-		//t[i]->waitToComplete();
-		delete t[i];
-		t[i] = nullptr;
-	}
+	t0.waitToComplete();
+	t1.waitToComplete();
+	t2.waitToComplete();
+	t3.waitToComplete();
+	t4.waitToComplete();
+
+	Log::addln(F("Result: "), val(false, true));
 }
 
 // ============== TEST 3 ============== //
 
 void test3()
 {
-	Serial.println();
-	Serial.println(F("========== Test3 =========="));
-	Serial.println();
+	Log::addln
+	(
+		Log::endl(),
+		F("========== Test3 =========="),
+		Log::endl()
+	);
 
-	Serial.println(F("Check1"));
+	Log::addln('[', (unsigned long)System::millis(), F("ms] Check1"));
 	Thread::sleep(5000);
-	Serial.println(F("Check2"));
+	Log::addln('[', (unsigned long)System::millis(), F("ms] Check2"));
 	Thread::sleep(2500);
-	Serial.println(F("Check3"));
+	Log::addln('[', (unsigned long)System::millis(), F("ms] Check3"));
 
 	auto type1 = []() -> void
 	{
 		ID id = Thread::current()->ID();
 
-		System::lock();
-		Serial.print(F("Type 1 started: "));
-		Serial.print((const unsigned long)id);
-		Serial.print(F(" ["));
-		Serial.print((const unsigned long)id * 250);
-		Serial.print(F("ms]"));
-		Serial.println();
-		System::unlock();
+		Log::addln
+		(
+			'[',
+			(unsigned long)System::millis(),
+			F("ms] Type 1 started: "),
+			(const unsigned long)id,
+			F(" ["),
+			(const unsigned long)id * 250,
+			F("ms]")
+		);
 
 		Thread::sleep((Time)id * 250);
 
-		System::lock();
-		Serial.print(F("Type 1 passed: "));
-		Serial.print((const unsigned long)id);
-		Serial.print(F(" ["));
-		Serial.print((const unsigned long)id * 125);
-		Serial.print(F("ms]"));
-		Serial.println();
-		System::unlock();
+		Log::addln
+		(
+			'[',
+			(unsigned long)System::millis(),
+			F("ms] Type 1 passed: "),
+			(const unsigned long)id,
+			F(" ["),
+			(const unsigned long)id * 125,
+			F("ms]")
+		);
 
 		Thread::sleep((Time)id * 125);
 
-		System::lock();
-		Serial.print(F("Type 1 finished: "));
-		Serial.print((const unsigned long)id);
-		Serial.println();
-		System::unlock();
+		Log::addln
+		(
+			'[',
+			(unsigned long)System::millis(),
+			F("ms] Type 1 finished: "),
+			(const unsigned long)id
+		);
 	};
 	auto type2 = []() -> void
 	{
 		ID id = Thread::current()->ID();
 
-		System::lock();
-		Serial.print(F("Type 2 started: "));
-		Serial.print((const unsigned long)id);
-		Serial.print(F(" ["));
-		Serial.print((const unsigned long)id * 100);
-		Serial.print(F("ms]"));
-		Serial.println();
-		System::unlock();
+		Log::addln
+		(
+			'[',
+			(unsigned long)System::millis(),
+			F("ms] Type 2 started: "),
+			(const unsigned long)id,
+			F(" ["),
+			(const unsigned long)id * 100,
+			F("ms]")
+		);
 
-		Thread::sleep(id * 100);
+		Thread::sleep((Time)id * 100);
 
-		System::lock();
-		Serial.print(F("Type 2 passed: "));
-		Serial.print((const unsigned long)id);
-		Serial.print(F(" ["));
-		Serial.print((const unsigned long)id * 50);
-		Serial.print(F("ms]"));
-		Serial.println();
-		System::unlock();
+		Log::addln
+		(
+			'[',
+			(unsigned long)System::millis(),
+			F("ms] Type 2 passed: "),
+			(const unsigned long)id,
+			F(" ["),
+			(const unsigned long)id * 50,
+			F("ms]")
+		);
 
-		Thread::sleep(id * 50);
+		Thread::sleep((Time)id * 50);
 
-		System::lock();
-		Serial.print(F("Type 2 finished: "));
-		Serial.print((const unsigned long)id);
-		Serial.println();
-		System::unlock();
+		Log::addln
+		(
+			'[',
+			(unsigned long)System::millis(),
+			F("ms] Type 2 finished: "),
+			(const unsigned long)id
+		);
 	};
 
 	System::lock();
 
-	t[0] = new Thread(type1);
-	t[1] = new Thread(type1);
-	t[2] = new Thread(type2);
-	t[3] = new Thread(type2);
-	t[4] = new Thread(type2);
+	Thread t0(type1);
+	Thread t1(type1);
+	Thread t2(type2);
+	Thread t3(type2);
+	Thread t4(type2);
 
 	System::unlock();
-
-	for (byte i = 0; i < N; ++i)
-	{
-		if (t[i] == nullptr) continue;
-		System::lock();
-		Serial.print(F("Waiting for: "));
-		Serial.println(t[i]->ID());
-		System::unlock();
-		//t[i]->waitToComplete();
-		delete t[i];
-		t[i] = nullptr;
-	}
 }
 
 // ============== TEST 4 ============== //
@@ -356,22 +548,23 @@ condition cnd;
 
 void test4()
 {
-	Serial.println();
-	Serial.println(F("========== Test4 =========="));
-	Serial.println();
+	Log::addln
+	(
+		Log::endl(),
+		F("========== Test4 =========="),
+		Log::endl()
+	);
 
 	auto master = []() -> void
 	{
-		System::lock();
-		Serial.println(F("MASTER start"));
-		System::unlock();
+		Log::addln('[', (unsigned long)System::millis(), F("ms] MASTER start"));
 
 		noncriticalcode();
 		noncriticalcode();
 		noncriticalcode();
 
 		System::lock();
-		Serial.println(F("Notifying one slave"));
+		Log::addln('[', (unsigned long)System::millis(), F("ms] Notifying one slave"));
 		cnd.notify();
 		System::unlock();
 
@@ -380,52 +573,28 @@ void test4()
 		noncriticalcode();
 
 		System::lock();
-		Serial.println(F("Notifying all slaves"));
+		Log::addln('[', (unsigned long)System::millis(), F("ms] Notifying all slaves"));
 		cnd.notify_all();
 		System::unlock();
 
-		System::lock();
-		Serial.println(F("MASTER end."));
-		System::unlock();
+		Log::addln('[', (unsigned long)System::millis(), F("ms] MASTER end."));
 	};
 	auto slave = []() -> void
 	{
-		System::lock();
-		Serial.print(F("Slave "));
-		Serial.print(Thread::current()->ID());
-		Serial.println(F(" blocked?."));
-		System::unlock();
-
+		Log::addln('[', (unsigned long)System::millis(), F("ms] Slave "), Thread::current()->ID(), F(" blocked?."));
 		cnd.wait();
-
-		System::lock();
-		Serial.print(F("Slave "));
-		Serial.print(Thread::current()->ID());
-		Serial.println(F(" passed."));
-		System::unlock();
+		Log::addln('[', (unsigned long)System::millis(), F("ms] Slave "), Thread::current()->ID(), F(" passed."));
 	};
 
 	System::lock();
 
-	t[0] = new Thread(master);
-	t[1] = new Thread(slave);
-	t[2] = new Thread(slave);
-	t[3] = new Thread(slave);
-	t[4] = new Thread(slave);
+	Thread t0(master);
+	Thread t1(slave);
+	Thread t2(slave);
+	Thread t3(slave);
+	Thread t4(slave);
 
 	System::unlock();
-
-	for (byte i = 0; i < N; ++i)
-	{
-		if (t[i] == nullptr) continue;
-		System::lock();
-		Serial.print(F("Waiting for: "));
-		Serial.println(t[i]->ID());
-		System::unlock();
-		//t[i]->waitToComplete();
-		delete t[i];
-		t[i] = nullptr;
-	}
 }
 
 // ============== TEST 5 ============== //
@@ -436,22 +605,23 @@ semaphore sem;
 
 void test5()
 {
-	Serial.println();
-	Serial.println(F("========== Test5 =========="));
-	Serial.println();
+	Log::addln
+	(
+		Log::endl(),
+		F("========== Test5 =========="),
+		Log::endl()
+	);
 
 	auto master = []() -> void
 	{
-		System::lock();
-		Serial.println(F("MASTER start"));
-		System::unlock();
+		Log::addln('[', (unsigned long)System::millis(), F("ms] MASTER start"));
 
 		noncriticalcode();
 		noncriticalcode();
 		noncriticalcode();
 
 		System::lock();
-		Serial.println(F("Notifying one slave"));
+		Log::addln('[', (unsigned long)System::millis(), F("ms] Notifying one slave"));
 		sem.notify();
 		System::unlock();
 
@@ -460,50 +630,26 @@ void test5()
 		noncriticalcode();
 
 		System::lock();
-		Serial.println(F("Notifying all slaves"));
+		Log::addln('[', (unsigned long)System::millis(), F("ms] Notifying all slaves"));
 		sem.notify_all();
 		System::unlock();
 
-		System::lock();
-		Serial.println(F("MASTER end."));
-		System::unlock();
+		Log::addln('[', (unsigned long)System::millis(), F("ms] MASTER end."));
 	};
 	auto slave = []() -> void
 	{
-		System::lock();
-		Serial.print(F("Slave "));
-		Serial.print(Thread::current()->ID());
-		Serial.println(F(" blocked?."));
-		System::unlock();
-
+		Log::addln('[', (unsigned long)System::millis(), F("ms] Slave "), Thread::current()->ID(), F(" blocked?."));
 		sem.wait();
-
-		System::lock();
-		Serial.print(F("Slave "));
-		Serial.print(Thread::current()->ID());
-		Serial.println(F(" passed."));
-		System::unlock();
+		Log::addln('[', (unsigned long)System::millis(), F("ms] Slave "), Thread::current()->ID(), F(" passed."));
 	};
 
 	System::lock();
 
-	t[0] = new Thread(master);
-	t[1] = new Thread(slave);
-	t[2] = new Thread(slave);
-	t[3] = new Thread(slave);
-	t[4] = new Thread(slave);
+	Thread t0(master);
+	Thread t1(slave);
+	Thread t2(slave);
+	Thread t3(slave);
+	Thread t4(slave);
 
 	System::unlock();
-
-	for (byte i = 0; i < N; ++i)
-	{
-		if (t[i] == nullptr) continue;
-		System::lock();
-		Serial.print(F("Waiting for: "));
-		Serial.println(t[i]->ID());
-		System::unlock();
-		//t[i]->waitToComplete();
-		delete t[i];
-		t[i] = nullptr;
-	}
 }

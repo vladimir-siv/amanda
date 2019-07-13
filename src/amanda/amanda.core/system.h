@@ -19,7 +19,7 @@ class System final
 	private: static volatile unsigned long long _lock;
 	private: static volatile unsigned long long _millis;
 	
-	private: static SystemScheduler scheduler;
+	private: static volatile SystemScheduler scheduler;
 	
 	public: static void init();
 	

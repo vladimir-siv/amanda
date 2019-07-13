@@ -5,12 +5,12 @@
 #include "schedulers/fifo.h"
 #include "thread.h"
 
-unsigned long Thread::idGen = 0;
-Thread Thread::loop;
-Thread* Thread::running = &Thread::loop;
-bool Thread::dispatch_idle = true;
-Thread Thread::idle(&__idle__);
-vmultilist<Thread> Thread::sleeping;
+volatile unsigned long Thread::idGen = 0;
+volatile Thread Thread::loop;
+volatile Thread* Thread::running = &Thread::loop;
+volatile bool Thread::dispatch_idle = true;
+volatile Thread Thread::idle(&__idle__);
+volatile vmultilist<Thread> Thread::sleeping;
 
 #define __push_context__() __asm volatile ("push r1\npush r0\nin r0, 0x3f\npush r0\npush r2\npush r3\npush r4\npush r5\npush r6\npush r7\npush r8\npush r9\npush r10\npush r11\npush r12\npush r13\npush r14\npush r15\npush r16\npush r17\npush r18\npush r19\npush r20\npush r21\npush r22\npush r23\npush r24\npush r25\npush r26\npush r27\npush r28\npush r29\npush r30\npush r31\nin r0, 0x1e\npush r0\nin r0, 0x2a\npush r0\nin r0, 0x2b\npush r0\n")
 #define __pop_context__() __asm volatile ("pop r0\nout 0x2b, r0\npop r0\nout 0x2a, r0\npop r0\nout 0x1e, r0\npop r31\npop r30\npop r29\npop r28\npop r27\npop r26\npop r25\npop r24\npop r23\npop r22\npop r21\npop r20\npop r19\npop r18\npop r17\npop r16\npop r15\npop r14\npop r13\npop r12\npop r11\npop r10\npop r9\npop r8\npop r7\npop r6\npop r5\npop r4\npop r3\npop r2\npop r0\nout 0x3f, r0\npop r0\npop r1\n")
@@ -33,18 +33,19 @@ extern "C" void __attribute__((signal, __INTR_ATTRS)) __attribute__((naked)) TIM
 			if (!Thread::running->isInState(Thread::FINISHED))
 			{
 				Thread::running->sp = SP;
-				if (!Thread::running->isInState(Thread::WAITING) && Thread::running != &Thread::idle) System::scheduler.put(Thread::running);
+				if (!Thread::running->isInState(Thread::WAITING) && Thread::running != &Thread::idle) System::scheduler.put((Thread*)Thread::running);
 				if (Thread::running->isInState(Thread::RUNNING)) Thread::running->setState(Thread::READY);
 			}
 
-			while (true)
+		_tvect_scheduler_choice:
+			Thread::running = System::scheduler.get();
+			if (Thread::running != nullptr && Thread::running->isInState(Thread::ABORTING))
 			{
-				Thread::running = System::scheduler.get();
-				if (Thread::running == nullptr || !Thread::running->isInState(Thread::ABORTING)) break;
 				Thread::running->finish();
+				goto _tvect_scheduler_choice;
 			}
 
-			if (Thread::running == nullptr) { Thread::running = &Thread::idle; Thread::dispatch_idle = false; }
+			if (Thread::running == nullptr) { Thread::running = &Thread::idle; Thread::running->quantum = 1; Thread::dispatch_idle = false; }
 			Thread::running->setState(Thread::RUNNING);
 			SP = Thread::running->sp;
 		}
@@ -65,18 +66,19 @@ void __attribute__((naked)) __attribute__((noinline)) dispatch()
 		if (!Thread::running->isInState(Thread::FINISHED))
 		{
 			Thread::running->sp = SP;
-			if (!Thread::running->isInState(Thread::WAITING) && Thread::running != &Thread::idle) System::scheduler.put(Thread::running);
+			if (!Thread::running->isInState(Thread::WAITING) && Thread::running != &Thread::idle) System::scheduler.put((Thread*)Thread::running);
 			if (Thread::running->isInState(Thread::RUNNING)) Thread::running->setState(Thread::READY);
 		}
 
-		while (true)
+	_dispatch_scheduler_choice:
+		Thread::running = System::scheduler.get();
+		if (Thread::running != nullptr && Thread::running->isInState(Thread::ABORTING))
 		{
-			Thread::running = System::scheduler.get();
-			if (Thread::running == nullptr || !Thread::running->isInState(Thread::ABORTING)) break;
 			Thread::running->finish();
+			goto _dispatch_scheduler_choice;
 		}
 		
-		if (Thread::running == nullptr) { Thread::running = &Thread::idle; Thread::dispatch_idle = false; }
+		if (Thread::running == nullptr) { Thread::running = &Thread::idle; Thread::running->quantum = 1; Thread::dispatch_idle = false; }
 		Thread::running->setState(Thread::RUNNING);
 		SP = Thread::running->sp;
 	}
@@ -87,25 +89,27 @@ void __attribute__((naked)) __attribute__((noinline)) dispatch()
 	__asm volatile ("reti\n");
 }
 
-void Thread::__idle__(void)
+void __attribute__((noinline)) Thread::__idle__(void)
 {
+	__asm volatile ("");
+
 	while (true)
 	{
 		if (Thread::dispatch_idle) dispatch();
 	}
 }
 
-void Thread::tick()
+void __attribute__((noinline)) Thread::tick()
 {
-	sleeping.tick(System::locked() || inSwitching);
+	sleeping.tick();
 }
 
-Thread* Thread::current()
+Thread* __attribute__((noinline)) Thread::current()
 {
-	return running;
+	return const_cast<Thread*>(running);
 }
 
-void Thread::sleep(Time millis)
+void __attribute__((noinline)) Thread::sleep(Time millis)
 {
 	if (millis > 0)
 	{
@@ -174,7 +178,7 @@ Thread::~Thread()
 	this->waitToComplete();
 }
 
-void Thread::finish()
+void Thread::finish() volatile
 {
 #ifndef _FIXED_STACK_SIZE_
 	delete[] this->stack;
@@ -194,16 +198,17 @@ void  __attribute__((naked)) __attribute__((noinline)) Thread::finalize()
 {
 	System::lock();
 	
-	Thread* next = nullptr;
+	volatile Thread* next = nullptr;
 
-	while (true)
+_finalize_scheduler_choice:
+	next = System::scheduler.get();
+	if (next != nullptr && next->isInState(Thread::ABORTING))
 	{
-		next = System::scheduler.get();
-		if (next == nullptr || !next->isInState(Thread::ABORTING)) break;
 		next->finish();
+		goto _finalize_scheduler_choice;
 	}
 
-	if (next == nullptr) { next = &idle; dispatch_idle = false; }
+	if (next == nullptr) { next = &idle; next->quantum = 1; dispatch_idle = false; }
 	next->setState(Thread::RUNNING);
 	SP = next->sp;
 
@@ -216,38 +221,38 @@ void  __attribute__((naked)) __attribute__((noinline)) Thread::finalize()
 	__asm volatile ("reti\n");
 }
 
-unsigned long Thread::ID() const
+unsigned long Thread::ID() volatile const
 {
 	return this->id;
 }
 
-bool Thread::isInState(State state) const
+bool Thread::isInState(State state) volatile const
 {
 	return this->state & state;
 }
 
-void Thread::setState(State state)
+void Thread::setState(State state) volatile
 {
 	if (state & Thread::LOOP) return;
 	this->state = (State)(this->state & (Thread::ABORTING | Thread::FINISHED | Thread::LOOP));
 	this->state = (State)(this->state | state);
 }
 
-void Thread::waitToComplete()
+void Thread::waitToComplete() volatile
 {
 	System::lock();
 
 	if (!this->isInState(Thread::FINISHED) && this != running)
 	{
 		running->setState(Thread::WAITING);
-		this->complete.push_back(running);
+		complete.push_back(const_cast<Thread*>(running));
 		System::unlock();
 		dispatch();
 	}
 	else System::unlock();
 }
 
-void Thread::abort()
+void Thread::abort() volatile
 {
 	System::lock();
 

@@ -13,13 +13,13 @@ class ObjectAllocator : public Allocator<T>
 	ObjectAllocator& operator=(const ObjectAllocator&) = delete;
 	ObjectAllocator& operator=(ObjectAllocator&&) = delete;
 
-	private: byte _memory[size * sizeof(T)];
-	private: bitvector<size> _usage;
-	private: unsigned int _ptr = size - 1;
+	private: volatile byte _memory[size * sizeof(T)];
+	private: volatile bitvector<size> _usage;
+	private: volatile unsigned int _ptr = size - 1;
 	
 	public: ObjectAllocator() { }
 	
-	public: unsigned int available() const
+	public: unsigned int available() volatile const
 	{
 		unsigned int avail = 0;
 
@@ -34,7 +34,7 @@ class ObjectAllocator : public Allocator<T>
 		return avail;
 	}
 	
-	public: virtual T* alloc() override
+	public: virtual T* alloc() volatile override
 	{
 		for (unsigned int i = 0; i < size; ++i)
 		{
@@ -49,7 +49,7 @@ class ObjectAllocator : public Allocator<T>
 
 		return nullptr;
 	}
-	public: virtual void dealloc(const T* object)
+	public: virtual void dealloc(const T* object) volatile override
 	{
 		if (object == nullptr) return;
 

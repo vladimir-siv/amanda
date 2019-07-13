@@ -4,7 +4,7 @@
 
 namespace RAII
 {
-	class Generic
+	class Generic final
 	{
 		private: const IDelegate<>* del;
 		private: bool shouldDelete = false;
@@ -24,7 +24,7 @@ namespace RAII
 		public: Generic(const IDelegate<>* del, bool shouldDelete = false) : del(del), shouldDelete(shouldDelete) { }
 		public: Generic(const IDelegate<>& del) : Generic(&del) { }
 		public: Generic(IDelegate<>&& del) : Generic(del.clone(), true) { }
-		public: virtual ~Generic() { del->invoke(); clear(); }
+		public: ~Generic() { del->invoke(); clear(); }
 		
 		public: Generic(const Generic& gen) { copy(gen); }
 		public: Generic(Generic&& gen) { move(gen); }
@@ -38,5 +38,15 @@ namespace RAII
 			if (&gen != this) { clear(); move(gen); }
 			return *this;
 		}
+	};
+
+	class Light final
+	{
+		using Delegate = void (*)(void);
+		
+		private: Delegate del;
+		
+		public: Light(Delegate del, Delegate now = nullptr) : del(del) { if (now != nullptr) (*now)(); }
+		public: ~Light() { if (del != nullptr) (*del)(); }
 	};
 }

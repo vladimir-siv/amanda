@@ -8,9 +8,9 @@
 
 class condition final
 {
-	private: vlist<Thread> _blocked;
+	private: volatile vlist<Thread> _blocked;
 	
-	public: void wait(lock* lck = nullptr)
+	public: void wait(lock* lck = nullptr) volatile
 	{
 		System::lock();
 
@@ -22,7 +22,7 @@ class condition final
 		System::unlock();
 		dispatch();
 	}
-	public: void notify()
+	public: void notify() volatile
 	{
 		System::lock();
 
@@ -35,7 +35,7 @@ class condition final
 
 		System::unlock();
 	}
-	public: void notify_all()
+	public: void notify_all() volatile
 	{
 		System::lock();
 

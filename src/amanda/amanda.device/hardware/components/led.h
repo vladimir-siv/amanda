@@ -16,10 +16,10 @@ class BlinkingLED : public LED
 {
 	protected: static ThreadDelegate _delegate;
 	protected: Time _freq = 0;
-	protected: semaphore _sync = semaphore(1);
+	protected: semaphore _sync;
 	protected: Thread _blinker;
 	
-	public: explicit BlinkingLED(byte pin) : LED(pin), _blinker(_delegate, this) { }
+	public: explicit BlinkingLED(byte pin) : LED(pin), _sync(1), _blinker(_delegate, this) { }
 	
 	public: virtual const char* commands() const override { return "|blink|stop|"; }
 	public: virtual CommandResult execute(const Command& command) override

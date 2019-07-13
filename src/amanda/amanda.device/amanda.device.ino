@@ -5,7 +5,7 @@
 
 HardwareController controller;
 
-void setup2()
+void setup()
 {
 	Serial.begin(9600);
 	while (!Serial) ;
@@ -16,7 +16,7 @@ void setup2()
 	System::init();
 
 	System::lock();
-
+	
 	controller += new BTN(32);
 	controller += new BTN(34);
 	
@@ -25,7 +25,7 @@ void setup2()
 	controller += new LED(10);
 	
 	controller += new BlinkingLMP(7);
-
+	
 	controller += new BUZZ(33);
 	controller += new BUZZ(35);
 
@@ -36,7 +36,7 @@ void setup2()
 	controller += new LDR(A15);
 
 	controller += new PIR(36);
-
+	
 	System::unlock();
 
 	/*const Command* cmd;
@@ -56,7 +56,7 @@ void setup2()
 	}*/
 }
 
-void loop2()
+void loop()
 {
 	/*Serial.print(F("<scan>"));
 	controller.scan().print_to_serial();

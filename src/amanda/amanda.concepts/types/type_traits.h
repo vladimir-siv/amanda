@@ -1,8 +1,22 @@
 #pragma once
 
+
 #ifdef __CPP_STD__
+
+#include <xstddef>
+#include <yvals.h>
+
 namespace type_traits
 #else
+
+#define _EMPTY_ARGUMENT		/* for empty macro argument */
+
+#define _CLASS_DEFINE_CV(CLASS) \
+	CLASS(_EMPTY_ARGUMENT) \
+	CLASS(const) \
+	CLASS(volatile) \
+	CLASS(const volatile)
+
 namespace std
 #endif
 {
@@ -24,6 +38,12 @@ namespace std
 	template <typename T> struct remove_const<const T> { using type = T; };
 	template <typename T> using remove_const_t = typename remove_const<T>::type;
 
+	template <typename T> struct remove_pointer { using type = T; };
+	#define _REMOVE_POINTER(CV_OPT) template <typename T> struct remove_pointer<T * CV_OPT> { using type = T; };
+	_CLASS_DEFINE_CV(_REMOVE_POINTER)
+	#undef _REMOVE_POINTER
+	template <typename T> using remove_pointer_t = typename remove_pointer<T>::type;
+
 	template <typename T> constexpr T&& forward(remove_reference_t<T>& arg) //noexcept
 	{
 		return static_cast<T&&>(arg);
@@ -37,6 +57,26 @@ namespace std
 	{
 		return static_cast<remove_reference_t<T>&&>(arg);
 	}
+
+	template <typename T, T val> struct integral_constant
+	{
+		static constexpr T value = val;
+
+		using value_type = T;
+		using type = integral_constant;
+
+		constexpr operator value_type() const noexcept { return (value); }
+		constexpr value_type operator()() const noexcept { return (value); }
+	};
+
+	template <bool val> using bool_constant = integral_constant<bool, val>;
+	using true_type = bool_constant<true>;
+	using false_type = bool_constant<false>;
+
+	template <typename T1, typename T2> struct is_same : false_type { };
+	template <typename T> struct is_same<T, T> : true_type { };
+
+	template <typename T, typename U> constexpr bool is_same_v = is_same<T, U>::value;
 }
 
 namespace std

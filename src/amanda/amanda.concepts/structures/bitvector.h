@@ -7,21 +7,21 @@
 template <size_t size>
 class bitvector final
 {
-	private: byte vector[size / (sizeof(byte) * 8) + (size % (sizeof(byte) * 8) > 0 ? 1 : 0)] = { };
+	private: volatile byte vector[size / (sizeof(byte) * 8) + (size % (sizeof(byte) * 8) > 0 ? 1 : 0)] = { };
 	
-	public: inline bool isset(unsigned int i) const
+	public: bool isset(unsigned int i) volatile const
 	{
 		return (vector[i / (sizeof(byte) * 8)] & ((byte)1 << (i % (sizeof(byte) * 8)))) > 0;
 	}
-	public: inline void set(unsigned int i)
+	public: void set(unsigned int i) volatile
 	{
 		vector[i / (sizeof(byte) * 8)] |= ((byte)1 << (i % (sizeof(byte) * 8)));
 	}
-	public: inline void unset(unsigned int i)
+	public: void unset(unsigned int i) volatile
 	{
 		vector[i / (sizeof(byte) * 8)] &= ~((byte)1 << (i % (sizeof(byte) * 8)));
 	}
-	public: inline void value(unsigned int i, bool value)
+	public: void value(unsigned int i, bool value) volatile
 	{
 		if (value) set(i);
 		else unset(i);

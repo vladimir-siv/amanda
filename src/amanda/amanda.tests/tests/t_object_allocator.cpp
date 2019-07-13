@@ -28,7 +28,7 @@ void _object_allocator()
 
 	for (int i = 0; i < 6; ++i)
 	{
-		pairs[i] = memory.alloc()->init(7, 'a');
+		pairs[i] = memory.alloc()->init(7 - i, 'a' + i);
 	}
 
 	message = "[Ax] Element is null";
@@ -57,4 +57,51 @@ void _object_allocator()
 	assert::areNotEqual(obj3, nullptr, "[A15] Object 3 is null");
 	assert::areEqual(obj3->i, 11, "[A16] Object 3.i is not equal to 11");
 	assert::areEqual(obj3->c, 'p', "[A17] Object 3.c is not equal to 'p'");
+
+	auto fetch = [&](int index) -> SimplePair*
+	{
+		if (index == 0) return obj1;
+		if (index == 1) return obj3;
+		return pairs[index - 2];
+	};
+
+	message = "[Axx] Pointers are the same [i == j]";
+	for (int i = 0; i < 8; ++i)
+	{
+		SimplePair* pi = fetch(i);
+
+		for (int j = 0; j < 8; ++j)
+		{
+			if (i != j)
+			{
+				SimplePair* pj = fetch(j);
+
+				int t = 18 + i * 8 + j;
+				message[2] = '0' + (t / 10);
+				message[3] = '0' + (t % 10);
+				message[29] = '0' + i;
+				message[34] = '0' + j;
+				assert::areNotEqual(pi, pj, message.c_str());
+			}
+		}
+	}
+
+	SimplePair* p0 = pairs[0];
+	SimplePair* p2 = pairs[2];
+	SimplePair* p3 = pairs[3];
+	SimplePair* p4 = pairs[4];
+
+	memory.dealloc(pairs[2]);
+	memory.dealloc(pairs[4]);
+	memory.dealloc(pairs[0]);
+	memory.dealloc(pairs[3]);
+	pairs[2] = memory.alloc();
+	pairs[4] = memory.alloc();
+	pairs[0] = memory.alloc();
+	pairs[3] = memory.alloc();
+
+	assert::areEqual(pairs[2], p0, "[A81] Memory address invalid");
+	assert::areEqual(pairs[4], p2, "[A82] Memory address invalid");
+	assert::areEqual(pairs[0], p3, "[A83] Memory address invalid");
+	assert::areEqual(pairs[3], p4, "[A84] Memory address invalid");
 }

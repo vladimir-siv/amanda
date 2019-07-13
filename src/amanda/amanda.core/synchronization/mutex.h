@@ -7,14 +7,14 @@
 
 class mutex final
 {
-	private: Thread* _owner = nullptr;
-	private: unsigned int _lock_count = 0;
-	private: vlist<Thread> _blocked;
+	private: volatile Thread* _owner = nullptr;
+	private: volatile unsigned int _lock_count = 0;
+	private: volatile vlist<Thread> _blocked;
 	
-	public: Thread* owningThread() const { return _owner; }
-	public: unsigned int lock_count() const { return _lock_count; }
+	public: Thread* owningThread() volatile const { return const_cast<Thread*>(_owner); }
+	public: unsigned int lock_count() volatile const { return _lock_count; }
 	
-	public: void lock()
+	public: void lock() volatile
 	{
 		System::lock();
 
@@ -31,12 +31,12 @@ class mutex final
 		{
 			current->setState(Thread::WAITING);
 			_blocked.push_back(current);
-
+			
 			System::unlock();
 			dispatch();
 		}
 	}
-	public: bool try_lock()
+	public: bool try_lock() volatile
 	{
 		System::lock();
 
@@ -56,7 +56,7 @@ class mutex final
 			return false;
 		}
 	}
-	public: bool unlock()
+	public: bool unlock() volatile
 	{
 		System::lock();
 

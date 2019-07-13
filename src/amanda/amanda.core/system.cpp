@@ -4,7 +4,7 @@
 
 volatile unsigned long long System::_lock = 0;
 volatile unsigned long long System::_millis = 0;
-SystemScheduler System::scheduler;
+volatile SystemScheduler System::scheduler;
 
 void System::init()
 {

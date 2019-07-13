@@ -2,44 +2,44 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <ClInclude Include="__vm\.amanda.device.vsarduino.h" />
+    <ClInclude Include="lib\string_builder.h" />
+    <ClInclude Include="lib\string64.h" />
+    <ClInclude Include="server\commands\command_parser.h" />
     <ClInclude Include="xml\api.h" />
     <ClInclude Include="hardware\components\abstraction\component.h" />
     <ClInclude Include="hardware\components\abstraction\element.h" />
     <ClInclude Include="hardware\components\abstraction\sensor.h" />
     <ClInclude Include="hardware\components\btn.h" />
-    <ClInclude Include="hardware\components\led.h" />
-    <ClInclude Include="hardware\components\lmp.h" />
     <ClInclude Include="hardware\components\buzz.h" />
-    <ClInclude Include="hardware\components\pot.h" />
-    <ClInclude Include="hardware\components\lm35.h" />
     <ClInclude Include="hardware\components\ldr.h" />
+    <ClInclude Include="hardware\components\led.h" />
+    <ClInclude Include="hardware\components\lm35.h" />
+    <ClInclude Include="hardware\components\lmp.h" />
     <ClInclude Include="hardware\components\pir.h" />
-    <ClInclude Include="hardware\hardware_controller.h" />
+    <ClInclude Include="hardware\components\pot.h" />
     <ClInclude Include="hardware\components.h" />
-    <ClInclude Include="lib\string_builder.h" />
-    <ClInclude Include="lib\string64.h" />
-    <ClInclude Include="server\commands\command_parser.h" />
+    <ClInclude Include="hardware\hardware_controller.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="amanda.device.ino" />
     <None Include="tests\amanda.core.ino" />
+    <None Include="amanda.device.ino" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="lib\string_builder.cpp" />
+    <ClCompile Include="lib\string64.cpp" />
+    <ClCompile Include="server\commands\command_parser.cpp" />
+    <ClCompile Include="xml\api.cpp" />
     <ClCompile Include="hardware\components\abstraction\component.cpp" />
     <ClCompile Include="hardware\components\abstraction\element.cpp" />
     <ClCompile Include="hardware\components\abstraction\sensor.cpp" />
     <ClCompile Include="hardware\components\btn.cpp" />
-    <ClCompile Include="hardware\components\led.cpp" />
-    <ClCompile Include="xml\api.cpp" />
-    <ClCompile Include="hardware\components\lmp.cpp" />
     <ClCompile Include="hardware\components\buzz.cpp" />
-    <ClCompile Include="hardware\components\pot.cpp" />
-    <ClCompile Include="hardware\components\lm35.cpp" />
     <ClCompile Include="hardware\components\ldr.cpp" />
+    <ClCompile Include="hardware\components\led.cpp" />
+    <ClCompile Include="hardware\components\lm35.cpp" />
+    <ClCompile Include="hardware\components\lmp.cpp" />
     <ClCompile Include="hardware\components\pir.cpp" />
+    <ClCompile Include="hardware\components\pot.cpp" />
     <ClCompile Include="hardware\hardware_controller.cpp" />
-    <ClCompile Include="lib\string_builder.cpp" />
-    <ClCompile Include="lib\string64.cpp" />
-    <ClCompile Include="server\commands\command_parser.cpp" />
   </ItemGroup>
 </Project>

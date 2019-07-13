@@ -1,23 +1,23 @@
 #pragma once
 
+#include "../../assert/static.h"
 #include "../../types/def.h"
 #include "../../types/type_traits.h"
 #include "../../event_system/delegate.h"
 #include "../../exceptions.h"
 #include "../../patterns/enumerator.h"
-
-#include "../bitvector.h"
+#include "../../memory_management/object_allocator.h"
 
 #ifndef __USE_RTTI__
 #include "../../rtti/type.h"
 #endif
 
-#define _VLIST_ALLOCATOR_SIZE_ 128
-
-class vlist_allocator
+class NodeAllocator
 {
 	template <typename T> friend class vlist;
 	template <typename T> friend class vlist_enumerator;
+
+	private: static volatile NodeAllocator _default;
 	
 	private: struct Node final
 	{
@@ -25,39 +25,18 @@ class vlist_allocator
 		Node* next;
 	};
 	
-	private: static Node nodes[_VLIST_ALLOCATOR_SIZE_];
-	private: static bitvector<_VLIST_ALLOCATOR_SIZE_> usage;
-	private: static unsigned int ptr;
+	private: volatile ObjectAllocator<Node, 128> _memory;
 	
-	private: static void* alloc()
+	private: template <typename T> T alloc() volatile
 	{
-		for (unsigned int i = 0; i < _VLIST_ALLOCATOR_SIZE_; ++i)
-		{
-			if (++ptr == _VLIST_ALLOCATOR_SIZE_) ptr = 0;
-
-			if (!usage.isset(ptr))
-			{
-				usage.set(ptr);
-				return nodes + ptr;
-			}
-		}
-
-		return nullptr;
+		xassert(sizeof(std::remove_pointer_t<T>) == sizeof(Node));
+		return (T)(_memory.alloc());
 	}
-	private: static void dealloc(void* object)
+	private: template <typename T> void dealloc(T object) volatile
 	{
-		if (object == nullptr) return;
-
-		auto k = (Node*)object - nodes;
-
-		if (0 <= k && k < _VLIST_ALLOCATOR_SIZE_)
-		{
-			usage.unset(k);
-		}
+		xassert(sizeof(std::remove_pointer_t<T>) == sizeof(Node));
+		_memory.dealloc((Node*)(object));
 	}
-	
-	private: template <typename T> static inline T alloc() { return static_cast<T>(alloc()); }
-	private: template <typename T> static inline void dealloc(T object) { dealloc(static_cast<void*>(object)); }
 };
 
 template <typename T> class vlist_enumerator;
@@ -70,8 +49,8 @@ class vlist final
 	private: struct Node final
 	{
 		T* value;
-		Node* next;
-		Node* construct(const T* value, Node* next = nullptr)
+		volatile Node* next;
+		volatile Node* construct(const T* value, volatile Node* next = nullptr) volatile
 		{
 			this->value = const_cast<T*>(value);
 			this->next = next;
@@ -79,81 +58,87 @@ class vlist final
 		}
 	};
 	
-	private: unsigned int _size = 0;
-	private: Node* _first = nullptr; Node* _last = nullptr;
+	private: volatile unsigned int _size = 0;
+	private: volatile Node* _first = nullptr; volatile Node* _last = nullptr;
+	private: volatile NodeAllocator* _allocator = &NodeAllocator::_default;
 	
-	private: void copy(const vlist& list)
+	private: void copy(const vlist& list) volatile
 	{
-		for (Node* i = list._first; i != nullptr; i = i->next)
+		for (volatile Node* i = list._first; i != nullptr; i = i->next)
 		{
 			push_back(i->value);
 		}
+
+		_allocator = list._allocator;
 	}
-	private: void move(vlist& list)
+	private: void move(vlist& list) volatile
 	{
 		this->_size = list._size;
 		this->_first = list._first;
 		this->_last = list._last;
+		this->_allocator = list._allocator;
 		list._first = list._last = nullptr;
+		list._allocator = &NodeAllocator::_default;
 		list._size = 0;
 	}
-	private: void clean()
+	private: void clean() volatile
 	{
-		for (Node* i = _first, *temp; i != nullptr; )
+		for (volatile Node* i = _first, *temp; i != nullptr; )
 		{
 			temp = i;
 			i = i->next;
 			//delete temp;
-			vlist_allocator::dealloc(temp);
+			_allocator->dealloc(temp);
 		}
 
 		_size = 0;
 		_first = _last = nullptr;
+		_allocator = &NodeAllocator::_default;
 	}
 	
-	public: explicit vlist() { }
+	public: explicit vlist(volatile NodeAllocator* allocator = &NodeAllocator::_default) : _allocator(allocator) { }
 	public: vlist(const vlist& list) { copy(list); }
 	public: vlist(vlist&& list) { move(list); }
 	public: ~vlist() { clean(); }
 	
-	public: vlist& operator=(const vlist& list)
+	public: vlist& operator=(const vlist& list) volatile
 	{
 		if (this != &list) { clean(); copy(list); }
 		return *this;
 	}
-	public: vlist& operator=(vlist&& list)
+	public: vlist& operator=(vlist&& list) volatile
 	{
 		if (this != &list) { clean(); move(list); }
 		return *this;
 	}
 	
-	public: unsigned int size() const { return _size; }
+	public: unsigned int size() volatile const { return _size; }
 	
-	public: void clear() { clean(); }
+	public: void clear() volatile { clean(); }
 	
-	public: void push_front(const T* value)
+	public: void push_front(const T* value) volatile
 	{
 		//_first = new Node(value, _first);
-		_first = vlist_allocator::alloc<Node*>()->construct(value, _first);
+		_first = _allocator->alloc<volatile Node*>()->construct(value, _first);
 		if (_size++ == 0) _last = _first;
 	}
-	public: T* pop_front()
+	public: T* pop_front() volatile
 	{
 		if (_size == 0)
 		{
 			Exceptions::Throw<CollectionEmptyException>();
-			return _first->value;
+			return nullptr;
 		}
 
-		Node* temp = _first;
+		volatile Node* temp = _first;
 		_first = _first->next;
 		if (--_size == 0) _last = nullptr;
 		T* value = std::move(temp->value);
 		//delete temp;
-		vlist_allocator::dealloc(temp);
+		_allocator->dealloc(temp);
 		return value;
 	}
-	public: void remove_front()
+	public: void remove_front() volatile
 	{
 		if (_size == 0)
 		{
@@ -161,35 +146,35 @@ class vlist final
 			return;
 		}
 
-		Node* temp = _first;
+		volatile Node* temp = _first;
 		_first = _first->next;
 		if (--_size == 0) _last = nullptr;
 		//delete temp;
-		vlist_allocator::dealloc(temp);
+		_allocator->dealloc(temp);
 	}
-	public: T* peek_front() const
+	public: T* peek_front() volatile const
 	{
 		return _first->value;
 	}
-	public: void push_back(const T* value)
+	public: void push_back(const T* value) volatile
 	{
 		//Node* node = new Node(value);
-		Node* node = vlist_allocator::alloc<Node*>()->construct(value);
+		volatile Node* node = _allocator->alloc<volatile Node*>()->construct(value);
 		if (_size == 0) _first = _last = node;
 		else _last = _last->next = node;
 		++_size;
 	}
-	public: T* peek_back() const
+	public: T* peek_back() volatile const
 	{
 		return _last->value;
 	}
 	
-	public: void remove_last(const T* value)
+	public: void remove_last(const T* value) volatile
 	{
-		Node* before = nullptr;
-		Node* current = nullptr;
+		volatile Node* before = nullptr;
+		volatile Node* current = nullptr;
 
-		for (Node* i = _first, *prev = nullptr; i != nullptr; prev = i, i = i->next)
+		for (volatile Node* i = _first, *prev = nullptr; i != nullptr; prev = i, i = i->next)
 		{
 			if (i->value == value)
 			{
@@ -206,21 +191,21 @@ class vlist final
 				if (before->next == nullptr) _last = before;
 				--_size;
 				//delete current;
-				vlist_allocator::dealloc(current);
+				_allocator->dealloc(current);
 			}
 			else remove_front();
 		}
 	}
 	
-	public: void traverse(IDelegate<void, T*>* del)
+	public: void traverse(IDelegate<void, T*>* del) volatile
 	{
-		for (Node* i = _first; i != nullptr; i = i->next)
+		for (volatile Node* i = _first; i != nullptr; i = i->next)
 		{
 			del->invoke(i->value);
 		}
 	}
 	
-	public: void merge(vlist& list)
+	public: void merge(vlist& list) volatile
 	{
 		if (list._size == 0) return;
 		
@@ -235,12 +220,12 @@ class vlist final
 		}
 		else move(list);
 	}
-	public: T* second() const
+	public: T* second() volatile const
 	{
 		if (_size < 2) return nullptr;
 		return _first->next->value;
 	}
-	public: void remove_second()
+	public: void remove_second() volatile
 	{
 		if (_size < 2) return;
 
@@ -251,14 +236,14 @@ class vlist final
 		--_size;
 
 		// delete second
-		vlist_allocator::dealloc(second);
+		_allocator->dealloc(second);
 	}
 	
-	public: vlist_enumerator<T> begin() { return vlist_enumerator<T>(this, _first); }
-	public: vlist_enumerator<T> end() { return vlist_enumerator<T>(this, nullptr); }
+	public: vlist_enumerator<T> begin() volatile { return vlist_enumerator<T>(this, _first); }
+	public: vlist_enumerator<T> end() volatile { return vlist_enumerator<T>(this, nullptr); }
 	
-	public: const vlist_enumerator<T> cbegin() const { return vlist_enumerator<T>(const_cast<vlist<T>*>(this), _first); }
-	public: const vlist_enumerator<T> cend() const { return vlist_enumerator<T>(const_cast<vlist<T>*>(this), nullptr); }
+	public: const vlist_enumerator<T> cbegin() volatile const { return vlist_enumerator<T>(const_cast<volatile vlist<T>*>(this), _first); }
+	public: const vlist_enumerator<T> cend() volatile const { return vlist_enumerator<T>(const_cast<volatile vlist<T>*>(this), nullptr); }
 };
 
 template <typename T>
@@ -267,16 +252,17 @@ class vlist_enumerator : public enumerator<T*>
 	__RTTI__
 	
 	friend class vlist<T>;
+	using Node = typename vlist<T>::Node;
 
-	protected: vlist<T>* lst;
-	protected: typename vlist<T>::Node* ptr;
-	protected: vlist_enumerator(vlist<T>* lst, typename vlist<T>::Node* ptr) : lst(lst), ptr(ptr) { }
+	protected: volatile vlist<T>* lst;
+	protected: volatile Node* ptr;
+	protected: vlist_enumerator(volatile vlist<T>* lst, volatile Node* ptr) : lst(lst), ptr(ptr) { }
 	
 	public: virtual ~vlist_enumerator() override { }
 	public: virtual vlist_enumerator* clone() const override { return new vlist_enumerator(lst, ptr); }
 	
-	public: virtual T*& operator*() const override { return ptr->value; }
-	public: virtual T*& operator->() const override { return ptr->value; }
+	public: virtual T*& operator*() const override { return const_cast<T*&>(ptr->value); }
+	public: virtual T*& operator->() const override { return const_cast<T*&>(ptr->value); }
 	
 	public: virtual vlist_enumerator<T>& operator++() override
 	{
@@ -307,12 +293,12 @@ class vlist_enumerator : public enumerator<T*>
 		if (ptr == nullptr) return false;
 
 		//ptr->next = new typename vlist<T>::Node(value, ptr->next);
-		ptr->next = vlist_allocator::alloc<typename vlist<T>::Node*>()->construct(value, ptr->next);
+		ptr->next = lst->_allocator->template alloc<volatile Node*>()->construct(value, ptr->next);
 		if (lst->_last == ptr) lst->_last = ptr->next;
 		++lst->_size;
 
 		return true;
 	}
 	
-	public: virtual T* next() const { return ptr->next->value; }
+	public: virtual T* next() volatile const { return ptr->next->value; }
 };

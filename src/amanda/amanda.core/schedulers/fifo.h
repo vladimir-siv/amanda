@@ -16,20 +16,20 @@ class FIFOScheduler : public Scheduler
 	
 	protected: static FIFOScheduler* instance() { static FIFOScheduler _scheduler; return &_scheduler; }
 	
-	protected: vlist<Thread> threads;
+	protected: volatile vlist<Thread> threads;
 	
 	protected: FIFOScheduler() { }
 	
-	public: unsigned int size() const { return threads.size(); }
-	public: Thread* next() const { return threads.peek_front(); }
-	public: Thread* last() const { return threads.peek_back(); }
+	public: unsigned int size() volatile const { return threads.size(); }
+	public: Thread* next() volatile const { return threads.peek_front(); }
+	public: Thread* last() volatile const { return threads.peek_back(); }
 	
-	public: virtual void put(Thread* thread) override
+	public: virtual void put(Thread* thread) volatile override
 	{
-		threads.push_back(thread);
+		if (thread != nullptr) threads.push_back(thread);
 		return;
 	}
-	public: virtual Thread* get() override
+	public: virtual Thread* get() volatile override
 	{
 		if (size() == 0) return nullptr;
 		return threads.pop_front();

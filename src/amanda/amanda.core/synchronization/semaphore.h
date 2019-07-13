@@ -10,9 +10,9 @@
 
 class semaphore final
 {
-	private: mutex _mtx;
-	private: condition _cnd;
-	private: int _value;
+	private: volatile mutex _mtx;
+	private: volatile condition _cnd;
+	private: volatile int _value;
 	
 	public: explicit semaphore(int value = 0) : _value(value)
 	{

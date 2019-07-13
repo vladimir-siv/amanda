@@ -4,7 +4,7 @@
 
 class lock final
 {
-	public: mutex& mtx;
-	public: lock(mutex& mtx, bool lock = true) : mtx(mtx) { if (lock) mtx.lock(); }
+	public: volatile mutex& mtx;
+	public: lock(volatile mutex& mtx, bool lock = true) : mtx(mtx) { if (lock) mtx.lock(); }
 	public: ~lock() { mtx.unlock(); }
 };
