@@ -55,9 +55,7 @@ void _object_allocator()
 	obj3 = memory.alloc();
 
 	assert::areNotEqual(obj3, nullptr, "[A15] Object 3 is null");
-	assert::areEqual(obj3->i, 11, "[A16] Object 3.i is not equal to 11");
-	assert::areEqual(obj3->c, 'p', "[A17] Object 3.c is not equal to 'p'");
-
+	
 	auto fetch = [&](int index) -> SimplePair*
 	{
 		if (index == 0) return obj1;
@@ -76,7 +74,7 @@ void _object_allocator()
 			{
 				SimplePair* pj = fetch(j);
 
-				int t = 18 + i * 8 + j;
+				int t = 16 + i * 8 + j;
 				message[2] = '0' + (t / 10);
 				message[3] = '0' + (t % 10);
 				message[29] = '0' + i;
@@ -100,8 +98,8 @@ void _object_allocator()
 	pairs[0] = memory.alloc();
 	pairs[3] = memory.alloc();
 
-	assert::areEqual(pairs[2], p0, "[A81] Memory address invalid");
-	assert::areEqual(pairs[4], p2, "[A82] Memory address invalid");
-	assert::areEqual(pairs[0], p3, "[A83] Memory address invalid");
-	assert::areEqual(pairs[3], p4, "[A84] Memory address invalid");
+	assert::areEqual(pairs[2], p3, "[A79] Memory address invalid");
+	assert::areEqual(pairs[4], p0, "[A80] Memory address invalid");
+	assert::areEqual(pairs[0], p4, "[A81] Memory address invalid");
+	assert::areEqual(pairs[3], p2, "[A82] Memory address invalid");
 }

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "../assert/static.h"
 #include "../types/def.h"
 #include "../structures/bitvector.h"
 
@@ -8,46 +9,53 @@
 template <typename T, size_t size = 32>
 class ObjectAllocator : public Allocator<T>
 {
+	private: struct Chunk
+	{
+		volatile Chunk* next;
+		volatile byte _pad[sizeof(T) - sizeof(next)];
+	};
+	
+	private: static inline void __constraint__() { xassert(sizeof(T) >= sizeof(Chunk*)); xassert(sizeof(T) == sizeof(Chunk)); xassert(size > 0); }
+	
 	ObjectAllocator(const ObjectAllocator&) = delete;
 	ObjectAllocator(ObjectAllocator&&) = delete;
 	ObjectAllocator& operator=(const ObjectAllocator&) = delete;
 	ObjectAllocator& operator=(ObjectAllocator&&) = delete;
 
 	private: volatile byte _memory[size * sizeof(T)];
-	private: volatile bitvector<size> _usage;
-	private: volatile unsigned int _ptr = size - 1;
+	private: volatile Chunk* _first = nullptr;
+	private: volatile unsigned int _available = 0;
 	
-	public: ObjectAllocator() { }
+	public: ObjectAllocator() { __constraint__(); format(); }
 	
-	public: unsigned int available() volatile const
+	// Warning: use with caution! Formatting the memory WILL earase & deallocate the entire memory!
+	public: void format() volatile
 	{
-		unsigned int avail = 0;
+		volatile Chunk* memory = (volatile Chunk*)_memory;
 
-		for (unsigned int i = 0; i < size; ++i)
+		_first = memory;
+
+		for (volatile unsigned int i = 0; i < size - 1; ++i)
 		{
-			if (!_usage.isset(i))
-			{
-				++avail;
-			}
+			memory = memory->next = memory + 1;
 		}
 
-		return avail;
+		memory->next = nullptr;
+
+		_available = size;
 	}
+	
+	public: unsigned int available() volatile const { return _available; }
 	
 	public: virtual T* alloc() volatile override
 	{
-		for (unsigned int i = 0; i < size; ++i)
-		{
-			if (++_ptr == size) _ptr = 0;
+		if (_first == nullptr) return nullptr;
+		volatile Chunk* chunk = _first;
 
-			if (!_usage.isset(_ptr))
-			{
-				_usage.set(_ptr);
-				return ((T*)_memory) + _ptr;
-			}
-		}
+		_first = _first->next;
+		--_available;
 
-		return nullptr;
+		return (T*)chunk;
 	}
 	public: virtual void dealloc(const T* object) volatile override
 	{
@@ -57,7 +65,11 @@ class ObjectAllocator : public Allocator<T>
 		
 		if (0 <= k && k < size)
 		{
-			_usage.unset(k);
+			volatile Chunk* chunk = (volatile Chunk*)object;
+
+			chunk->next = _first;
+			_first = chunk;
+			++_available;
 		}
 	}
 };
