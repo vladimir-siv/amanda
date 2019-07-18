@@ -4,19 +4,26 @@
 #include "../xml/api.h"
 #include "../lib/string_builder.h"
 
+#include <dependency.h>
 #include <structures/specialized/vlist.h>
 
 class HardwareController
 {
-	private: static NodeAllocator& nodes() { static NodeAllocator _nodes; return _nodes; }
-	
 	protected: vlist<IComponent> _components;
 	protected: StringBuilder<144> _scan_builder;
 	
-	public: HardwareController() : _components(&nodes()) { }
+	public: HardwareController() : _components(dependency::node_allocator()) { }
 	public: virtual ~HardwareController() { }
 	
 	public: unsigned int size() const { return _components.size(); }
+	
+	public: const IComponent* operator[](unsigned int index) const { return const_cast<HardwareController&>(*this)[index]; }
+	public: IComponent* operator[](unsigned int index)
+	{
+		auto it = _components.begin();
+		for (unsigned int i = 0; i < index; ++i) ++it;
+		return *it;
+	}
 	
 	public: HardwareController& operator+=(IComponent* component)
 	{

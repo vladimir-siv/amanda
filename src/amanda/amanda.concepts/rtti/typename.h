@@ -1,5 +1,7 @@
 #pragma once
 
+#define _TYPENAME_DISABLE_
+
 template <typename Type> class TypeName final
 {
 	private: static TypeName* assemble()
@@ -54,6 +56,11 @@ template <typename Type> class TypeName final
 	private: TypeName& operator=(const TypeName&) = delete;
 	private: TypeName& operator=(TypeName&&) = delete;
 };
+
 template <typename Type> TypeName<Type>* TypeName<Type>::instance = TypeName<Type>::assemble();
 
+#ifndef _TYPENAME_DISABLE_
 #define type_name(type) (TypeName<type>::resolve().name)
+#else
+#define type_name(type) ("<TypeName Disabled>")
+#endif

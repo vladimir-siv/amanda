@@ -5,6 +5,26 @@
 
 HardwareController controller;
 
+BTN btn1(32);
+BTN btn2(34);
+
+BlinkingLED led1(12);
+LED led2(11);
+LED led3(10);
+
+BlinkingLMP lmp(7);
+
+BUZZ buzz1(33);
+BUZZ buzz2(35);
+
+POT pot(A7);
+
+LM35 lm35(A10);
+
+LDR ldr(A15);
+
+PIR pir(36);
+
 void setup()
 {
 	Serial.begin(9600);
@@ -12,34 +32,33 @@ void setup()
 	Serial.flush();
 
 	pinMode(13, OUTPUT);
-
 	System::init();
 
 	System::lock();
 	
-	controller += new BTN(32);
-	controller += new BTN(34);
+	controller += &btn1;
+	controller += &btn2;
 	
-	controller += new BlinkingLED(12);
-	controller += new LED(11);
-	controller += new LED(10);
+	controller += &led1;
+	controller += &led2;
+	controller += &led3;
 	
-	controller += new BlinkingLMP(7);
+	controller += &lmp;
 	
-	controller += new BUZZ(33);
-	controller += new BUZZ(35);
+	controller += &buzz1;
+	controller += &buzz2;
 
-	controller += new POT(A7);
+	controller += &pot;
 
-	controller += new LM35(A10);
+	controller += &lm35;
 	
-	controller += new LDR(A15);
+	controller += &ldr;
 
-	controller += new PIR(36);
+	controller += &pir;
 	
 	System::unlock();
 
-	/*const Command* cmd;
+	const Command* cmd;
 	
 	cmd = CommandParser::parse("<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"no\"?><command name=\"blink\"><arg>1000</arg></command>");
 	if (cmd != nullptr)
@@ -53,15 +72,22 @@ void setup()
 	if (cmd != nullptr)
 	{
 		controller[5]->execute(*cmd);
-	}*/
+	}
 }
 
 void loop()
 {
-	/*Serial.print(F("<scan>"));
-	controller.scan().print_to_serial();
+	System::lock();
+	Serial.print(F("<scan>"));
+	System::unlock();
+
+	auto& scan = controller.scan();
+
+	System::lock();
+	//scan.print_to_serial();
 	Serial.println(F("</scan>"));
-	Thread::sleep(1000);*/
-	Serial.println(F("1s"));
-	delay(1000);
+	System::unlock();
+
+	Thread::sleep(1000);
 }
+//*/

@@ -12,14 +12,12 @@ class vsublist_allocator
 {
 	template <typename T> friend class vmultilist;
 
-	//private: static volatile NodeAllocator _nodes;
 	private: static volatile TupleAllocator<vlist<void>*, unsigned long long> _tuples;
 	private: static volatile ReinterpretingAllocator<vlist<void>, unsigned int, void*, void*, volatile void*> _vlists;
 	
 	private: static inline Tuple<vlist<void>*, unsigned long long>* alloc(unsigned long long tag = 0)
 	{
-		//auto vlist = _vlists.alloc(0, nullptr, nullptr, &_nodes);
-		auto vlist = _vlists.alloc(0, nullptr, nullptr, nullptr);
+		auto vlist = _vlists.alloc(0, nullptr, nullptr, NodeAllocator::_default());
 		return _tuples.alloc(vlist, tag);
 	}
 	private: static inline void dealloc(Tuple<vlist<void>*, unsigned long long>* object)
@@ -55,8 +53,6 @@ class vmultilist final
 	
 	private: volatile vlist<vsublist<T>> list;
 	private: volatile unsigned long long ticks = 0;
-	
-	//public: vmultilist() : list(&vsublist_allocator::_nodes) { }
 	
 	public: unsigned int size() volatile const { return list.size(); }
 	

@@ -28,8 +28,10 @@ class ObjectAllocator : public Allocator<T>
 	
 	public: ObjectAllocator() { __constraint__(); format(); }
 	
+	public: unsigned int available() volatile const { return _available; }
+	
 	// Warning: use with caution! Formatting the memory WILL earase & deallocate the entire memory!
-	public: void format() volatile
+	public: virtual void format() volatile
 	{
 		volatile Chunk* memory = (volatile Chunk*)_memory;
 
@@ -44,8 +46,6 @@ class ObjectAllocator : public Allocator<T>
 
 		_available = size;
 	}
-	
-	public: unsigned int available() volatile const { return _available; }
 	
 	public: virtual T* alloc() volatile override
 	{

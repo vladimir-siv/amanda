@@ -11,6 +11,8 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)schedulers\fifo.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)schedulers\scheduler.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)schedulers\system_scheduler.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)extensions\memory_management\tnode_allocator.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)dependency.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)system.cpp" />
@@ -22,6 +24,8 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)schedulers\fifo.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)schedulers\scheduler.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)schedulers\system_scheduler.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)dependency.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)extensions\memory_management\tnode_allocator.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)library.properties" />

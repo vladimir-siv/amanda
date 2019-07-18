@@ -17,26 +17,40 @@ class NodeAllocator
 	template <typename T> friend class vlist;
 	template <typename T> friend class vlist_enumerator;
 
-	private: static volatile NodeAllocator _default;
+	public: static volatile NodeAllocator* _default();
 	
-	private: struct Node final
+	protected: struct Node final
 	{
 		void* info;
 		Node* next;
 	};
 	
-	private: volatile ObjectAllocator<Node, 128> _memory;
+	public: virtual ~NodeAllocator() { }
+	
+	protected: virtual Node* _alloc() volatile = 0;
+	protected: virtual void _dealloc(Node* object) volatile = 0;
 	
 	private: template <typename T> T alloc() volatile
 	{
 		xassert(sizeof(std::remove_pointer_t<T>) == sizeof(Node));
-		return (T)(_memory.alloc());
+		return (T)(_alloc());
 	}
 	private: template <typename T> void dealloc(T object) volatile
 	{
 		xassert(sizeof(std::remove_pointer_t<T>) == sizeof(Node));
-		_memory.dealloc((Node*)(object));
+		_dealloc((Node*)(object));
 	}
+};
+
+template <size_t size>
+class VNodeAllocator : public NodeAllocator
+{
+	private: volatile ObjectAllocator<NodeAllocator::Node, size> _memory;
+	
+	public: virtual ~VNodeAllocator() { }
+	
+	protected: virtual NodeAllocator::Node* _alloc() volatile override { return _memory.alloc(); }
+	protected: virtual void _dealloc(NodeAllocator::Node* object) volatile override { _memory.dealloc(object); }
 };
 
 template <typename T> class vlist_enumerator;
@@ -60,7 +74,7 @@ class vlist final
 	
 	private: volatile unsigned int _size = 0;
 	private: volatile Node* _first = nullptr; volatile Node* _last = nullptr;
-	private: volatile NodeAllocator* _allocator = &NodeAllocator::_default;
+	private: volatile NodeAllocator* _allocator = nullptr;
 	
 	private: void copy(const vlist& list) volatile
 	{
@@ -68,18 +82,18 @@ class vlist final
 		{
 			push_back(i->value);
 		}
-
-		_allocator = list._allocator;
 	}
 	private: void move(vlist& list) volatile
 	{
-		this->_size = list._size;
-		this->_first = list._first;
-		this->_last = list._last;
-		this->_allocator = list._allocator;
-		list._first = list._last = nullptr;
-		list._allocator = &NodeAllocator::_default;
-		list._size = 0;
+		if (this->_allocator == list._allocator)
+		{
+			this->_size = list._size;
+			this->_first = list._first;
+			this->_last = list._last;
+			list._first = list._last = nullptr;
+			list._size = 0;
+		}
+		else copy(list);
 	}
 	private: void clean() volatile
 	{
@@ -93,10 +107,9 @@ class vlist final
 
 		_size = 0;
 		_first = _last = nullptr;
-		_allocator = &NodeAllocator::_default;
 	}
 	
-	public: explicit vlist(volatile NodeAllocator* allocator = &NodeAllocator::_default) : _allocator(allocator) { }
+	public: explicit vlist(volatile NodeAllocator* allocator = NodeAllocator::_default()) : _allocator(allocator) { }
 	public: vlist(const vlist& list) { copy(list); }
 	public: vlist(vlist&& list) { move(list); }
 	public: ~vlist() { clean(); }
