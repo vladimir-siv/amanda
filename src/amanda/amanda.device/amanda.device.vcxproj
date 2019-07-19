@@ -129,6 +129,8 @@
     <ClInclude Include="hardware\components\pir.h" />
     <ClInclude Include="hardware\components\pot.h" />
     <ClInclude Include="hardware\hardware_controller.h" />
+    <ClInclude Include="hardware\scanning\component_scanner.h" />
+    <ClInclude Include="hardware\scanning\scanner.h" />
     <ClInclude Include="lib\string64.h" />
     <ClInclude Include="lib\string_builder.h" />
     <ClInclude Include="server\commands\command_parser.h" />
@@ -148,6 +150,8 @@
     <ClCompile Include="hardware\components\pir.cpp" />
     <ClCompile Include="hardware\components\pot.cpp" />
     <ClCompile Include="hardware\hardware_controller.cpp" />
+    <ClCompile Include="hardware\scanning\component_scanner.cpp" />
+    <ClCompile Include="hardware\scanning\scanner.cpp" />
     <ClCompile Include="lib\string64.cpp" />
     <ClCompile Include="lib\string_builder.cpp" />
     <ClCompile Include="server\commands\command_parser.cpp" />

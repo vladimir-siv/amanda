@@ -19,6 +19,8 @@
     <ClInclude Include="hardware\components\pot.h" />
     <ClInclude Include="hardware\components.h" />
     <ClInclude Include="hardware\hardware_controller.h" />
+    <ClInclude Include="hardware\scanning\component_scanner.h" />
+    <ClInclude Include="hardware\scanning\scanner.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="amanda.device.ino" />
@@ -40,5 +42,7 @@
     <ClCompile Include="hardware\components\pir.cpp" />
     <ClCompile Include="hardware\components\pot.cpp" />
     <ClCompile Include="hardware\hardware_controller.cpp" />
+    <ClCompile Include="hardware\scanning\component_scanner.cpp" />
+    <ClCompile Include="hardware\scanning\scanner.cpp" />
   </ItemGroup>
 </Project>

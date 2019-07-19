@@ -25,6 +25,8 @@ LDR ldr(A15);
 
 PIR pir(36);
 
+SerialScanner sscanner;
+
 void setup()
 {
 	Serial.begin(9600);
@@ -81,10 +83,9 @@ void loop()
 	Serial.print(F("<scan>"));
 	System::unlock();
 
-	auto& scan = controller.scan();
+	controller.scan(&sscanner);
 
 	System::lock();
-	//scan.print_to_serial();
 	Serial.println(F("</scan>"));
 	System::unlock();
 
