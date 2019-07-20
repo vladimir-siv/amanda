@@ -1,6 +1,8 @@
-﻿#include <system.h>
+﻿#include <assert/static.h>
+#include <system.h>
 
 #include "hardware/hardware_controller.h"
+#include "hardware/events.h"
 #include "server/commands/command_parser.h"
 
 HardwareController controller;
@@ -26,6 +28,57 @@ LDR ldr(A15);
 PIR pir(36);
 
 SerialScanner sscanner;
+
+void test(bool _setup = false)
+{
+	auto __oncall = []()
+	{
+		static unsigned long c = 0;
+		++c;
+		if (c < 10) Serial.print(F("    "));
+		else if (c < 100) Serial.print(F("   "));
+		else if (c < 1000) Serial.print(F("  "));
+		else if (c < 10000) Serial.print(F(" "));
+		Serial.print(c);
+		Serial.print(F(":"));
+	};
+	//__oncall();
+
+	#define newvlist(type) (D::vlists->alloc<type>(D::nodes))
+	
+	static cond* cnd_ldr = nullptr;
+	static cond* cnd_pir = nullptr;
+
+	static pack* pck = nullptr;
+	static activity* act = nullptr;
+
+	static event* evt = nullptr;
+
+	static bool lastv = false;
+
+	if (_setup)
+	{
+		cnd_ldr = D::sdds->alloc<cond>(sdd::cast(&ldr), sdd::cast(newvlist(comparator)));
+		cnd_pir = D::sdds->alloc<cond>(sdd::cast(&pir), sdd::cast(newvlist(comparator)));
+
+		pck = D::sdds->alloc<pack>(sdd::cast(newvlist(cond)), sdd::cast(nullptr));
+		act = D::sdds->alloc<activity>(sdd::cast(false), sdd::cast(nullptr));
+
+		evt = D::sdds->alloc<event>(sdd::cast(newvlist(pack)), sdd::cast(act));
+
+		cnd_ldr->append("leq", 70.0f);
+		cnd_pir->append("equ", HIGH);
+
+		pck->append(cnd_ldr);
+		pck->append(cnd_pir);
+
+		evt->append(pck);
+	}
+
+	bool newv = evt->check();
+	if (newv != lastv) Serial.println(newv);
+	lastv = newv;
+}
 
 void setup()
 {
@@ -61,34 +114,30 @@ void setup()
 	System::unlock();
 
 	const Command* cmd;
-	
+
 	cmd = CommandParser::parse("<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"no\"?><command name=\"blink\"><arg>1000</arg></command>");
 	if (cmd != nullptr)
 	{
-		controller[2]->execute(*cmd);
 		controller[3]->execute(*cmd);
 		controller[4]->execute(*cmd);
+		controller[5]->execute(*cmd);
 	}
 
 	cmd = CommandParser::parse("<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"no\"?><command name=\"blink\"><arg>10000</arg></command>");
 	if (cmd != nullptr)
 	{
-		controller[5]->execute(*cmd);
+		controller[6]->execute(*cmd);
 	}
+
+	test(true);
 }
 
 void loop()
 {
-	System::lock();
-	Serial.print(F("<scan>"));
-	System::unlock();
-
-	controller.scan(&sscanner);
-
-	System::lock();
-	Serial.println(F("</scan>"));
-	System::unlock();
-
-	Thread::sleep(1000);
+	Thread::sleep(100);
+	//Serial.print(F("<scan>"));
+	//controller.scan(&sscanner);
+	//Serial.println(F("</scan>"));
+	test();
 }
 //*/

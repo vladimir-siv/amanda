@@ -4,6 +4,7 @@
 #include "components/abstraction/sensor.h"
 #include "components/abstraction/element.h"
 
+#include "components/tmr.h"
 #include "components/btn.h"
 #include "components/led.h"
 #include "components/lmp.h"

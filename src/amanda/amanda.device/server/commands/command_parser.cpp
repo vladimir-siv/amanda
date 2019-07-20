@@ -77,6 +77,8 @@ void CommandParser::tag_closed(const char* tagname)
 	else cancel = true; // incorrect level to close a tag
 
 	--level;
+
+	if (level == 0) cancel = true; // end parsing command
 }
 
 const Command* CommandParser::parse(const char* xml)

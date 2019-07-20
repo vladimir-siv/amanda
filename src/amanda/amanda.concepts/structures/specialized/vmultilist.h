@@ -12,19 +12,19 @@ class vsublist_allocator
 {
 	template <typename T> friend class vmultilist;
 
-	private: static volatile TupleAllocator<vlist<void>*, unsigned long long> _tuples;
-	private: static volatile ReinterpretingAllocator<vlist<void>, unsigned int, void*, void*, volatile void*> _vlists;
+	private: static volatile ITupleAllocator<vlist<void>*, unsigned long long>* _tuples();
+	private: static volatile IReinterpretingAllocator<vlist<void>, unsigned int, void*, void*, volatile void*>* _vlists();
 	
 	private: static inline Tuple<vlist<void>*, unsigned long long>* alloc(unsigned long long tag = 0)
 	{
-		auto vlist = _vlists.alloc(0, nullptr, nullptr, NodeAllocator::_default());
-		return _tuples.alloc(vlist, tag);
+		auto vlist = _vlists()->alloc(0, nullptr, nullptr, NodeAllocator::_default());
+		return _tuples()->alloc(vlist, tag);
 	}
 	private: static inline void dealloc(Tuple<vlist<void>*, unsigned long long>* object)
 	{
 		if (object == nullptr) return;
-		_vlists.dealloc(object->e<0>());
-		_tuples.dealloc(object);
+		_vlists()->dealloc(object->e<0>());
+		_tuples()->dealloc(object);
 	}
 	
 	private: template <typename T> static inline vsublist<T>* alloc(unsigned long long tag = 0)
@@ -48,8 +48,8 @@ class vsublist_allocator
 template <typename T>
 class vmultilist final
 {
-	public: static unsigned int tuples_available() { return vsublist_allocator::_tuples.available(); }
-	public: static unsigned int vlists_available() { return vsublist_allocator::_vlists.available(); }
+	public: static unsigned int tuples_available() { return vsublist_allocator::_tuples()->available(); }
+	public: static unsigned int vlists_available() { return vsublist_allocator::_vlists()->available(); }
 	
 	private: volatile vlist<vsublist<T>> list;
 	private: volatile unsigned long long ticks = 0;

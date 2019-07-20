@@ -79,10 +79,10 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\amanda.device;$(ProjectDir)..\amanda.concepts;$(ProjectDir)..\amanda.os;$(ProjectDir)..\..\..\..\..\..\systems\arduino\libraries;$(ProjectDir)..\..\..\..\..\..\systems\arduino\hardware\arduino\avr\libraries;C:\Users\vladi\Documents\Arduino\libraries;$(ProjectDir)..\..\..\..\..\..\systems\arduino\hardware\arduino\avr\cores\arduino;$(ProjectDir)..\..\..\..\..\..\systems\arduino\hardware\arduino\avr\variants\mega;$(ProjectDir)..\amanda.concepts\event_system;$(ProjectDir)..\amanda.concepts\exceptions;$(ProjectDir)..\amanda.concepts\patterns;$(ProjectDir)..\amanda.concepts\RAII;$(ProjectDir)..\amanda.concepts\rtti;$(ProjectDir)..\amanda.concepts\structures;$(ProjectDir)..\amanda.concepts\structures\specialized;$(ProjectDir)..\amanda.concepts\types;$(ProjectDir)..\amanda.os\schedulers;$(ProjectDir)..\amanda.os\synchronization;$(ProjectDir)..\..\..\..\..\..\systems\arduino\hardware\tools\avr\avr\include;$(ProjectDir)..\..\..\..\..\..\systems\arduino\hardware\tools\avr\avr\include\avr;$(ProjectDir)..\..\..\..\..\..\systems\arduino\hardware\tools\avr\lib\gcc\avr\4.8.1\include;$(ProjectDir)..\..\..\..\..\..\systems\arduino\hardware\tools\avr\lib\gcc\avr\4.9.2\include;$(ProjectDir)..\..\..\..\..\..\systems\arduino\hardware\tools\avr\lib\gcc\avr\4.9.3\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\amanda.device;$(ProjectDir)..\amanda.concepts;$(ProjectDir)..\amanda.core;$(ProjectDir)..\..\..\..\..\..\systems\arduino\libraries;$(ProjectDir)..\..\..\..\..\..\systems\arduino\hardware\arduino\avr\libraries;C:\Users\vladi\Documents\Arduino\libraries;$(ProjectDir)..\..\..\..\..\..\systems\arduino\hardware\arduino\avr\cores\arduino;$(ProjectDir)..\..\..\..\..\..\systems\arduino\hardware\arduino\avr\variants\mega;$(ProjectDir)..\amanda.concepts\assert;$(ProjectDir)..\amanda.concepts\event_system;$(ProjectDir)..\amanda.concepts\exceptions;$(ProjectDir)..\amanda.concepts\memory_management;$(ProjectDir)..\amanda.concepts\memory_management\specialized;$(ProjectDir)..\amanda.concepts\networking\xml;$(ProjectDir)..\amanda.concepts\patterns;$(ProjectDir)..\amanda.concepts\RAII;$(ProjectDir)..\amanda.concepts\rtti;$(ProjectDir)..\amanda.concepts\structures;$(ProjectDir)..\amanda.concepts\structures\specialized;$(ProjectDir)..\amanda.concepts\types;$(ProjectDir)..\amanda.core\extensions\memory_management;$(ProjectDir)..\amanda.core\schedulers;$(ProjectDir)..\amanda.core\synchronization;$(ProjectDir)..\..\..\..\..\..\systems\arduino\hardware\tools\avr\avr\include;$(ProjectDir)..\..\..\..\..\..\systems\arduino\hardware\tools\avr\avr\include\avr;$(ProjectDir)..\..\..\..\..\..\systems\arduino\hardware\tools\avr\lib\gcc\avr\4.8.1\include;$(ProjectDir)..\..\..\..\..\..\systems\arduino\hardware\tools\avr\lib\gcc\avr\4.9.2\include;$(ProjectDir)..\..\..\..\..\..\systems\arduino\hardware\tools\avr\lib\gcc\avr\4.9.3\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <ForcedIncludeFiles>$(ProjectDir)__vm\.amanda.device.vsarduino.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
       <IgnoreStandardIncludePath>false</IgnoreStandardIncludePath>
-      <PreprocessorDefinitions>__AVR_ATmega2560__;_VMDEBUG=1;F_CPU=16000000L;ARDUINO=10808;ARDUINO_AVR_MEGA2560;ARDUINO_ARCH_AVR;__cplusplus=201103L;_VMICRO_INTELLISENSE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>__AVR_ATmega2560__;_VMDEBUG=1;F_CPU=16000000L;ARDUINO=10809;ARDUINO_AVR_MEGA2560;ARDUINO_ARCH_AVR;__cplusplus=201103L;_VMICRO_INTELLISENSE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -128,6 +128,13 @@
     <ClInclude Include="hardware\components\lmp.h" />
     <ClInclude Include="hardware\components\pir.h" />
     <ClInclude Include="hardware\components\pot.h" />
+    <ClInclude Include="hardware\components\tmr.h" />
+    <ClInclude Include="hardware\events.h" />
+    <ClInclude Include="hardware\events\activity.h" />
+    <ClInclude Include="hardware\events\comparator.h" />
+    <ClInclude Include="hardware\events\cond.h" />
+    <ClInclude Include="hardware\events\event.h" />
+    <ClInclude Include="hardware\events\pack.h" />
     <ClInclude Include="hardware\hardware_controller.h" />
     <ClInclude Include="hardware\scanning\component_scanner.h" />
     <ClInclude Include="hardware\scanning\scanner.h" />
@@ -149,6 +156,12 @@
     <ClCompile Include="hardware\components\lmp.cpp" />
     <ClCompile Include="hardware\components\pir.cpp" />
     <ClCompile Include="hardware\components\pot.cpp" />
+    <ClCompile Include="hardware\components\tmr.cpp" />
+    <ClCompile Include="hardware\events\activity.cpp" />
+    <ClCompile Include="hardware\events\comparator.cpp" />
+    <ClCompile Include="hardware\events\cond.cpp" />
+    <ClCompile Include="hardware\events\event.cpp" />
+    <ClCompile Include="hardware\events\pack.cpp" />
     <ClCompile Include="hardware\hardware_controller.cpp" />
     <ClCompile Include="hardware\scanning\component_scanner.cpp" />
     <ClCompile Include="hardware\scanning\scanner.cpp" />

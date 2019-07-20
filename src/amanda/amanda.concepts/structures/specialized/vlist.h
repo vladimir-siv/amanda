@@ -110,8 +110,8 @@ class vlist final
 	}
 	
 	public: explicit vlist(volatile NodeAllocator* allocator = NodeAllocator::_default()) : _allocator(allocator) { }
-	public: vlist(const vlist& list) { copy(list); }
-	public: vlist(vlist&& list) { move(list); }
+	public: vlist(const vlist& list) : _allocator(list._allocator) { copy(list); }
+	public: vlist(vlist&& list) : _allocator(list._allocator) { move(list); }
 	public: ~vlist() { clean(); }
 	
 	public: vlist& operator=(const vlist& list) volatile

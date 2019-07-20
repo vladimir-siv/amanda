@@ -16,7 +16,9 @@
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)def.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)dependency.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)extensions\memory_management\sdd_allocator.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)extensions\memory_management\tnode_allocator.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)extensions\memory_management\vlist_allocator.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)schedulers\fifo.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)schedulers\scheduler.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)schedulers\system_scheduler.h" />
@@ -29,7 +31,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)dependency.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)extensions\memory_management\sdd_allocator.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)extensions\memory_management\tnode_allocator.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)extensions\memory_management\vlist_allocator.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)schedulers\fifo.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)schedulers\scheduler.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)schedulers\system_scheduler.cpp" />

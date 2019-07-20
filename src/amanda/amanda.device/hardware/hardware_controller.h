@@ -14,12 +14,15 @@ class HardwareController
 {
 	protected: vlist<IComponent> _components;
 	
-	public: HardwareController() : _components(dependency::node_allocator()) { }
+	public: HardwareController() : _components(D::nodes) { *this += &TMR::instance(); }
 	public: virtual ~HardwareController() { }
 	
 	public: unsigned int size() const { return _components.size(); }
 	
-	public: const IComponent* operator[](unsigned int index) const { return const_cast<HardwareController&>(*this)[index]; }
+	public: const IComponent* operator[](unsigned int index) const
+	{
+		return const_cast<HardwareController&>(*this)[index];
+	}
 	public: IComponent* operator[](unsigned int index)
 	{
 		auto it = _components.begin();
@@ -32,6 +35,11 @@ class HardwareController
 		_components.push_back(component);
 		return *this;
 	}
+	
+	/*public: auto begin() { return _components.begin(); }
+	public: auto end() { return _components.end(); }
+	public: auto cbegin() const { return _components.cbegin(); }
+	public: auto cend() const { return _components.cend(); }*/
 	
 	public: virtual void scan(Scanner* scanner)
 	{

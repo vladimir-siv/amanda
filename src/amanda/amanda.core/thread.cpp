@@ -124,6 +124,12 @@ void __attribute__((noinline)) Thread::sleep(Time millis)
 	}
 }
 
+void __attribute__((noinline)) Thread::delay(Time millis)
+{
+	volatile Time start = System::millis();
+	while (System::millis() - start < millis) ;
+}
+
 Thread::Thread() : id(idGen++), /*stack(nullptr),*/ sp(0), quantum(Thread::_DEFAULT_QUANTUM), state((State)(State::RUNNING | State::LOOP))
 {
 

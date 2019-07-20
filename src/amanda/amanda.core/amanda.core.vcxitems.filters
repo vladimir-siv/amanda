@@ -13,6 +13,8 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)schedulers\system_scheduler.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)extensions\memory_management\tnode_allocator.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)dependency.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)extensions\memory_management\vlist_allocator.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)extensions\memory_management\sdd_allocator.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)system.cpp" />
@@ -26,6 +28,8 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)schedulers\system_scheduler.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)dependency.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)extensions\memory_management\tnode_allocator.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)extensions\memory_management\vlist_allocator.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)extensions\memory_management\sdd_allocator.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)library.properties" />

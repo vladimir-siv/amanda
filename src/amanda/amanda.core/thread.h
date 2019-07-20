@@ -6,10 +6,11 @@
 #include <structures/specialized/vmultilist.h>
 #include <structures/tuple.h>
 
-//#define _FIXED_STACK_SIZE_
+#define _FIXED_STACK_SIZE_
 
 // constraints:
 // - NodeAllocator
+// - vsublist_allocator
 
 using ThreadDelegate = void (*)(void);
 extern void dispatch();
@@ -53,6 +54,7 @@ class Thread final
 	public: static void tick();
 	public: static Thread* current();
 	public: static void sleep(Time millis);
+	public: static void delay(Time millis);
 	
 	public: template <typename T> static T current_context() { return (T)(running->context); }
 	

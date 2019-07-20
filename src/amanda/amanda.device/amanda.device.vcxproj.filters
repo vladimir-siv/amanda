@@ -21,6 +21,13 @@
     <ClInclude Include="hardware\hardware_controller.h" />
     <ClInclude Include="hardware\scanning\component_scanner.h" />
     <ClInclude Include="hardware\scanning\scanner.h" />
+    <ClInclude Include="hardware\components\tmr.h" />
+    <ClInclude Include="hardware\events\cond.h" />
+    <ClInclude Include="hardware\events\comparator.h" />
+    <ClInclude Include="hardware\events\pack.h" />
+    <ClInclude Include="hardware\events\event.h" />
+    <ClInclude Include="hardware\events.h" />
+    <ClInclude Include="hardware\events\activity.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="amanda.device.ino" />
@@ -44,5 +51,11 @@
     <ClCompile Include="hardware\hardware_controller.cpp" />
     <ClCompile Include="hardware\scanning\component_scanner.cpp" />
     <ClCompile Include="hardware\scanning\scanner.cpp" />
+    <ClCompile Include="hardware\components\tmr.cpp" />
+    <ClCompile Include="hardware\events\cond.cpp" />
+    <ClCompile Include="hardware\events\comparator.cpp" />
+    <ClCompile Include="hardware\events\pack.cpp" />
+    <ClCompile Include="hardware\events\event.cpp" />
+    <ClCompile Include="hardware\events\activity.cpp" />
   </ItemGroup>
 </Project>

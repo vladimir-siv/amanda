@@ -18,7 +18,7 @@ class LM35 : public AnalogSensor
 			for (byte i = 0; i < 30; ++i)
 			{
 				temperature += AnalogSensor::read();
-				Thread::sleep(1);
+				Thread::delay(1);
 			}
 
 			temperature /= 30.0;
