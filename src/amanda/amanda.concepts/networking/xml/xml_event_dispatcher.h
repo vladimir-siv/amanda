@@ -1,14 +1,21 @@
 #pragma once
 
+#include "../../event_system/delegate.h"
+
 class XmlEventDispatcher final
 {
 	friend class XmlParser;
 
-	public: using TagOpenedEventHandler = void (*)(const char* tagvalue);
-	public: using AttributeSpecEventHandler = void (*)(const char* attrname, const char* attrvalue);
-	public: using AttributeSpecEndEventHandler = void (*)();
-	public: using TextValueEventHandler = void (*)(const char* text);
-	public: using TagClosedEventHandler = void (*)(const char* tagvalue);
+	//public: using TagOpenedEventHandler = void (*)(const char* tagvalue);
+	//public: using AttributeSpecEventHandler = void (*)(const char* attrname, const char* attrvalue);
+	//public: using AttributeSpecEndEventHandler = void (*)();
+	//public: using TextValueEventHandler = void (*)(const char* text);
+	//public: using TagClosedEventHandler = void (*)(const char* tagvalue);
+	public: using TagOpenedEventHandler = IDelegate<void, const char*>*;
+	public: using AttributeSpecEventHandler = IDelegate<void, const char*, const char*>*;
+	public: using AttributeSpecEndEventHandler = IDelegate<void>*;
+	public: using TextValueEventHandler = IDelegate<void, const char*>*;
+	public: using TagClosedEventHandler = IDelegate<void, const char*>*;
 	
 	private: TagOpenedEventHandler _tagopened = nullptr;
 	private: AttributeSpecEventHandler _attrspec = nullptr;

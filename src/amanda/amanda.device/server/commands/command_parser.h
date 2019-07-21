@@ -6,22 +6,26 @@
 
 // example of a command string: "<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"no\"?><command name=\"blink\"><arg>1000</arg></command>"
 
-class CommandParser final
+class CommandParser final : public xml::SAXParser
 {
-	private: virtual ~CommandParser() = 0;
+	public: static CommandParser& instance()
+	{
+		static CommandParser parser;
+		return parser;
+	}
 	
-	private: static bool cancel;
-	private: static unsigned int level;
-	private: static byte arg;
-	private: static Command command;
+	private: CommandParser() { }
 	
-	private: static void reset();
+	private: unsigned int level;
+	private: byte arg;
+	private: Command command;
 	
-	private: static void tag_opened(const char* tagname);
-	private: static void attribute_spec(const char* attrname, const char* attrvalue);
-	private: static void attribute_spec_end();
-	private: static void text_value(const char* value);
-	private: static void tag_closed(const char* tagname);
+	protected: virtual void reset() override;
+	protected: virtual void tag_opened(const char* tagname) override;
+	protected: virtual void attribute_spec(const char* attrname, const char* attrvalue) override;
+	protected: virtual void attribute_spec_end() override;
+	protected: virtual void text_value(const char* value) override;
+	protected: virtual void tag_closed(const char* tagname) override;
 	
-	public: static const Command* parse(const char* xml);
+	public: Command& extractCommand();
 };

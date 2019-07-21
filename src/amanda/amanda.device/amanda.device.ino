@@ -29,7 +29,36 @@ PIR pir(36);
 
 SerialScanner sscanner;
 
-void test(bool _setup = false)
+void test()
+{
+	class Base
+	{
+		public: Base() { }
+		public: virtual ~Base() { }
+		public: virtual void method() { Serial.println(F("Base")); }
+	};
+
+	class Test : public Base
+	{
+		private: static const unsigned long long _newid()
+		{
+			static unsigned long long gid = 0;
+			return ++gid;
+		}
+		public: const unsigned long long id = _newid();
+		
+		public: Test() { Serial.println(F(".ctor()")); }
+		public: Test(const Test&) { Serial.println(F(".copy()")); }
+		public: Test(Test&&) { Serial.println(F(".move()")); }
+		public: virtual ~Test() { Serial.println(F(".dtor()")); }
+		public: Test& operator=(const Test&) { Serial.println(F(".copy=")); return *this; }
+		public: Test& operator=(Test&&) { Serial.println(F(".move=")); return *this; }
+		
+		public: virtual void method() override { Serial.println(F("Test")); }
+	};
+}
+
+void test_events(bool _setup = false)
 {
 	auto __oncall = []()
 	{
@@ -113,23 +142,25 @@ void setup()
 	
 	System::unlock();
 
-	const Command* cmd;
-
-	cmd = CommandParser::parse("<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"no\"?><command name=\"blink\"><arg>1000</arg></command>");
-	if (cmd != nullptr)
+	bool p1 = CommandParser::instance().parse("<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"no\"?><command name=\"blink\"><arg>1000</arg></command>");
+	if (p1)
 	{
-		controller[3]->execute(*cmd);
-		controller[4]->execute(*cmd);
-		controller[5]->execute(*cmd);
+		controller[3]->execute(CommandParser::instance().extractCommand());
+		controller[4]->execute(CommandParser::instance().extractCommand());
+		controller[5]->execute(CommandParser::instance().extractCommand());
 	}
 
-	cmd = CommandParser::parse("<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"no\"?><command name=\"blink\"><arg>10000</arg></command>");
-	if (cmd != nullptr)
+	bool p2 = CommandParser::instance().parse("<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"no\"?><command name=\"blink\"><arg>10000</arg></command>");
+	if (p2)
 	{
-		controller[6]->execute(*cmd);
+		controller[6]->execute(CommandParser::instance().extractCommand());
 	}
 
-	test(true);
+	if (!p1) Serial.println(F("P1 failed."));
+	if (!p2) Serial.println(F("P2 failed."));
+
+	test();
+	test_events(true);
 }
 
 void loop()
@@ -138,6 +169,6 @@ void loop()
 	//Serial.print(F("<scan>"));
 	//controller.scan(&sscanner);
 	//Serial.println(F("</scan>"));
-	test();
+	test_events();
 }
 //*/
