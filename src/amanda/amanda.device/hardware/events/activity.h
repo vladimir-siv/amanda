@@ -1,22 +1,36 @@
 #pragma once
 
-#pragma once
-
 #include <Arduino.h>
 
 #include <dependency.h>
 
+#include "record.h"
+
 class activity final
 {
-	private: mutable sdd::type<bool> req;
-	private: mutable sdd::type<void*> unused;
+	private: sdd::type<bool> req;
+	private: sdd::type<record*> rec;
 	
-	public: activity() :
+	public: static activity* _new(int repeat = 0)
+	{
+		return D::sdds->alloc<activity>(sdd::cast(false), sdd::cast(record::_new(repeat)));
+	}
+	public: activity(int repeat = 0) :
 		req(false),
-		unused(nullptr)
+		rec(record::_new(repeat))
 	{ }
+	public: ~activity()
+	{
+		req.real = false;
+		rec.real->~record();
+		D::sdds->dealloc(rec.real);
+		rec.real = nullptr;
+	}
 	
-	public: bool setReq(bool value) const
+	public: int getRepeat() const { if (rec.real) return rec.real->getRepeat(); return -1; }
+	public: bool setRepeat(int repeat) { if (rec.real) rec.real->setRepeat(repeat); }
+	
+	public: bool setReq(bool value)
 	{
 		if (req.real != value)
 		{
@@ -28,12 +42,29 @@ class activity final
 		return value;
 	}
 	
-	private: void raise() const
+	public: void appendRaise(action* act)
 	{
-		digitalWrite(13, HIGH);
+		if (rec.real) rec.real->appendRaise(act);
 	}
-	private: void expire() const
+	public: void appendExpire(action* act)
 	{
-		digitalWrite(13, LOW);
+		if (rec.real) rec.real->appendExpire(act);
+	}
+	
+	private: void raise()
+	{
+		if (rec.real)
+		{
+			if (!rec.real->occur(false)) return;
+			rec.real->raise();
+		}
+	}
+	private: void expire()
+	{
+		if (rec.real)
+		{
+			if (!rec.real->occur(true)) return;
+			rec.real->expire();
+		}
 	}
 };

@@ -73,35 +73,32 @@ void test_events(bool _setup = false)
 	};
 	//__oncall();
 
-	#define newvlist(type) (D::vlists->alloc<type>(D::nodes))
-	
+	static event* evt = nullptr;
+	static pack* pck = nullptr;
 	static cond* cnd_ldr = nullptr;
 	static cond* cnd_pir = nullptr;
-
-	static pack* pck = nullptr;
-	static activity* act = nullptr;
-
-	static event* evt = nullptr;
+	static action* raise = nullptr;
+	static action* expire = nullptr;
 
 	static bool lastv = false;
 
 	if (_setup)
 	{
-		cnd_ldr = D::sdds->alloc<cond>(sdd::cast(&ldr), sdd::cast(newvlist(comparator)));
-		cnd_pir = D::sdds->alloc<cond>(sdd::cast(&pir), sdd::cast(newvlist(comparator)));
-
-		pck = D::sdds->alloc<pack>(sdd::cast(newvlist(cond)), sdd::cast(nullptr));
-		act = D::sdds->alloc<activity>(sdd::cast(false), sdd::cast(nullptr));
-
-		evt = D::sdds->alloc<event>(sdd::cast(newvlist(pack)), sdd::cast(act));
-
-		cnd_ldr->append("leq", 70.0f);
-		cnd_pir->append("equ", HIGH);
-
+		cnd_ldr = cond::_new(&ldr)->compare("leq", 70.0f);
+		cnd_pir = cond::_new(&pir)->compare("equ", HIGH);
+		
+		pck = pack::_new();
 		pck->append(cnd_ldr);
 		pck->append(cnd_pir);
 
+		raise = action::_new(&led3, HIGH);
+		expire = action::_new(&led3, LOW);
+
+		evt = event::_new(3);
+
 		evt->append(pck);
+		evt->appendRaise(raise);
+		evt->appendExpire(expire);
 	}
 
 	bool newv = evt->check();
@@ -142,18 +139,20 @@ void setup()
 	
 	System::unlock();
 
+	Command& cmd = CommandParser::instance().extractCommand();
+
 	bool p1 = CommandParser::instance().parse("<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"no\"?><command name=\"blink\"><arg>1000</arg></command>");
 	if (p1)
 	{
-		controller[3]->execute(CommandParser::instance().extractCommand());
-		controller[4]->execute(CommandParser::instance().extractCommand());
-		controller[5]->execute(CommandParser::instance().extractCommand());
+		controller[3]->execute(cmd);
+		controller[4]->execute(cmd);
+		controller[5]->execute(cmd);
 	}
 
 	bool p2 = CommandParser::instance().parse("<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"no\"?><command name=\"blink\"><arg>10000</arg></command>");
 	if (p2)
 	{
-		controller[6]->execute(CommandParser::instance().extractCommand());
+		controller[6]->execute(cmd);
 	}
 
 	if (!p1) Serial.println(F("P1 failed."));

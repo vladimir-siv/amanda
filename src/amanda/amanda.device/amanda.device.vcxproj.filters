@@ -28,6 +28,9 @@
     <ClInclude Include="hardware\events\event.h" />
     <ClInclude Include="hardware\events.h" />
     <ClInclude Include="hardware\events\activity.h" />
+    <ClInclude Include="server\events\event_parser.h" />
+    <ClInclude Include="hardware\events\record.h" />
+    <ClInclude Include="hardware\events\actions.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="amanda.device.ino" />
@@ -57,5 +60,8 @@
     <ClCompile Include="hardware\events\pack.cpp" />
     <ClCompile Include="hardware\events\event.cpp" />
     <ClCompile Include="hardware\events\activity.cpp" />
+    <ClCompile Include="server\events\event_parser.cpp" />
+    <ClCompile Include="hardware\events\record.cpp" />
+    <ClCompile Include="hardware\events\actions.cpp" />
   </ItemGroup>
 </Project>

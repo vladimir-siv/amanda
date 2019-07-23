@@ -2,7 +2,7 @@
 
 #include <Arduino.h>
 
-#include <extensions/memory_management/sdd_allocator.h>
+#include <dependency.h>
 
 class comparator final
 {
@@ -54,6 +54,14 @@ class comparator final
 	private: sdd::type<cmp> _compare;
 	private: sdd::type<float> _ref;
 	
+	public: static comparator* _new(cmp compare, float ref)
+	{
+		return D::sdds->alloc<comparator>(sdd::cast(compare), sdd::cast(ref));
+	}
+	public: static comparator* _new(const char* name, float ref)
+	{
+		return D::sdds->alloc<comparator>(sdd::cast(comparator::resolve(name)), sdd::cast(ref));
+	}
 	public: comparator(cmp compare, float ref) : _compare(compare), _ref(ref) { }
 	public: comparator(const char* name, float ref) : _compare(resolve(name)), _ref(ref) { }
 	

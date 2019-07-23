@@ -14,6 +14,11 @@ class cond final
 	private: sdd::type<ISensor*> sensor;
 	private: sdd::type<vlist<comparator>*> comps;
 	
+	public: static cond* _new(ISensor* sensor)
+	{
+		auto comps = D::vlists->alloc<comparator>(D::nodes);
+		return D::sdds->alloc<cond>(sdd::cast(sensor), sdd::cast(comps));
+	}
 	public: cond(ISensor* sensor) :
 		sensor(sensor),
 		comps(D::vlists->alloc<comparator>(D::nodes))
@@ -28,10 +33,10 @@ class cond final
 		comps.real = nullptr;
 	}
 	
-	public: void append(const char* cmp, float ref)
+	public: cond* compare(const char* cmp, float ref)
 	{
-		comparator* comp = D::sdds->alloc<comparator>(sdd::cast(comparator::resolve(cmp)), sdd::cast(ref));
-		comps.real->push_back(comp);
+		comps.real->push_back(comparator::_new(cmp, ref));
+		return this;
 	}
 	public: bool check() const
 	{
