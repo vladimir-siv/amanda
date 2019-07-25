@@ -36,10 +36,23 @@ class HardwareController
 		return *this;
 	}
 	
-	/*public: auto begin() { return _components.begin(); }
-	public: auto end() { return _components.end(); }
-	public: auto cbegin() const { return _components.cbegin(); }
-	public: auto cend() const { return _components.cend(); }*/
+	public: vlist_enumerator<IComponent> begin() { return _components.begin(); }
+	public: vlist_enumerator<IComponent> end() { return _components.end(); }
+	public: const vlist_enumerator<IComponent> cbegin() const { return _components.cbegin(); }
+	public: const vlist_enumerator<IComponent> cend() const { return _components.cend(); }
+	
+	public: IComponent* find(VID vid, const char* name) { return find(vid, IComponent::resolveType(name)); }
+	public: IComponent* find(VID vid, IComponent::Type type)
+	{
+		if (type == IComponent::Type::NONE) return nullptr;
+
+		for (auto i = begin(); i != end(); ++i)
+		{
+			if (i->is(type) && i->ID() == vid) return *i;
+		}
+
+		return nullptr;
+	}
 	
 	public: virtual void scan(Scanner* scanner)
 	{

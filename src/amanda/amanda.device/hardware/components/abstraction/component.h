@@ -54,6 +54,15 @@ class IComponent
 	public: static const Type AnalogSensor = (Type)(ANALOG | SENSOR);
 	public: static const Type DigitalElement = (Type)(DIGITAL | ELEMENT);
 	public: static const Type AnalogElement = (Type)(ANALOG | ELEMENT);
+	public: static Type resolveType(const char* name)
+	{
+		if (strcmp(name, "DS") == 0) return DigitalSensor;
+		if (strcmp(name, "AS") == 0) return AnalogSensor;
+		if (strcmp(name, "DE") == 0) return DigitalElement;
+		if (strcmp(name, "AE") == 0) return AnalogElement;
+
+		return Type::NONE;
+	}
 	
 	public: virtual ~IComponent() = 0;
 	

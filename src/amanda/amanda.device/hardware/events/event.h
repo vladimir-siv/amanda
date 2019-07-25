@@ -11,17 +11,17 @@
 class event final
 {
 	private: sdd::type<vlist<pack>*> packs;
-	private: sdd::type<activity*> act;
+	private: sdd::type<activity*> acty;
 	
-	public: static event* _new(int repeat = 0)
+	public: static event* _new(long repeat = 0)
 	{
 		auto packs = D::vlists->alloc<pack>(D::nodes);
 		auto act = activity::_new(repeat);
 		return D::sdds->alloc<event>(sdd::cast(packs), sdd::cast(act));
 	}
-	public: event(int repeat = 0) :
+	public: event(long repeat = 0) :
 		packs(D::vlists->alloc<pack>(D::nodes)),
-		act(activity::_new(repeat))
+		acty(activity::_new(repeat))
 	{ }
 	public: ~event()
 	{
@@ -35,26 +35,26 @@ class event final
 		D::vlists->dealloc(packs.real);
 		packs.real = nullptr;
 
-		act.real->~activity();
-		D::sdds->dealloc(act.real);
-		act.real = nullptr;
+		acty.real->~activity();
+		D::sdds->dealloc(acty.real);
+		acty.real = nullptr;
 	}
 	
-	public: int getRepeat() const { if (act.real) return act.real->getRepeat(); return -1; }
-	public: bool setRepeat(int repeat) { if (act.real) act.real->setRepeat(repeat); }
+	public: long getRepeat() const { if (acty.real) return acty.real->getRepeat(); return -1; }
+	public: bool setRepeat(long repeat) { if (acty.real) acty.real->setRepeat(repeat); }
 	
 	public: void append(pack* pck)
 	{
 		if (packs.real) packs.real->push_back(pck);
 	}
 	
-	public: void appendRaise(action* actn)
+	public: void appendRaise(action* act)
 	{
-		if (act.real) act.real->appendRaise(actn);
+		if (acty.real) acty.real->appendRaise(act);
 	}
-	public: void appendExpire(action* actn)
+	public: void appendExpire(action* act)
 	{
-		if (act.real) act.real->appendExpire(actn);
+		if (acty.real) acty.real->appendExpire(act);
 	}
 	
 	public: bool check() const
@@ -68,6 +68,6 @@ class event final
 			result = result || i->check();
 		}
 
-		return act.real->setReq(result);
+		return acty.real->setReq(result);
 	}
 };

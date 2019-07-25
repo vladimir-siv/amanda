@@ -31,6 +31,9 @@
     <ClInclude Include="server\events\event_parser.h" />
     <ClInclude Include="hardware\events\record.h" />
     <ClInclude Include="hardware\events\actions.h" />
+    <ClInclude Include="common\units.h" />
+    <ClInclude Include="xml\stream.h" />
+    <ClInclude Include="xml\flash_stream.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="amanda.device.ino" />
@@ -63,5 +66,8 @@
     <ClCompile Include="server\events\event_parser.cpp" />
     <ClCompile Include="hardware\events\record.cpp" />
     <ClCompile Include="hardware\events\actions.cpp" />
+    <ClCompile Include="common\units.cpp" />
+    <ClCompile Include="xml\stream.cpp" />
+    <ClCompile Include="xml\flash_stream.cpp" />
   </ItemGroup>
 </Project>

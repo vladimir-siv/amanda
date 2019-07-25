@@ -11,11 +11,11 @@ class activity final
 	private: sdd::type<bool> req;
 	private: sdd::type<record*> rec;
 	
-	public: static activity* _new(int repeat = 0)
+	public: static activity* _new(long repeat = 0)
 	{
 		return D::sdds->alloc<activity>(sdd::cast(false), sdd::cast(record::_new(repeat)));
 	}
-	public: activity(int repeat = 0) :
+	public: activity(long repeat = 0) :
 		req(false),
 		rec(record::_new(repeat))
 	{ }
@@ -27,8 +27,8 @@ class activity final
 		rec.real = nullptr;
 	}
 	
-	public: int getRepeat() const { if (rec.real) return rec.real->getRepeat(); return -1; }
-	public: bool setRepeat(int repeat) { if (rec.real) rec.real->setRepeat(repeat); }
+	public: long getRepeat() const { if (rec.real) return rec.real->getRepeat(); return -1; }
+	public: bool setRepeat(long repeat) { if (rec.real) rec.real->setRepeat(repeat); }
 	
 	public: bool setReq(bool value)
 	{

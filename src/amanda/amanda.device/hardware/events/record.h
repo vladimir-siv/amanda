@@ -9,13 +9,13 @@
 class record final
 {
 	private: sdd::type<actions*> acts;
-	private: sdd::type<int> rep;
+	private: sdd::type<long> rep;
 	
-	public: static record* _new(int repeat = 0)
+	public: static record* _new(long repeat = 0)
 	{
 		return D::sdds->alloc<record>(sdd::cast(actions::_new()), sdd::cast(repeat));
 	}
-	public: record(int repeat = 0) :
+	public: record(long repeat = 0) :
 		acts(actions::_new()),
 		rep(repeat)
 	{ }
@@ -27,8 +27,8 @@ class record final
 		rep.real = -1;
 	}
 	
-	public: int getRepeat() const { return rep.real; }
-	public: bool setRepeat(int repeat) { rep.real = repeat; }
+	public: long getRepeat() const { return rep.real; }
+	public: bool setRepeat(long repeat) { rep.real = repeat; }
 	
 	public: bool occur(bool count)
 	{

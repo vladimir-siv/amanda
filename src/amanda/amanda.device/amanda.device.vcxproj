@@ -116,6 +116,7 @@
     <None Include="amanda.device.ino" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="common\units.h" />
     <ClInclude Include="hardware\components.h" />
     <ClInclude Include="hardware\components\abstraction\component.h" />
     <ClInclude Include="hardware\components\abstraction\element.h" />
@@ -145,9 +146,12 @@
     <ClInclude Include="server\commands\command_parser.h" />
     <ClInclude Include="server\events\event_parser.h" />
     <ClInclude Include="xml\api.h" />
+    <ClInclude Include="xml\flash_stream.h" />
+    <ClInclude Include="xml\stream.h" />
     <ClInclude Include="__vm\.amanda.device.vsarduino.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="common\units.cpp" />
     <ClCompile Include="hardware\components\abstraction\component.cpp" />
     <ClCompile Include="hardware\components\abstraction\element.cpp" />
     <ClCompile Include="hardware\components\abstraction\sensor.cpp" />
@@ -175,6 +179,8 @@
     <ClCompile Include="server\commands\command_parser.cpp" />
     <ClCompile Include="server\events\event_parser.cpp" />
     <ClCompile Include="xml\api.cpp" />
+    <ClCompile Include="xml\flash_stream.cpp" />
+    <ClCompile Include="xml\stream.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

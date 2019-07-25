@@ -2,6 +2,8 @@
 
 #include <networking/xml/xml_parser.h>
 
+#include "stream.h"
+
 namespace xml
 {
 	class SAXParser
@@ -41,7 +43,7 @@ namespace xml
 			
 			private: XmlParser _exec_unit;
 			private: Dispatcher _dispatcher;
-			private: const char* _stream;
+			private: Stream* _stream;
 			private: Callback<Dispatcher, void, const char*> _tag_opened;
 			private: Callback<Dispatcher, void, const char*, const char*> _attribute_spec;
 			private: Callback<Dispatcher, void> _attribute_spec_end;
@@ -64,10 +66,10 @@ namespace xml
 			
 			private: bool isExecuting() const { return _dispatcher.isExecuting(); }
 			private: bool set(SAXParser* parser) { return _dispatcher.set(parser); }
-			private: void reset(const char* xml) { _exec_unit.reset(); _stream = xml; }
+			private: void reset(Stream* stream) { _exec_unit.reset(); _stream = stream; }
 			private: SAXParser* swap(SAXParser* parser) { return _dispatcher.swap(parser); }
-			private: bool eos() const { return _stream == nullptr || *_stream == 0; }
-			private: bool nextchar() { return _exec_unit.nextchar(*(_stream++)); }
+			private: bool eos() const { return _stream == nullptr || _stream->eos(); }
+			private: bool nextchar() { return _exec_unit.nextchar(_stream->advance()); }
 			private: bool finish(bool success = true) { _stream = nullptr; return _dispatcher.finish(success); }
 		};
 		
@@ -89,6 +91,13 @@ namespace xml
 		public: SAXParser(Context& context = defaultContext()) : _context(context) { }
 		public: virtual ~SAXParser() { }
 		
+		private: bool _oncancel(bool finish = true)
+		{
+			oncancel();
+			if (finish) return _context.finish(false);
+			else return false;
+		}
+		
 		protected: bool swap(SAXParser& parser)
 		{
 			if (&parser == this) return false;
@@ -100,21 +109,24 @@ namespace xml
 			parser._finish = false;
 			parser._cancel = false;
 
+			parser.reset();
+
 			while (!parser._finish && !_context.eos())
 			{
 				if (!_context.nextchar()) return false;
-				if (parser._cancel) return false;
+				if (parser._cancel) return parser._oncancel(false);
 			}
 
 			if (_context.swap(prev) != &parser) return false;
 
 			return true;
 		}
-		public: bool parse(const char* xml)
+		public: bool parse(Stream&& xml) { return parse(xml); }
+		public: bool parse(Stream& xml)
 		{
 			if (!_context.set(this)) return false;
 
-			_context.reset(xml);
+			_context.reset(&xml);
 
 			_finish = false;
 			_cancel = false;
@@ -124,7 +136,7 @@ namespace xml
 			while (!_finish && !_context.eos())
 			{
 				if (!_context.nextchar()) return _context.finish(false);
-				if (_cancel) return _context.finish(false);
+				if (_cancel) return _oncancel();
 			}
 
 			return _context.finish();
@@ -136,6 +148,7 @@ namespace xml
 		protected: bool finished() const { return _finish; }
 		
 		protected: virtual void reset() { }
+		protected: virtual void oncancel() { }
 		protected: virtual void tag_opened(const char* tagname) = 0;
 		protected: virtual void attribute_spec(const char* attrname, const char* attrvalue) = 0;
 		protected: virtual void attribute_spec_end() = 0;

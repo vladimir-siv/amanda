@@ -13,7 +13,7 @@ namespace dependency
 
 	volatile VListAllocator* vlist_allocator()
 	{
-		// number of vlists available for vsublists 64
+		// number of vlists available for vsublists
 		static volatile VListAllocatorT<64> _vlists;
 		return &_vlists;
 	}

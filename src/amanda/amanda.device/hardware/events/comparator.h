@@ -6,7 +6,7 @@
 
 class comparator final
 {
-	using cmp = bool (*)(float val, float ref);
+	public: using cmp = bool (*)(float val, float ref);
 	
 	public: static cmp equ()
 	{
@@ -65,5 +65,5 @@ class comparator final
 	public: comparator(cmp compare, float ref) : _compare(compare), _ref(ref) { }
 	public: comparator(const char* name, float ref) : _compare(resolve(name)), _ref(ref) { }
 	
-	public: bool operator()(float val) const { if (_compare.real == nullptr) return false; return _compare.real(val, _ref.real); }
+	public: bool operator()(float val) const { if (_compare.real == nullptr) return false; return (*_compare.real)(val, _ref.real); }
 };

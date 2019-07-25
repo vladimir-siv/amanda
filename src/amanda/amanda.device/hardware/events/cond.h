@@ -33,6 +33,11 @@ class cond final
 		comps.real = nullptr;
 	}
 	
+	public: cond* compare(comparator::cmp cmp, float ref)
+	{
+		comps.real->push_back(comparator::_new(cmp, ref));
+		return this;
+	}
 	public: cond* compare(const char* cmp, float ref)
 	{
 		comps.real->push_back(comparator::_new(cmp, ref));
