@@ -2,10 +2,13 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <ClInclude Include="__vm\.amanda.device.vsarduino.h" />
+    <ClInclude Include="xml\api.h" />
+    <ClInclude Include="xml\flash_stream.h" />
+    <ClInclude Include="xml\stream.h" />
+    <ClInclude Include="server\events\event_parser.h" />
+    <ClInclude Include="server\commands\command_parser.h" />
     <ClInclude Include="lib\string_builder.h" />
     <ClInclude Include="lib\string64.h" />
-    <ClInclude Include="server\commands\command_parser.h" />
-    <ClInclude Include="xml\api.h" />
     <ClInclude Include="hardware\components\abstraction\component.h" />
     <ClInclude Include="hardware\components\abstraction\element.h" />
     <ClInclude Include="hardware\components\abstraction\sensor.h" />
@@ -17,32 +20,32 @@
     <ClInclude Include="hardware\components\lmp.h" />
     <ClInclude Include="hardware\components\pir.h" />
     <ClInclude Include="hardware\components\pot.h" />
-    <ClInclude Include="hardware\components.h" />
-    <ClInclude Include="hardware\hardware_controller.h" />
+    <ClInclude Include="hardware\components\tmr.h" />
+    <ClInclude Include="hardware\events\actions.h" />
+    <ClInclude Include="hardware\events\activity.h" />
+    <ClInclude Include="hardware\events\comparator.h" />
+    <ClInclude Include="hardware\events\cond.h" />
+    <ClInclude Include="hardware\events\event.h" />
+    <ClInclude Include="hardware\events\pack.h" />
+    <ClInclude Include="hardware\events\record.h" />
     <ClInclude Include="hardware\scanning\component_scanner.h" />
     <ClInclude Include="hardware\scanning\scanner.h" />
-    <ClInclude Include="hardware\components\tmr.h" />
-    <ClInclude Include="hardware\events\cond.h" />
-    <ClInclude Include="hardware\events\comparator.h" />
-    <ClInclude Include="hardware\events\pack.h" />
-    <ClInclude Include="hardware\events\event.h" />
+    <ClInclude Include="hardware\components.h" />
     <ClInclude Include="hardware\events.h" />
-    <ClInclude Include="hardware\events\activity.h" />
-    <ClInclude Include="server\events\event_parser.h" />
-    <ClInclude Include="hardware\events\record.h" />
-    <ClInclude Include="hardware\events\actions.h" />
+    <ClInclude Include="hardware\hardware_controller.h" />
     <ClInclude Include="common\units.h" />
-    <ClInclude Include="xml\stream.h" />
-    <ClInclude Include="xml\flash_stream.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="amanda.device.ino" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="xml\api.cpp" />
+    <ClCompile Include="xml\flash_stream.cpp" />
+    <ClCompile Include="xml\stream.cpp" />
+    <ClCompile Include="server\events\event_parser.cpp" />
+    <ClCompile Include="server\commands\command_parser.cpp" />
     <ClCompile Include="lib\string_builder.cpp" />
     <ClCompile Include="lib\string64.cpp" />
-    <ClCompile Include="server\commands\command_parser.cpp" />
-    <ClCompile Include="xml\api.cpp" />
     <ClCompile Include="hardware\components\abstraction\component.cpp" />
     <ClCompile Include="hardware\components\abstraction\element.cpp" />
     <ClCompile Include="hardware\components\abstraction\sensor.cpp" />
@@ -54,20 +57,17 @@
     <ClCompile Include="hardware\components\lmp.cpp" />
     <ClCompile Include="hardware\components\pir.cpp" />
     <ClCompile Include="hardware\components\pot.cpp" />
-    <ClCompile Include="hardware\hardware_controller.cpp" />
+    <ClCompile Include="hardware\components\tmr.cpp" />
+    <ClCompile Include="hardware\events\actions.cpp" />
+    <ClCompile Include="hardware\events\activity.cpp" />
+    <ClCompile Include="hardware\events\comparator.cpp" />
+    <ClCompile Include="hardware\events\cond.cpp" />
+    <ClCompile Include="hardware\events\event.cpp" />
+    <ClCompile Include="hardware\events\pack.cpp" />
+    <ClCompile Include="hardware\events\record.cpp" />
     <ClCompile Include="hardware\scanning\component_scanner.cpp" />
     <ClCompile Include="hardware\scanning\scanner.cpp" />
-    <ClCompile Include="hardware\components\tmr.cpp" />
-    <ClCompile Include="hardware\events\cond.cpp" />
-    <ClCompile Include="hardware\events\comparator.cpp" />
-    <ClCompile Include="hardware\events\pack.cpp" />
-    <ClCompile Include="hardware\events\event.cpp" />
-    <ClCompile Include="hardware\events\activity.cpp" />
-    <ClCompile Include="server\events\event_parser.cpp" />
-    <ClCompile Include="hardware\events\record.cpp" />
-    <ClCompile Include="hardware\events\actions.cpp" />
+    <ClCompile Include="hardware\hardware_controller.cpp" />
     <ClCompile Include="common\units.cpp" />
-    <ClCompile Include="xml\stream.cpp" />
-    <ClCompile Include="xml\flash_stream.cpp" />
   </ItemGroup>
 </Project>

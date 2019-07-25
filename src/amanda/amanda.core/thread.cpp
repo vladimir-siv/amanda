@@ -10,7 +10,7 @@ volatile Thread Thread::loop;
 volatile Thread* Thread::running = &Thread::loop;
 volatile bool Thread::dispatch_idle = true;
 volatile Thread Thread::idle(&__idle__);
-volatile vmultilist<Thread> Thread::sleeping;
+volatile sleep Thread::sleeping;
 
 #define __push_context__() __asm volatile ("push r1\npush r0\nin r0, 0x3f\npush r0\npush r2\npush r3\npush r4\npush r5\npush r6\npush r7\npush r8\npush r9\npush r10\npush r11\npush r12\npush r13\npush r14\npush r15\npush r16\npush r17\npush r18\npush r19\npush r20\npush r21\npush r22\npush r23\npush r24\npush r25\npush r26\npush r27\npush r28\npush r29\npush r30\npush r31\nin r0, 0x1e\npush r0\nin r0, 0x2a\npush r0\nin r0, 0x2b\npush r0\n")
 #define __pop_context__() __asm volatile ("pop r0\nout 0x2b, r0\npop r0\nout 0x2a, r0\npop r0\nout 0x1e, r0\npop r31\npop r30\npop r29\npop r28\npop r27\npop r26\npop r25\npop r24\npop r23\npop r22\npop r21\npop r20\npop r19\npop r18\npop r17\npop r16\npop r15\npop r14\npop r13\npop r12\npop r11\npop r10\npop r9\npop r8\npop r7\npop r6\npop r5\npop r4\npop r3\npop r2\npop r0\nout 0x3f, r0\npop r0\npop r1\n")

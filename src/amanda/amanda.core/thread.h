@@ -3,14 +3,15 @@
 #include "def.h"
 
 #include <structures/specialized/vlist.h>
-#include <structures/specialized/vmultilist.h>
 #include <structures/tuple.h>
+
+#include "extensions/structures/sleep.h"
 
 #define _FIXED_STACK_SIZE_
 
 // constraints:
 // - NodeAllocator
-// - vsublist_allocator
+// - sleep
 
 using ThreadDelegate = void (*)(void);
 extern void dispatch();
@@ -48,7 +49,7 @@ class Thread final
 	private: static volatile Thread* running;
 	private: static volatile bool dispatch_idle;
 	private: static volatile Thread idle;
-	private: static volatile vmultilist<Thread> sleeping;
+	private: static volatile sleep sleeping;
 	
 	private: static void __idle__(void);
 	public: static void tick();

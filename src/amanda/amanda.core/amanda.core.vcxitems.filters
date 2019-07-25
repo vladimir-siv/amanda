@@ -15,6 +15,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)dependency.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)extensions\memory_management\vlist_allocator.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)extensions\memory_management\sdd_allocator.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)extensions\structures\sleep.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)system.cpp" />
@@ -30,6 +31,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)extensions\memory_management\tnode_allocator.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)extensions\memory_management\vlist_allocator.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)extensions\memory_management\sdd_allocator.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)extensions\structures\sleep.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)library.properties" />

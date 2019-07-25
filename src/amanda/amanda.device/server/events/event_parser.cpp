@@ -2,6 +2,8 @@
 
 #include <dependency.h>
 
+//#define _DEBUG_EVENT_PARSER_
+
 // level legend:
 //	l2 == 1 => requirements
 //	{
@@ -91,6 +93,15 @@ void EventParser::tag_opened(const char* tagname)
 				{
 					if (strcmp(tagname, "pack") == 0)
 					{
+#ifdef _DEBUG_EVENT_PARSER_
+						if (pck == nullptr)
+						{
+							cli();
+							Serial.println(F("Pack created."));
+							sei();
+						}
+#endif
+
 						if (pck != nullptr) cancel(); // previous pack not closed
 						else pck = pack::_new();
 					}
@@ -152,6 +163,16 @@ void EventParser::tag_opened(const char* tagname)
 						else if (cmp == comparator::geq()) l5 = 5;
 						else if (cmp == comparator::leq()) l5 = 6;
 						else cancel(); // what?
+
+#ifdef _DEBUG_EVENT_PARSER_
+						if (cmp != nullptr)
+						{
+							cli();
+							Serial.print(F("Comparator resolved: "));
+							Serial.println(tagname);
+							sei();
+						}
+#endif
 					}
 					else cancel(); // comparator already set
 				} break;
@@ -183,6 +204,16 @@ void EventParser::attribute_spec(const char* attrname, const char* attrvalue)
 		{
 			if (strcmp(attrname, "repeat") == 0)
 			{
+#ifdef _DEBUG_EVENT_PARSER_
+				if (evt == nullptr)
+				{
+					cli();
+					Serial.print(F("Event created with repeat: "));
+					Serial.println(strtol(attrvalue, nullptr, 0));
+					sei();
+				}
+#endif
+
 				if (evt != nullptr) cancel(); // tag not closed (shouldn't be possible) or repeat attribute duplicate
 				else evt = event::_new(strtol(attrvalue, nullptr, 0));
 			}
@@ -222,6 +253,17 @@ void EventParser::attribute_spec(const char* attrname, const char* attrvalue)
 				{
 					if (unt.isset()) cancel(); // unit already set (duplicate attribute)
 					else if (!unt.set(attrvalue)) cancel(); // invalid or unknown unit
+
+#ifdef _DEBUG_EVENT_PARSER_
+					if (unt.isset())
+					{
+						cli();
+						Serial.print(F("Unit resolved: "));
+						Serial.print(unt.prefix());
+						Serial.println(unt.measure()->label);
+						sei();
+					}
+#endif
 				}
 				else cancel(); // invalid attribute name
 			}
@@ -251,6 +293,19 @@ void EventParser::attribute_spec_end()
 						comp = controller->find((VID)comp_details.vid, comp_details.ctype);
 					}
 
+#ifdef _DEBUG_EVENT_PARSER_
+					if (comp != nullptr)
+					{
+						cli();
+						Serial.print(F("Component resolved: "));
+						Serial.print(comp->description());
+						Serial.print('[');
+						Serial.print(comp->ID());
+						Serial.println(']');
+						sei();
+					}
+#endif
+
 					if (comp != nullptr)
 					{
 						switch (l2)
@@ -258,6 +313,19 @@ void EventParser::attribute_spec_end()
 							case 1: // inside requirements
 							{
 								ISensor* sensor = ComponentCaster::sensor(comp);
+
+#ifdef _DEBUG_EVENT_PARSER_
+								if (sensor != nullptr)
+								{
+									cli();
+									Serial.print(F("Condition created with sensor: "));
+									Serial.print(sensor->description());
+									Serial.print('[');
+									Serial.print(sensor->ID());
+									Serial.println(']');
+									sei();
+								}
+#endif
 
 								if (sensor != nullptr) cnd = cond::_new(sensor);
 								else cancel(); // component is not a sensor (should not be possible for this to happen)
@@ -293,10 +361,17 @@ void EventParser::text_value(const char* value)
 				{
 					if (cmp != nullptr)
 					{
+#ifdef _DEBUG_EVENT_PARSER_
 						if (cnd != nullptr)
 						{
-							cnd->compare(cmp, (float)strtod(value, nullptr));
+							cli();
+							Serial.print(F("Condition comparator set to compare: "));
+							Serial.println((float)strtod(value, nullptr));
+							sei();
 						}
+#endif
+
+						if (cnd != nullptr) cnd->compare(cmp, (float)strtod(value, nullptr));
 						else cancel(); // condition not opened
 					}
 					else cancel(); // invalid cmp
@@ -320,6 +395,23 @@ void EventParser::text_value(const char* value)
 											{
 												action* act = action::_new(element, (float)unt.convert(strtod(value, nullptr)));
 
+#ifdef _DEBUG_EVENT_PARSER_
+												if (act != nullptr)
+												{
+													cli();
+													Serial.print(F("Action set on <value>: "));
+													Serial.print(l3 == 1 ? F("Raise") : F("Expire"));
+													Serial.print(' ');
+													Serial.print(element->description());
+													Serial.print('[');
+													Serial.print(element->ID());
+													Serial.print(']');
+													Serial.print(' ');
+													Serial.println((float)unt.convert(strtod(value, nullptr)));
+													sei();
+												}
+#endif
+
 												if (l3 == 1) evt->appendRaise(act);
 												else if (l3 == 2) evt->appendExpire(act);
 												else cancel(); // fatal error => act memory leak [system failure if this happens]
@@ -329,6 +421,23 @@ void EventParser::text_value(const char* value)
 										case 2: // <state>
 										{
 											action* act = action::_new(element, (float)strtol(value, nullptr, 0));
+
+#ifdef _DEBUG_EVENT_PARSER_
+											if (act != nullptr)
+											{
+												cli();
+												Serial.print(F("Action set on <state>: "));
+												Serial.print(l3 == 1 ? F("Raise") : F("Expire"));
+												Serial.print(' ');
+												Serial.print(element->description());
+												Serial.print('[');
+												Serial.print(element->ID());
+												Serial.print(']');
+												Serial.print(' ');
+												Serial.println((float)strtol(value, nullptr, 0));
+												sei();
+											}
+#endif
 
 											if (l3 == 1) evt->appendRaise(act);
 											else if (l3 == 2) evt->appendExpire(act);
@@ -395,6 +504,15 @@ void EventParser::tag_closed(const char* tagname)
 					{
 						if (evt != nullptr)
 						{
+#ifdef _DEBUG_EVENT_PARSER_
+							if (pck != nullptr)
+							{
+								cli();
+								Serial.println(F("Pack appended on event."));
+								sei();
+							}
+#endif
+
 							if (pck != nullptr)
 							{
 								evt->append(pck);
@@ -437,6 +555,15 @@ void EventParser::tag_closed(const char* tagname)
 					{
 						if (pck != nullptr)
 						{
+#ifdef _DEBUG_EVENT_PARSER_
+							if (cnd != nullptr)
+							{
+								cli();
+								Serial.println(F("Condition appended on pack."));
+								sei();
+							}
+#endif
+
 							if (cnd != nullptr)
 							{
 								pck->append(cnd);
