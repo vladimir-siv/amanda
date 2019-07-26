@@ -3,8 +3,6 @@
   <ItemGroup>
     <ClInclude Include="__vm\.amanda.device.vsarduino.h" />
     <ClInclude Include="xml\api.h" />
-    <ClInclude Include="xml\flash_stream.h" />
-    <ClInclude Include="xml\stream.h" />
     <ClInclude Include="server\events\event_parser.h" />
     <ClInclude Include="server\commands\command_parser.h" />
     <ClInclude Include="lib\string_builder.h" />
@@ -34,14 +32,16 @@
     <ClInclude Include="hardware\events.h" />
     <ClInclude Include="hardware\hardware_controller.h" />
     <ClInclude Include="common\units.h" />
+    <ClInclude Include="common\data\stream.h" />
+    <ClInclude Include="common\data\flash_stream.h" />
+    <ClInclude Include="server\storage\sdcard.h" />
+    <ClInclude Include="server\ethernet.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="amanda.device.ino" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="xml\api.cpp" />
-    <ClCompile Include="xml\flash_stream.cpp" />
-    <ClCompile Include="xml\stream.cpp" />
     <ClCompile Include="server\events\event_parser.cpp" />
     <ClCompile Include="server\commands\command_parser.cpp" />
     <ClCompile Include="lib\string_builder.cpp" />
@@ -69,5 +69,9 @@
     <ClCompile Include="hardware\scanning\scanner.cpp" />
     <ClCompile Include="hardware\hardware_controller.cpp" />
     <ClCompile Include="common\units.cpp" />
+    <ClCompile Include="common\data\flash_stream.cpp" />
+    <ClCompile Include="common\data\stream.cpp" />
+    <ClCompile Include="server\storage\sdcard.cpp" />
+    <ClCompile Include="server\ethernet.cpp" />
   </ItemGroup>
 </Project>

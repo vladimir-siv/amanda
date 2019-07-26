@@ -6,7 +6,7 @@
 #include "server/commands/command_parser.h"
 #include "server/events/event_parser.h"
 
-#include "xml/flash_stream.h"
+#include "common/data/flash_stream.h"
 
 HardwareController controller;
 
@@ -117,7 +117,7 @@ void test_event_parser(bool _setup = false)
 	if (_setup)
 	{
 		EventParser parser(&controller);
-		bool p = parser.parse(xml::FlashStream(F("<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"no\"?><event repeat=\"3\"><requirements><pack><condition vid=\"4\" ctype=\"AS\"><lss>100.0</lss></condition><condition vid=\"3\" ctype=\"DS\"><equ>1</equ></condition></pack></requirements><actions><raise><write vid=\"3\" ctype=\"DE\"><state>1</state></write></raise><expire><write vid=\"3\" ctype=\"DE\"><state>0</state></write></expire></actions></event>")));
+		bool p = parser.parse(data::FlashStream(F("<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"no\"?><event repeat=\"3\"><requirements><pack><condition vid=\"4\" ctype=\"AS\"><lss>100.0</lss></condition><condition vid=\"3\" ctype=\"DS\"><equ>1</equ></condition></pack></requirements><actions><raise><write vid=\"3\" ctype=\"DE\"><state>1</state></write></raise><expire><write vid=\"3\" ctype=\"DE\"><state>0</state></write></expire></actions></event>")));
 		
 		if (p) evt = parser.extractEvent();
 		else Serial.println(F("Parsing event failed."));
@@ -166,7 +166,7 @@ void setup()
 
 	Command& cmd = CommandParser::instance().extractCommand();
 
-	bool p1 = CommandParser::instance().parse(xml::FlashStream(F("<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"no\"?><command name=\"blink\"><arg>1000</arg></command>")));
+	bool p1 = CommandParser::instance().parse(data::FlashStream(F("<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"no\"?><command name=\"blink\"><arg>1000</arg></command>")));
 	if (p1)
 	{
 		controller[3]->execute(cmd);
@@ -174,7 +174,7 @@ void setup()
 		controller[5]->execute(cmd);
 	}
 
-	bool p2 = CommandParser::instance().parse(xml::FlashStream(F("<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"no\"?><command name=\"blink\"><arg>10000</arg></command>")));
+	bool p2 = CommandParser::instance().parse(data::FlashStream(F("<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"no\"?><command name=\"blink\"><arg>10000</arg></command>")));
 	if (p2)
 	{
 		controller[6]->execute(cmd);

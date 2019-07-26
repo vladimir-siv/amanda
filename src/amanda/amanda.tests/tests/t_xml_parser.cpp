@@ -172,12 +172,18 @@ void _xml_parser()
 	OutputComparer<std::string>& o = comparer();
 
 	XmlParser parser;
+
+	Executable<void, const char*> tag_opened(&_tag_opened);
+	Executable<void, const char*, const char*> attribute_spec(&_attribute_spec);
+	Executable<void> attribute_spec_end(&_attribute_spec_end);
+	Executable<void, const char*> text_value(&_text_value);
+	Executable<void, const char*> tag_closed(&_tag_closed);
 	
-	parser.events.SetTagOpenedEventHandler(&_tag_opened);
-	parser.events.SetAttributeSpecEventHandler(&_attribute_spec);
-	parser.events.SetAttributeSpecEventEndHandler(&_attribute_spec_end);
-	parser.events.SetTextValueEventHandler(&_text_value);
-	parser.events.SetTagClosedEventHandler(&_tag_closed);
+	parser.events.SetTagOpenedEventHandler(&tag_opened);
+	parser.events.SetAttributeSpecEventHandler(&attribute_spec);
+	parser.events.SetAttributeSpecEventEndHandler(&attribute_spec_end);
+	parser.events.SetTextValueEventHandler(&text_value);
+	parser.events.SetTagClosedEventHandler(&tag_closed);
 
 	const char* current = nullptr;
 	std::string message = "[Axx]";

@@ -1,73 +1,72 @@
 ﻿#include <SPI.h>
 #include <UIPEthernet.h>
 
-extern const int _ETH_CS;
+#include <server/ethernet.h>
+#include <common/data/flash_stream.h>
 
-byte mac[] = { 0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED };
-IPAddress ip(192, 168, 56, 177);
+ethernet::HTTPServer server;
 
-EthernetServer server(80);
-
-void _setup_ethernet_server(void)
+class Controller final
 {
-	pinMode(_ETH_CS, OUTPUT);
+	private: Controller() { }
+	#define action public: static inline response
+	public: using response = const __FlashStringHelper*;
+	
+	action index()
+	{
+		return F
+		(
+			"HTTP/1.1 200 OK\n"
+			"Content-Type: text/html\n"
+			"Connection: close\n"
+			"\n"
+			"<!DOCTYPE html>\n"
+			"<html lang=\"en\">\n"
+			"<head>\n"
+			"<meta charset = \"UTF-8\">\n"
+			"<title>Arduino</title>\n"
+			"</head>\n"
+			"<body>\n"
+			"<h1>Hello from Arduino Web Server</h1>\n"
+			"</body>\n"
+			"</html>\n"
+		);
+	}
+};
 
-	Serial.println(F("Ethernet WebServer Test"));
+void setup(void)
+{
+	Serial.begin(9600);
+	while (!Serial) ;
+	Serial.flush();
 
-	Ethernet.begin(mac, ip);
-
+	ethernet::begin(IPAddress(192, 168, 56, 177 ));
 	server.begin();
 
-	Serial.print(F("Server is at "));
-	Serial.println(Ethernet.localIP());
+	Serial.print(F("Running server at: "));
+	Serial.println(ethernet::localIP());
 }
 
-const char* const page =
-	"HTTP/1.1 200 OK\n"
-	"Content-Type: text/html\n"
-	"Connection: close\n"
-	"\n"
-	"<!DOCTYPE html>\n"
-	"<html lang=\"en\">\n"
-	"<head>\n"
-	"<meta charset = \"UTF-8\">\n"
-	"<title>Arduino</title>\n"
-	"</head>\n"
-	"<body>\n"
-	"<h1>Hello from Arduino Web Server</h1>\n"
-	"</body>\n"
-	"</html>\n";
-
-void _check_for_ethernet_client(void)
+void loop(void)
 {
-	EthernetClient client = server.available();
+	while (server.await()) ;
 
-	if (client)
+	Serial.println();
+	Serial.println(F("============= New client request ============="));
+	Serial.println();
+
+	HTTPClientRequest client = server.get_request();
+	client.inquire_request();
+
+	while (!client.eos())
 	{
-		Serial.println();
-		Serial.println(F("============= New client request ============="));
-		Serial.println();
-
-		bool currentLineIsBlank = true;
-		while (client.connected())
-		{
-			if (!client.available()) continue;
-
-			char c = client.read();
-			Serial.write(c);
-
-			if (c == '\n' && currentLineIsBlank)
-			{
-				client.write((uint8_t*)page, strlen(page));
-				break;
-			}
-
-			if (c == '\n') currentLineIsBlank = true;
-			else if (c != '\r') currentLineIsBlank = false;
-		}
-
-		delay(10);
-		client.stop();
-		Serial.println(F("client disconnected"));
+		Serial.print(client.current());
+		client.next();
 	}
+
+	client.respond(data::FlashStream(Controller::index()));
+	delay(10);
+	client.stop();
+
+	Serial.println(F("client disconnected"));
 }

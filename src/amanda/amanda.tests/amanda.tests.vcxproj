@@ -85,7 +85,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <PreprocessorDefinitions>_MBCS;%(PreprocessorDefinitions);__CPP_STD__;__THROW_EX__;__USE_RTTI__</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_MBCS;%(PreprocessorDefinitions);__CPP_STD__;__THROW_EX__;__USE_RTTI__;__AMANDA_TESTS__</PreprocessorDefinitions>
       <DebugInformationFormat />
     </ClCompile>
     <Link>

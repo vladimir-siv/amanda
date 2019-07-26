@@ -1,6 +1,6 @@
 #pragma once
 
-namespace xml
+namespace data
 {
 	class Stream
 	{
@@ -9,16 +9,16 @@ namespace xml
 		public: virtual char current() const = 0;
 		public: virtual void next() = 0;
 		public: virtual bool reset() { return false; }
+		public: virtual bool eos() const { return current() == 0; }
 		public: char advance() { char c = current(); next(); return c; }
-		public: bool eos() const { return current() == 0; }
 	};
 
 	class RAMStream final : public Stream
 	{
-		private: const char* _xml;
+		private: const char* _content;
 		private: const char* _current;
 		
-		public: RAMStream(const char* xml) : _xml(xml), _current(xml) { }
+		public: RAMStream(const char* content) : _content(content), _current(content) { }
 		
 		public: virtual char current() const override
 		{
@@ -26,11 +26,11 @@ namespace xml
 		}
 		public: virtual void next() override
 		{
-			++_current;
+			if (!eos()) ++_current;
 		}
 		public: virtual bool reset() override
 		{
-			_current = _xml;
+			_current = _content;
 			return true;
 		}
 	};

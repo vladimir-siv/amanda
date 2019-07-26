@@ -1,13 +1,18 @@
 #include <SPI.h>
 #include <SD.h>
 
-extern const int _SD_CS;
+const int _SD_CS = 4;
 
 Sd2Card card;
 SdVolume volume;
 SdFile root;
-void _sd_check(void)
+
+void setup(void)
 {
+	Serial.begin(9600);
+	while (!Serial) ;
+	Serial.flush();
+
 	pinMode(_SD_CS, OUTPUT);
 
 	Serial.print(F("Initializing SD card..."));
@@ -64,6 +69,7 @@ void _sd_check(void)
 	Serial.print(F("Volume size (Gb):  "));
 	Serial.println((float)volumesize / 1024.0);
 
+	Serial.println();
 	Serial.println(F("\nFiles found on the card (name, date and size in bytes): "));
 	root.openRoot(volume);
 
@@ -71,40 +77,4 @@ void _sd_check(void)
 	root.ls(LS_R | LS_DATE | LS_SIZE);
 }
 
-void _sd_file_read(const char* const filepath)
-{
-	pinMode(_SD_CS, OUTPUT);
-
-	Serial.print(F("Initializing SD card..."));
-
-	if (!SD.begin(_SD_CS))
-	{
-		Serial.println(F(" Initialization failed!"));
-		while (1);
-	}
-	Serial.println(F(" Initialization done."));
-
-	File file = SD.open(filepath);
-	if (file)
-	{
-		Serial.print(filepath);
-		Serial.println(':');
-
-		while (file.available())
-		{
-			Serial.write(file.read());
-		}
-
-		Serial.println();
-
-		Serial.print(F("~EOF:"));
-		Serial.println(filepath);
-		
-		file.close();
-	}
-	else
-	{
-		Serial.print(F("Error opening "));
-		Serial.println(filepath);
-	}
-}
+void loop(void) { }

@@ -2,7 +2,7 @@
 
 #include <networking/xml/xml_parser.h>
 
-#include "stream.h"
+#include "../common/data/stream.h"
 
 namespace xml
 {
@@ -43,7 +43,7 @@ namespace xml
 			
 			private: XmlParser _exec_unit;
 			private: Dispatcher _dispatcher;
-			private: Stream* _stream;
+			private: data::Stream* _stream;
 			private: Callback<Dispatcher, void, const char*> _tag_opened;
 			private: Callback<Dispatcher, void, const char*, const char*> _attribute_spec;
 			private: Callback<Dispatcher, void> _attribute_spec_end;
@@ -66,7 +66,7 @@ namespace xml
 			
 			private: bool isExecuting() const { return _dispatcher.isExecuting(); }
 			private: bool set(SAXParser* parser) { return _dispatcher.set(parser); }
-			private: void reset(Stream* stream) { _exec_unit.reset(); _stream = stream; }
+			private: void reset(data::Stream* stream) { _exec_unit.reset(); _stream = stream; }
 			private: SAXParser* swap(SAXParser* parser) { return _dispatcher.swap(parser); }
 			private: bool eos() const { return _stream == nullptr || _stream->eos(); }
 			private: bool nextchar() { return _exec_unit.nextchar(_stream->advance()); }
@@ -121,8 +121,8 @@ namespace xml
 
 			return true;
 		}
-		public: bool parse(Stream&& xml) { return parse(xml); }
-		public: bool parse(Stream& xml)
+		public: bool parse(data::Stream&& xml) { return parse(xml); }
+		public: bool parse(data::Stream& xml)
 		{
 			if (!_context.set(this)) return false;
 
