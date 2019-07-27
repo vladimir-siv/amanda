@@ -1,7 +1,9 @@
 ﻿#include <SPI.h>
 #include <UIPEthernet.h>
+#include <SD.h>
 
 #include <server/ethernet.h>
+#include <server/storage/sdcard.h>
 #include <common/data/flash_stream.h>
 
 ethernet::HTTPServer server;
@@ -27,7 +29,7 @@ class Controller final
 			"<title>Arduino</title>\n"
 			"</head>\n"
 			"<body>\n"
-			"<h1>Hello from Arduino Web Server</h1>\n"
+			"<h1>Hello from Arduino Storage Server</h1>\n"
 			"</body>\n"
 			"</html>\n"
 		);
@@ -40,7 +42,17 @@ void setup(void)
 	while (!Serial) ;
 	Serial.flush();
 
-	ethernet::begin(IPAddress(192, 168, 56, 177 ));
+	if (!storage::SDCard::init())
+	{
+		pinMode(13, OUTPUT);
+		while (true)
+		{
+			digitalWrite(13, HIGH); delay(500);
+			digitalWrite(13, LOW); delay(500);
+		}
+	}
+
+	ethernet::begin(IPAddress(192, 168, 56, 177));
 	server.begin();
 
 	Serial.print(F("Running server at: "));
@@ -56,12 +68,10 @@ void loop(void)
 	Serial.println(F("============= New client request ============="));
 	Serial.println();
 
+	SD.remove(F("/request.log"));
 	client.inquire_request();
-	while (!client.eos())
-	{
-		Serial.print(client.current());
-		client.next();
-	}
+	storage::SDCard::WriteToFile(F("/request.log"), client);
+	storage::SDCard::PrintFileToSerial(F("/request.log"));
 
 	client.respond(data::FlashStream(Controller::index()));
 	delay(10);

@@ -69,6 +69,7 @@ namespace ethernet
 		public: void stop() { _client.stop(); }
 		
 		public: uint8_t connected() const { return const_cast<EthernetClient&>(_client).connected(); }
+		public: int available() const { return const_cast<EthernetClient&>(_client).available(); }
 		
 		public: virtual char current() const override
 		{

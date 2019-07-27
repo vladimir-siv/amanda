@@ -56,12 +56,14 @@ namespace storage
 		
 		public: static bool WriteToFile(File& file, data::Stream& content)
 		{
-			while (file.availableForWrite())
+			if (content.eos()) return false;
+
+			while (!content.eos())
 			{
 				file.print(content.advance());
 			}
 
-			return content.eos();
+			return true;
 		}
 		public: static bool WriteToFile(File& file, data::Stream&& content) { return WriteToFile(file, content); }
 		public: static bool WriteToFile(File&& file, data::Stream& content) { return WriteToFile(file, content); }
