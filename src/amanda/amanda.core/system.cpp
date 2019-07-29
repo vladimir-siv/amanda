@@ -2,7 +2,7 @@
 #include "system.h"
 #include "thread.h"
 
-volatile unsigned long long System::_lock = 0;
+volatile unsigned long long System::_lock = -1ull;
 volatile unsigned long long System::_millis = 0;
 volatile SystemScheduler System::scheduler;
 
@@ -18,6 +18,8 @@ void System::init()
 
 	TCNT1 = 0;
 	TIMSK1 |= _BV(OCIE1A);
+
+	_lock = 0;
 
 	sei();
 }

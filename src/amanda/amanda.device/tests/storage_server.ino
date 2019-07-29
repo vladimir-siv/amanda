@@ -18,20 +18,20 @@ class Controller final
 	{
 		return F
 		(
-			"HTTP/1.1 200 OK\n"
-			"Content-Type: text/html\n"
-			"Connection: close\n"
-			"\n"
-			"<!DOCTYPE html>\n"
-			"<html lang=\"en\">\n"
-			"<head>\n"
-			"<meta charset = \"UTF-8\">\n"
-			"<title>Arduino</title>\n"
-			"</head>\n"
-			"<body>\n"
-			"<h1>Hello from Arduino Storage Server</h1>\n"
-			"</body>\n"
-			"</html>\n"
+			"HTTP/1.1 200 OK\r\n"
+			"Content-Type: text/html\r\n"
+			"Connection: close\r\n"
+			"\r\n"
+			"<!DOCTYPE html>\r\n"
+			"<html lang=\"en\">\r\n"
+			"<head>\r\n"
+			"<meta charset = \"UTF-8\">\r\n"
+			"<title>Arduino</title>\r\n"
+			"</head>\r\n"
+			"<body>\r\n"
+			"<h1>Hello from Arduino Storage Server</h1>\r\n"
+			"</body>\r\n"
+			"</html>"
 		);
 	}
 };

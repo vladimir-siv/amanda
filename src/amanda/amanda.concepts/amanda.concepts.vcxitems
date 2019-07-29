@@ -49,7 +49,6 @@
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)assert\static.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)memory_management\specialized\casting_allocator.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)utility.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)event_system\delegate.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)event_system\event.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)event_system\eventargs.h" />

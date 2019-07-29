@@ -36,6 +36,7 @@
     <ClInclude Include="common\data\flash_stream.h" />
     <ClInclude Include="server\storage\sdcard.h" />
     <ClInclude Include="server\ethernet.h" />
+    <ClInclude Include="server\request.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="amanda.device.ino" />
@@ -73,5 +74,6 @@
     <ClCompile Include="common\data\stream.cpp" />
     <ClCompile Include="server\storage\sdcard.cpp" />
     <ClCompile Include="server\ethernet.cpp" />
+    <ClCompile Include="server\request.cpp" />
   </ItemGroup>
 </Project>

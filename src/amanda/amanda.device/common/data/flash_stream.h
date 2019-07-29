@@ -6,7 +6,7 @@
 
 namespace data
 {
-	class FlashStream final : public Stream
+	class FlashStream final : public InputStream
 	{
 		private: PGM_P _content;
 		private: PGM_P _current;

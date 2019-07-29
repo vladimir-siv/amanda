@@ -4,6 +4,8 @@
 #include <SPI/src/SPI.h>
 #include <UIPEthernet/UIPEthernet.h>
 
+#include <thread.h>
+
 #include "../common/data/stream.h"
 
 #define HTTPClientRequest ethernet::HTTPClient&
@@ -38,7 +40,7 @@ namespace ethernet
 	IPAddress subnetMask();
 	int maintain();
 
-	class HTTPClient final : public data::Stream
+	class HTTPClient final : public data::InputStream
 	{
 		friend class HTTPServer;
 
@@ -49,18 +51,14 @@ namespace ethernet
 		
 		private: EthernetClient _client;
 		private: char c;
-		private: unsigned int lfcnt;
-		private: bool done;
 		
-		private: HTTPClient() : _client(), c(0), lfcnt(0), done(false) { }
+		private: HTTPClient() : _client(), c(0) { }
 		public: virtual ~HTTPClient() { /* stop(); */ }
 		
 		private: HTTPClient& operator=(EthernetClient client)
 		{
 			_client = client;
 			c = 0;
-			lfcnt = 0;
-			done = false;
 			return *this;
 		}
 		public: operator bool() const { return const_cast<EthernetClient&>(_client); }
@@ -79,18 +77,14 @@ namespace ethernet
 		{
 			if (!eos())
 			{
-				while (_client.available() == 0) ; // is this a good idea?
+				while (_client.available() == 0) dispatch(); // is this a good idea?
 				c = (char)_client.read();
-
-				if (c == '\n') ++lfcnt;
-				else if (c != '\r') lfcnt = 0;
-
-				if (lfcnt == 2) done = true;
 			}
 		}
 		public: virtual bool eos() const override
 		{
-			return !connected() || done;
+			// As long as the clinet is connected, he may send data
+			return !connected();
 		}
 		
 		public: void flush() { _client.flush(); }
@@ -98,14 +92,14 @@ namespace ethernet
 		public: size_t respond(uint8_t data) { return _client.write(data); }
 		public: size_t respond(const uint8_t* buf, size_t size) { return _client.write(buf, size); }
 		
-		public: void respond(data::Stream& stream)
+		public: void respond(data::InputStream& stream)
 		{
 			while (!stream.eos())
 			{
 				respond((uint8_t)stream.advance());
 			}
 		}
-		public: void respond(data::Stream&& stream) { respond(stream); }
+		public: void respond(data::InputStream&& stream) { respond(stream); }
 	};
 
 	class HTTPServer
@@ -121,5 +115,146 @@ namespace ethernet
 		public: HTTPClient& get_request() const { return (HTTPClient&)client; }
 		public: size_t write(uint8_t data) { return server.write(data); }
 		public: size_t write(const uint8_t* buf, size_t size) { return server.write(buf, size); }
+	};
+
+	class HTTPRequestParser
+	{
+		private: enum State { UNKNOWN = 0, REQUEST_URI = 1, REQUEST_HEADER = 2, REQUEST_BODY = 4 };
+		
+		private: bool _cancel;
+		private: char buffer1[65] = { };
+		private: char buffer2[65] = { };
+		
+		public: virtual ~HTTPRequestParser() { }
+		
+		public: bool parse(HTTPClientRequest request)
+		{
+			State state = REQUEST_URI;
+			unsigned int c = 0;
+			char prev = 0;
+			bool colon = false;
+
+			auto advanceState = [&](char chr, State next) -> bool
+			{
+				if (chr != '\n') return false;
+
+				state = next;
+				c = 0;
+				prev = 0;
+				colon = false;
+
+				return true;
+			};
+			auto buff = [&](char* buffer, char chr)
+			{
+				if (c < 64) buffer[c++] = chr != '\n' ? chr : 0;
+			};
+			auto is_whitespace = [](char chr) -> bool
+			{
+				return chr == ' ' || chr == '\t';
+			};
+
+			_cancel = false;
+			reset();
+
+			for (request.inquire_request(); !request.eos() && !_cancel; request.next())
+			{
+				char chr = request.current();
+				if (state != REQUEST_BODY && chr == '\r') continue;
+
+				switch (state)
+				{
+					case REQUEST_URI:
+					{
+						if (chr == '\n' && c == 0) return false;
+
+						buff(buffer1, chr);
+						
+						if (advanceState(chr, REQUEST_HEADER))
+						{
+							request_uri(buffer1);
+							continue;
+						}
+					} break;
+					case REQUEST_HEADER:
+					{
+						bool isChrColon = chr == ':';
+						bool isChrNewLine = chr == '\n';
+						bool isCntZero = c == 0;
+
+						if (isChrNewLine && !colon && c == 0)
+						{
+							request_header_end();
+							advanceState(chr, REQUEST_BODY);
+							continue;
+						}
+						
+						if (isChrColon && isCntZero) return false;
+						if (isChrNewLine && isCntZero) return false;
+						if (isChrNewLine && !colon) return false;
+
+						bool isChrWhitespace = is_whitespace(chr);
+						bool isPrevWhitespace = is_whitespace(prev);
+
+						if (isChrWhitespace)
+						{
+							chr = ' ';
+							if (isCntZero) continue;
+							if (isPrevWhitespace) continue;
+						}
+
+						if (isPrevWhitespace)
+						{
+							if (isChrColon) buffer1[c - 1] = 0;
+							if (isChrNewLine) buffer2[c - 1] = 0;
+						}
+
+						if (isChrColon)
+						{
+							if (colon) return false;
+
+							buff(buffer1, 0);
+							c = 0;
+							prev = 0;
+							colon = true;
+							continue;
+						}
+
+						if (colon) buff(buffer2, chr);
+						else buff(buffer1, chr);
+
+						if (advanceState(chr, REQUEST_HEADER))
+						{
+							request_header(buffer1, buffer2);
+							continue;
+						}
+					} break;
+					case REQUEST_BODY:
+					{
+						if (!request_body(chr)) return false;
+					} break;
+
+					default: return false;
+				}
+				
+				// This class does not know even if the request body exists,
+				// certainly not how to handle one. This is why the subclass
+				// needs to tell if the parsing of request body is done.
+				if (state == REQUEST_BODY && request_body_end()) break;
+
+				prev = chr;
+			}
+
+			return !_cancel;
+		}
+		
+		protected: void cancel() { _cancel = true; }
+		
+		protected: virtual void reset() { }
+		protected: virtual void request_uri(const char* uri) = 0;
+		protected: virtual void request_header(const char* hname, const char* hvalue) = 0;
+		protected: virtual void request_header_end() { }
+		protected: virtual bool request_body_end() const { return true; }
+		protected: virtual bool request_body(char chr) { return false; }
 	};
 }
