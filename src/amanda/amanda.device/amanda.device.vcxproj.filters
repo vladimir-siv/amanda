@@ -37,6 +37,9 @@
     <ClInclude Include="server\storage\sdcard.h" />
     <ClInclude Include="server\ethernet.h" />
     <ClInclude Include="server\request.h" />
+    <ClInclude Include="server\actions\task.h" />
+    <ClInclude Include="server\actions\tasks\echo\hello.h" />
+    <ClInclude Include="server\actions\tasks\echo\reply.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="amanda.device.ino" />
@@ -75,5 +78,8 @@
     <ClCompile Include="server\storage\sdcard.cpp" />
     <ClCompile Include="server\ethernet.cpp" />
     <ClCompile Include="server\request.cpp" />
+    <ClCompile Include="server\actions\task.cpp" />
+    <ClCompile Include="server\actions\tasks\echo\hello.cpp" />
+    <ClCompile Include="server\actions\tasks\echo\reply.cpp" />
   </ItemGroup>
 </Project>

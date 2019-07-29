@@ -143,6 +143,9 @@
     <ClInclude Include="hardware\scanning\scanner.h" />
     <ClInclude Include="lib\string64.h" />
     <ClInclude Include="lib\string_builder.h" />
+    <ClInclude Include="server\actions\tasks\echo\hello.h" />
+    <ClInclude Include="server\actions\task.h" />
+    <ClInclude Include="server\actions\tasks\echo\reply.h" />
     <ClInclude Include="server\commands\command_parser.h" />
     <ClInclude Include="server\ethernet.h" />
     <ClInclude Include="server\events\event_parser.h" />
@@ -179,6 +182,9 @@
     <ClCompile Include="hardware\scanning\scanner.cpp" />
     <ClCompile Include="lib\string64.cpp" />
     <ClCompile Include="lib\string_builder.cpp" />
+    <ClCompile Include="server\actions\tasks\echo\hello.cpp" />
+    <ClCompile Include="server\actions\task.cpp" />
+    <ClCompile Include="server\actions\tasks\echo\reply.cpp" />
     <ClCompile Include="server\commands\command_parser.cpp" />
     <ClCompile Include="server\ethernet.cpp" />
     <ClCompile Include="server\events\event_parser.cpp" />

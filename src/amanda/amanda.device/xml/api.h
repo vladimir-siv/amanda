@@ -69,7 +69,8 @@ namespace xml
 			private: void reset(data::InputStream* stream) { _exec_unit.reset(); _stream = stream; }
 			private: SAXParser* swap(SAXParser* parser) { return _dispatcher.swap(parser); }
 			private: bool eos() const { return _stream == nullptr || _stream->eos(); }
-			private: bool nextchar() { return _exec_unit.nextchar(_stream->advance()); }
+			private: bool nextchar() { return _exec_unit.nextchar(_stream->current()); }
+			private: void advance() { _stream->next(); }
 			private: bool finish(bool success = true) { _stream = nullptr; return _dispatcher.finish(success); }
 		};
 		
@@ -98,7 +99,7 @@ namespace xml
 			else return false;
 		}
 		
-		protected: bool swap(SAXParser& parser)
+		protected: bool swap(SAXParser& parser, unsigned long content_length = 0)
 		{
 			if (&parser == this) return false;
 			if (&parser._context != &_context) return false;
@@ -111,18 +112,19 @@ namespace xml
 
 			parser.reset();
 
-			while (!parser._finish && !_context.eos())
+			for (unsigned long i = 0; !parser._finish && !_context.eos(); _context.advance())
 			{
 				if (!_context.nextchar()) return false;
 				if (parser._cancel) return parser._oncancel(false);
+				if (content_length != 0 && ++i == content_length) break;
 			}
 
 			if (_context.swap(prev) != &parser) return false;
 
 			return true;
 		}
-		public: bool parse(data::InputStream&& xml) { return parse(xml); }
-		public: bool parse(data::InputStream& xml)
+		public: bool parse(data::InputStream&& xml, unsigned long content_length = 0) { return parse(xml, content_length); }
+		public: bool parse(data::InputStream& xml, unsigned long content_length = 0)
 		{
 			if (!_context.set(this)) return false;
 
@@ -133,10 +135,11 @@ namespace xml
 
 			reset();
 
-			while (!_finish && !_context.eos())
+			for (unsigned long i = 0; !_finish && !_context.eos(); _context.advance())
 			{
 				if (!_context.nextchar()) return _context.finish(false);
 				if (_cancel) return _oncancel();
+				if (content_length != 0 && ++i == content_length) break;
 			}
 
 			return _context.finish();

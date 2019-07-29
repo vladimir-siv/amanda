@@ -10,9 +10,8 @@
 class Req2Hndl : public RequestHandler
 {
 	private: storage::OutputFileStream log;
-	private: bool firstchar;
 	
-	public: Req2Hndl() : log(F("/request.log")), firstchar(true) { }
+	public: Req2Hndl() : log(F("/request.log")) { }
 	public: virtual ~Req2Hndl() { }
 	
 	protected: virtual void request_uri(const char* uri) override
@@ -20,6 +19,11 @@ class Req2Hndl : public RequestHandler
 		Serial.print('\'');
 		Serial.print(uri);
 		Serial.println('\'');
+
+		log.print('\'');
+		log.print(uri);
+		log.println('\'');
+
 		RequestHandler::request_uri(uri);
 	}
 	protected: virtual void request_header(const char* hname, const char* hvalue) override
@@ -29,83 +33,24 @@ class Req2Hndl : public RequestHandler
 		Serial.print(F(": "));
 		Serial.print(hvalue);
 		Serial.println('\'');
+
+		log.print('\'');
+		log.print(hname);
+		log.print(F(": "));
+		log.print(hvalue);
+		log.println('\'');
+
 		RequestHandler::request_header(hname, hvalue);
 	}
 	protected: virtual void request_header_end() override
 	{
 		Serial.println();
+		log.println();
 		RequestHandler::request_header_end();
-	}
-	protected: virtual bool request_body_end() const override
-	{
-		bool body_end = RequestHandler::request_body_end();
-		if (body_end) Serial.println('\'');
-		return body_end;
-	}
-	protected: virtual bool request_body(char chr) override
-	{
-		if (firstchar)
-		{
-			Serial.print('\'');
-			firstchar = false;
-		}
-
-		Serial.print(chr);
-		log.print(chr);
-		return RequestHandler::request_body(chr);
 	}
 };
 
 ethernet::HTTPServer server;
-
-class Controller final
-{
-	private: Controller() { }
-	#define action public: static inline response
-	public: using response = const __FlashStringHelper*;
-	
-	action bad_req()
-	{
-		return F
-		(
-			//"HTTP/1.1 400 Bad Request\r\n"
-			"HTTP/1.1 200 OK\r\n"
-			"Content-Type: text/html\r\n"
-			"Connection: close\r\n"
-			"\r\n"
-			"<!DOCTYPE html>\r\n"
-			"<html lang=\"en\">\r\n"
-			"<head>\r\n"
-			"<meta charset = \"UTF-8\">\r\n"
-			"<title>Arduino</title>\r\n"
-			"</head>\r\n"
-			"<body>\r\n"
-			"<h1>Error 400: Bad Request</h1>\r\n"
-			"</body>\r\n"
-			"</html>"
-		);
-	}
-	action index()
-	{
-		return F
-		(
-			"HTTP/1.1 200 OK\r\n"
-			"Content-Type: text/html\r\n"
-			"Connection: close\r\n"
-			"\r\n"
-			"<!DOCTYPE html>\r\n"
-			"<html lang=\"en\">\r\n"
-			"<head>\r\n"
-			"<meta charset = \"UTF-8\">\r\n"
-			"<title>Arduino</title>\r\n"
-			"</head>\r\n"
-			"<body>\r\n"
-			"<h1>Hello from Arduino Responsive Server</h1>\r\n"
-			"</body>\r\n"
-			"</html>"
-		);
-	}
-};
 
 void setup(void)
 {
@@ -142,8 +87,7 @@ void loop(void)
 	SD.remove(F("/request.log"));
 	Req2Hndl handler;
 
-	if (handler.parse(client)) client.respond(data::FlashStream(Controller::index()));
-	else client.respond(data::FlashStream(Controller::bad_req()));
+	if (!handler.parse(client)) client.bad_request();
 
 	delay(10);
 	client.stop();

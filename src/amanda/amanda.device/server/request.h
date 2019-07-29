@@ -1,6 +1,22 @@
 #pragma once
 
+/**
+ *     Request formats:
+ * 
+ * <action task="{name}"><arg>{value}</arg>...</action>
+ * <action process="{name}">{inner-xml}</action>
+ * 
+ *     Examples of [client request] -> [server response]:
+ * 
+ * <action task="Echo/hello"></action> -> <message>Hello World.</message>
+ * <action task="Echo/reply"><arg>{message}</arg></action> -> <message>{message}</message>
+ * 
+ * <action process="event-create">{event-xml}</action> -> <action>[success|failure]</action>
+ */
+
+#include "../xml/api.h"
 #include "ethernet.h"
+#include "actions/task.h"
 
 class Host final
 {
@@ -9,6 +25,31 @@ class Host final
 	private: const char* _name = nullptr;
 	public: Host& operator=(const char* host_name) { _name = host_name; return *this; }
 	public: operator bool() { return _name != nullptr; }
+};
+
+class RequestBodyParser final : public xml::SAXParser
+{
+	private: HTTPClientRequest request;
+	
+	private: unsigned int level;
+	private: unsigned int l1;
+	private: Task* task;
+	
+	public: RequestBodyParser(HTTPClientRequest request) : request(request) { }
+	
+	public: bool parse(unsigned long content_length = 0)
+	{
+		request.inquire_request();
+		return xml::SAXParser::parse(request, content_length);
+	}
+	
+	protected: virtual void reset() override;
+	protected: virtual void oncancel() override;
+	protected: virtual void tag_opened(const char* tagname) override;
+	protected: virtual void attribute_spec(const char* attrname, const char* attrvalue) override;
+	protected: virtual void attribute_spec_end() override;
+	protected: virtual void text_value(const char* value) override;
+	protected: virtual void tag_closed(const char* tagname) override;
 };
 
 class RequestHandler : public ethernet::HTTPRequestParser
@@ -67,13 +108,14 @@ class RequestHandler : public ethernet::HTTPRequestParser
 	{
 		if (!host || !content_length || !expect100continue) cancel();
 	}
-	protected: virtual bool request_body_end() const override
+	protected: virtual bool request_body(HTTPClientRequest request) override
 	{
-		return content_length == 0;
-	}
-	protected: virtual bool request_body(char chr) override
-	{
-		--content_length;
+		if (content_length > 0)
+		{
+			RequestBodyParser body_parser(request);
+			return body_parser.parse(content_length);
+		}
+
 		return true;
 	}
 };

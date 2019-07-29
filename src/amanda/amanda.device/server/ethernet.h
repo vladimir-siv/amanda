@@ -7,6 +7,7 @@
 #include <thread.h>
 
 #include "../common/data/stream.h"
+#include "../common/data/flash_stream.h"
 
 #define HTTPClientRequest ethernet::HTTPClient&
 
@@ -51,14 +52,16 @@ namespace ethernet
 		
 		private: EthernetClient _client;
 		private: char c;
+		private: bool header_sent;
 		
-		private: HTTPClient() : _client(), c(0) { }
+		private: HTTPClient() : _client(), c(0), header_sent(false) { }
 		public: virtual ~HTTPClient() { /* stop(); */ }
 		
 		private: HTTPClient& operator=(EthernetClient client)
 		{
 			_client = client;
 			c = 0;
+			header_sent = false;
 			return *this;
 		}
 		public: operator bool() const { return const_cast<EthernetClient&>(_client); }
@@ -89,8 +92,27 @@ namespace ethernet
 		
 		public: void flush() { _client.flush(); }
 		
-		public: size_t respond(uint8_t data) { return _client.write(data); }
-		public: size_t respond(const uint8_t* buf, size_t size) { return _client.write(buf, size); }
+		private: void send_header()
+		{
+			if (header_sent) return;
+			header_sent = true;
+
+			data::FlashStream fs
+			(
+				F
+				(
+					"HTTP/1.1 200 OK\r\n"
+					"Content-Type: application/xml\r\n"
+					"Connection: close\r\n"
+					"\r\n"
+					"<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"no\"?>"
+				)
+			);
+
+			while (!fs.eos()) _client.write(fs.advance());
+		}
+		public: size_t respond(uint8_t data) { send_header(); return _client.write(data); }
+		public: size_t respond(const uint8_t* buf, size_t size) { send_header(); return _client.write(buf, size); }
 		
 		public: void respond(data::InputStream& stream)
 		{
@@ -100,6 +122,36 @@ namespace ethernet
 			}
 		}
 		public: void respond(data::InputStream&& stream) { respond(stream); }
+		
+		public: void bad_request()
+		{
+			if (header_sent) return;
+			header_sent = true;
+
+			data::FlashStream fs
+			(
+				F
+				(
+					//"HTTP/1.1 400 Bad Request\r\n"
+					"HTTP/1.1 200 OK\r\n"
+					"Content-Type: application/xml\r\n"
+					"Connection: close\r\n"
+					"\r\n"
+					"<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"no\"?>\r\n"
+					"<response>\r\n"
+					"\t<meta>\r\n"
+					"\t\t<status>400</status>\r\n"
+					"\t\t<title>Arduino</title>\r\n"
+					"\t</meta>\r\n"
+					"\t<content>\r\n"
+					"\t\t<message>Error 400: Bad Request</message>\r\n"
+					"\t</content>\r\n"
+					"</response>"
+				)
+			);
+
+			while (!fs.eos()) _client.write(fs.advance());
+		}
 	};
 
 	class HTTPServer
@@ -119,7 +171,7 @@ namespace ethernet
 
 	class HTTPRequestParser
 	{
-		private: enum State { UNKNOWN = 0, REQUEST_URI = 1, REQUEST_HEADER = 2, REQUEST_BODY = 4 };
+		private: enum State { UNKNOWN = 0, REQUEST_URI = 1, REQUEST_HEADER = 2, DONE = 4 };
 		
 		private: bool _cancel;
 		private: char buffer1[65] = { };
@@ -160,7 +212,7 @@ namespace ethernet
 			for (request.inquire_request(); !request.eos() && !_cancel; request.next())
 			{
 				char chr = request.current();
-				if (state != REQUEST_BODY && chr == '\r') continue;
+				if (chr == '\r') continue;
 
 				switch (state)
 				{
@@ -185,8 +237,14 @@ namespace ethernet
 						if (isChrNewLine && !colon && c == 0)
 						{
 							request_header_end();
-							advanceState(chr, REQUEST_BODY);
-							continue;
+
+							state = DONE;
+							c = 0;
+							prev = 0;
+							colon = false;
+
+							if (!request_body(request)) return false;
+							goto end;
 						}
 						
 						if (isChrColon && isCntZero) return false;
@@ -229,22 +287,14 @@ namespace ethernet
 							continue;
 						}
 					} break;
-					case REQUEST_BODY:
-					{
-						if (!request_body(chr)) return false;
-					} break;
 
 					default: return false;
 				}
-				
-				// This class does not know even if the request body exists,
-				// certainly not how to handle one. This is why the subclass
-				// needs to tell if the parsing of request body is done.
-				if (state == REQUEST_BODY && request_body_end()) break;
 
 				prev = chr;
 			}
 
+		end:
 			return !_cancel;
 		}
 		
@@ -254,7 +304,6 @@ namespace ethernet
 		protected: virtual void request_uri(const char* uri) = 0;
 		protected: virtual void request_header(const char* hname, const char* hvalue) = 0;
 		protected: virtual void request_header_end() { }
-		protected: virtual bool request_body_end() const { return true; }
-		protected: virtual bool request_body(char chr) { return false; }
+		protected: virtual bool request_body(HTTPClientRequest request) { }
 	};
 }
