@@ -40,6 +40,7 @@
     <ClInclude Include="server\actions\task.h" />
     <ClInclude Include="server\actions\tasks\echo\hello.h" />
     <ClInclude Include="server\actions\tasks\echo\reply.h" />
+    <ClInclude Include="common\communication\serial_monitor.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="amanda.device.ino" />
@@ -81,5 +82,6 @@
     <ClCompile Include="server\actions\task.cpp" />
     <ClCompile Include="server\actions\tasks\echo\hello.cpp" />
     <ClCompile Include="server\actions\tasks\echo\reply.cpp" />
+    <ClCompile Include="common\communication\serial_monitor.cpp" />
   </ItemGroup>
 </Project>

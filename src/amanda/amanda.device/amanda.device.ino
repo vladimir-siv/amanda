@@ -1,21 +1,35 @@
-﻿#include <assert/static.h>
+﻿#include <SPI.h>
+#include <UIPEthernet.h>
+#include <SD.h>
+
+#include <assert/static.h>
 #include <system.h>
 
 #include "hardware/hardware_controller.h"
 #include "hardware/events.h"
+
 #include "server/commands/command_parser.h"
 #include "server/events/event_parser.h"
+#include "server/ethernet.h"
+#include "server/request.h"
+#include "server/storage/sdcard.h"
 
 #include "common/data/flash_stream.h"
+#include "common/communication/serial_monitor.h"
+
+using communication::SerialMonitor;
+
+//#define _RUN_TESTS
 
 HardwareController controller;
+HTTPEthernetServer server;
 
 BTN btn1(32);
 BTN btn2(34);
 
-BlinkingLED led1(12);
-LED led2(11);
-LED led3(10);
+BlinkingLED led1(22);
+LED led2(23);
+LED led3(24);
 
 BlinkingLMP lmp(7);
 
@@ -30,118 +44,20 @@ LDR ldr(A15);
 
 PIR pir(36);
 
-SerialScanner sscanner;
-
-void test()
-{
-	class Base
-	{
-		public: Base() { }
-		public: virtual ~Base() { }
-		public: virtual void method() { Serial.println(F("Base")); }
-	};
-
-	class Test : public Base
-	{
-		private: static const unsigned long long _newid()
-		{
-			static unsigned long long gid = 0;
-			return ++gid;
-		}
-		public: const unsigned long long id = _newid();
-		
-		public: Test() { Serial.println(F(".ctor()")); }
-		public: Test(const Test&) { Serial.println(F(".copy()")); }
-		public: Test(Test&&) { Serial.println(F(".move()")); }
-		public: virtual ~Test() { Serial.println(F(".dtor()")); }
-		public: Test& operator=(const Test&) { Serial.println(F(".copy=")); return *this; }
-		public: Test& operator=(Test&&) { Serial.println(F(".move=")); return *this; }
-		
-		public: virtual void method() override { Serial.println(F("Test")); }
-	};
-}
-
-void test_events(bool _setup = false)
-{
-	auto __oncall = []()
-	{
-		static unsigned long c = 0;
-		++c;
-		if (c < 10) Serial.print(F("    "));
-		else if (c < 100) Serial.print(F("   "));
-		else if (c < 1000) Serial.print(F("  "));
-		else if (c < 10000) Serial.print(F(" "));
-		Serial.print(c);
-		Serial.print(F(":"));
-	};
-	//__oncall();
-
-	static event* evt = nullptr;
-	static pack* pck = nullptr;
-	static cond* cnd_ldr = nullptr;
-	static cond* cnd_pir = nullptr;
-	static action* raise = nullptr;
-	static action* expire = nullptr;
-
-	static bool lastv = false;
-
-	if (_setup)
-	{
-		cnd_ldr = cond::_new(&ldr)->compare("leq", 70.0f);
-		cnd_pir = cond::_new(&pir)->compare("equ", HIGH);
-		
-		pck = pack::_new();
-		pck->append(cnd_ldr);
-		pck->append(cnd_pir);
-
-		raise = action::_new(&led3, HIGH);
-		expire = action::_new(&led3, LOW);
-
-		evt = event::_new(3);
-
-		evt->append(pck);
-		evt->appendRaise(raise);
-		evt->appendExpire(expire);
-	}
-
-	bool newv = evt->check();
-	if (newv != lastv) Serial.println(newv);
-	lastv = newv;
-}
-
-void test_event_parser(bool _setup = false)
-{
-	static event* evt = nullptr;
-	static bool lastv = false;
-
-	if (_setup)
-	{
-		EventParser parser(&controller);
-		bool p = parser.parse(data::FlashStream(F("<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"no\"?><event repeat=\"3\"><requirements><pack><condition vid=\"4\" ctype=\"AS\"><lss>100.0</lss></condition><condition vid=\"3\" ctype=\"DS\"><equ>1</equ></condition></pack></requirements><actions><raise><write vid=\"3\" ctype=\"DE\"><state>1</state></write></raise><expire><write vid=\"3\" ctype=\"DE\"><state>0</state></write></expire></actions></event>")));
-		
-		if (p) evt = parser.extractEvent();
-		else Serial.println(F("Parsing event failed."));
-	}
-
-	if (evt)
-	{
-		bool newv = evt->check();
-		if (newv != lastv) Serial.println(newv);
-		lastv = newv;
-	}
-}
-
 void setup()
 {
-	Serial.begin(9600);
-	while (!Serial) ;
-	Serial.flush();
-
-	pinMode(13, OUTPUT);
 	System::init();
 
 	System::lock();
 	
+	SerialMonitor::begin();
+	pinMode(13, OUTPUT);
+	if (!storage::SDCard::init()) SerialMonitor::println(F("Failed to initialize SD card."));
+	ethernet::begin(IPAddress(192, 168, 56, 177));
+	server.begin();
+
+	SerialMonitor::println (F("HTTP server running at: "), ethernet::localIP());
+
 	controller += &btn1;
 	controller += &btn2;
 	
@@ -164,6 +80,39 @@ void setup()
 	
 	System::unlock();
 
+#ifdef _RUN_TESTS
+	test_setup();
+#endif
+}
+
+void loop()
+{
+#ifndef _RUN_TESTS
+	while (server.await());
+	HTTPClientRequest client = server.get_request();
+
+	//SerialMonitor::println(SerialMonitor::endl(), F("============= New client request ============="), SerialMonitor::endl());
+	//SD.remove(F("/request.log"));
+
+	RequestHandler handler;
+
+	if (!handler.parse(client)) client.bad_request();
+
+	Thread::delay(10);
+	client.stop();
+#else
+	test_loop();
+#endif
+}
+
+// ===================== //
+// ======= TESTS ======= //
+// ===================== //
+
+#ifdef _RUN_TESTS
+
+void test_commands(bool _setup = false)
+{
 	Command& cmd = CommandParser::instance().extractCommand();
 
 	bool p1 = CommandParser::instance().parse(data::FlashStream(F("<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"no\"?><command name=\"blink\"><arg>1000</arg></command>")));
@@ -180,21 +129,96 @@ void setup()
 		controller[6]->execute(cmd);
 	}
 
-	if (!p1) Serial.println(F("P1 failed."));
-	if (!p2) Serial.println(F("P2 failed."));
-
-	test();
-	//test_events(true);
-	test_event_parser(true);
+	if (!p1) SerialMonitor::println(F("P1 failed."));
+	if (!p2) SerialMonitor::println(F("P2 failed."));
 }
-
-void loop()
+void test_events(bool _setup = false)
 {
-	Thread::sleep(100);
-	//Serial.print(F("<scan>"));
-	//controller.scan(&sscanner);
-	//Serial.println(F("</scan>"));
-	//test_events();
-	test_event_parser();
+	auto __oncall = []()
+	{
+		static unsigned long c = 0;
+		++c;
+		if (c < 10) SerialMonitor::print(F("    "));
+		else if (c < 100) SerialMonitor::print(F("   "));
+		else if (c < 1000) SerialMonitor::print(F("  "));
+		else if (c < 10000) SerialMonitor::print(F(" "));
+		SerialMonitor::print(c);
+		SerialMonitor::print(F(":"));
+	};
+	//__oncall();
+
+	static event* evt = nullptr;
+	static pack* pck = nullptr;
+	static cond* cnd_ldr = nullptr;
+	static cond* cnd_pir = nullptr;
+	static action* raise = nullptr;
+	static action* expire = nullptr;
+
+	static bool lastv = false;
+
+	if (_setup)
+	{
+		cnd_ldr = cond::_new(&ldr)->compare("leq", 100.0f);
+		cnd_pir = cond::_new(&pir)->compare("equ", HIGH);
+
+		pck = pack::_new();
+		pck->append(cnd_ldr);
+		pck->append(cnd_pir);
+
+		raise = action::_new(&led3, HIGH);
+		expire = action::_new(&led3, LOW);
+
+		evt = event::_new(3);
+
+		evt->append(pck);
+		evt->appendRaise(raise);
+		evt->appendExpire(expire);
+	}
+
+	bool newv = evt->check();
+	if (newv != lastv) SerialMonitor::println(newv);
+	lastv = newv;
 }
+void test_event_parser(bool _setup = false)
+{
+	static event* evt = nullptr;
+	static bool lastv = false;
+
+	if (_setup)
+	{
+		EventParser parser(&controller);
+		bool p = parser.parse(data::FlashStream(F("<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"no\"?><event repeat=\"3\"><requirements><pack><condition vid=\"4\" ctype=\"AS\"><lss>100.0</lss></condition><condition vid=\"3\" ctype=\"DS\"><equ>1</equ></condition></pack></requirements><actions><raise><write vid=\"3\" ctype=\"DE\"><state>1</state></write></raise><expire><write vid=\"3\" ctype=\"DE\"><state>0</state></write></expire></actions></event>")));
+
+		if (p) evt = parser.extractEvent();
+		else SerialMonitor::println(F("Parsing event failed."));
+	}
+
+	if (evt)
+	{
+		bool newv = evt->check();
+		if (newv != lastv) SerialMonitor::println(newv);
+		lastv = newv;
+	}
+}
+
+void test_setup()
+{
+	//test_commands(true);
+	//test_events(true);
+	//test_event_parser(true);
+}
+
+void test_loop()
+{
+	//SerialMonitor::print(F("<scan>"));
+	//controller.scan(&sscanner);
+	//SerialMonitor::println(F("</scan>"));
+
+	//Thread::delay(100);
+	//test_events();
+	//test_event_parser();
+}
+
+#endif
+
 //*/

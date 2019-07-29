@@ -10,6 +10,7 @@
 #include "../common/data/flash_stream.h"
 
 #define HTTPClientRequest ethernet::HTTPClient&
+#define HTTPEthernetServer ethernet::HTTPServer
 
 class MACAddress final
 {
