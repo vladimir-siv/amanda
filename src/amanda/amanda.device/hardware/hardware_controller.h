@@ -64,3 +64,5 @@ class HardwareController
 		for (; it != end; ++it) csc.scan(*it);
 	}
 };
+
+extern HardwareController& default_hw_controller();

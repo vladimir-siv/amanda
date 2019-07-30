@@ -1,6 +1,6 @@
 ﻿#include <SPI.h>
-#include <UIPEthernet.h>
 #include <SD.h>
+#include <UIPEthernet.h>
 
 #include <server/ethernet.h>
 #include <server/request.h>

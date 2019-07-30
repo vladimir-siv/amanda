@@ -112,10 +112,11 @@ namespace xml
 
 			parser.reset();
 
-			for (unsigned long i = 0; !parser._finish && !_context.eos(); _context.advance())
+			for (unsigned long i = 0; !_context.eos(); _context.advance())
 			{
 				if (!_context.nextchar()) return false;
 				if (parser._cancel) return parser._oncancel(false);
+				if (parser._finish) break;
 				if (content_length != 0 && ++i == content_length) break;
 			}
 
@@ -135,10 +136,11 @@ namespace xml
 
 			reset();
 
-			for (unsigned long i = 0; !_finish && !_context.eos(); _context.advance())
+			for (unsigned long i = 0; !_context.eos(); _context.advance())
 			{
 				if (!_context.nextchar()) return _context.finish(false);
 				if (_cancel) return _oncancel();
+				if (_finish) break;
 				if (content_length != 0 && ++i == content_length) break;
 			}
 

@@ -9,12 +9,14 @@ void RequestBodyParser::reset()
 	level = 0;
 	l1 = 0;
 	task = nullptr;
+	proc = nullptr;
 }
 void RequestBodyParser::oncancel()
 {
 	level = 0;
 	l1 = 0;
 	task = nullptr;
+	proc = nullptr;
 }
 void RequestBodyParser::tag_opened(const char* tagname)
 {
@@ -55,7 +57,7 @@ void RequestBodyParser::attribute_spec(const char* attrname, const char* attrval
 			else if (strcmp(attrname, "process") == 0)
 			{
 				l1 = 2;
-				// resolve saxparser named as attrvalue and swap
+				proc = Process::resolve(attrvalue, request);
 			}
 			else cancel(); // invalid attribute specification
 		} break;
@@ -68,7 +70,23 @@ void RequestBodyParser::attribute_spec(const char* attrname, const char* attrval
 }
 void RequestBodyParser::attribute_spec_end()
 {
-
+	switch (level)
+	{
+		case 1:
+		{
+			if (l1 == 2)
+			{
+				if (proc != nullptr)
+				{
+					xml::SAXParser& parser = proc->parser();
+					bool succ = swap(parser);
+					proc->invoke(succ);
+					if (!succ) cancel(); // invalid request
+				}
+				else cancel(); // proc not set
+			}
+		} break;
+	}
 }
 void RequestBodyParser::text_value(const char* value)
 {
@@ -113,7 +131,12 @@ void RequestBodyParser::tag_closed(const char* tagname)
 				}
 				else if (l1 == 2)
 				{
-					l1 = 0;
+					if (proc != nullptr)
+					{
+						l1 = 0;
+						proc = nullptr;
+					}
+					else cancel(); // proc not set (should not be possible to happen)
 				}
 				else cancel(); // invalid action type (should not be possible to happen) 
 			}

@@ -1,11 +1,10 @@
 #pragma once
 
-#include "../../hardware/hardware_controller.h"
 #include "../../hardware/components/abstraction/component.h"
-#include "../../xml/api.h"
-#include "../../lib/string64.h"
-#include "../../common/units.h"
+#include "../../hardware/hardware_controller.h"
 #include "../../hardware/events.h"
+#include "../../xml/api.h"
+#include "../../common/units.h"
 
 // example of an event: "<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"no\"?><event repeat=\"0\"><requirements><pack><condition vid=\"4\" ctype=\"AS\"><lss>100.0</lss></condition><condition vid=\"3\" ctype=\"DS\"><equ>1</equ></condition></pack></requirements><actions><raise><write vid=\"3\" ctype=\"DE\"><state>1</state></write></raise><expire><write vid=\"3\" ctype=\"DE\"><state>0</state></write></expire></actions></event>"
 
@@ -29,6 +28,11 @@ class EventParser final : public xml::SAXParser
 	public: HardwareController* controller;
 	
 	public: explicit EventParser(HardwareController* controller = nullptr) : controller(controller) { }
+	
+	public: void setDefaultController()
+	{
+		controller = &default_hw_controller();
+	}
 	
 	protected: virtual void reset() override;
 	protected: virtual void oncancel() override;

@@ -1,15 +1,16 @@
 ﻿#include <SPI.h>
-#include <UIPEthernet.h>
 #include <SD.h>
+#include <UIPEthernet.h>
 
-#include <assert/static.h>
 #include <system.h>
+#include <structures/specialized/vlist.h>
 
 #include "hardware/hardware_controller.h"
 #include "hardware/events.h"
 
 #include "server/commands/command_parser.h"
 #include "server/events/event_parser.h"
+#include "server/events/event_handler.h"
 #include "server/ethernet.h"
 #include "server/request.h"
 #include "server/storage/sdcard.h"
@@ -18,6 +19,7 @@
 #include "common/communication/serial_monitor.h"
 
 using communication::SerialMonitor;
+#define _LOG(TAG, ...) SerialMonitor::println(F(" > ["), TAG, F("] {@"), (unsigned long)System::millis(), F("ms} "), ##__VA_ARGS__)
 
 //#define _RUN_TESTS
 
@@ -44,6 +46,11 @@ LDR ldr(A15);
 
 PIR pir(36);
 
+HardwareController& default_hw_controller()
+{
+	return controller;
+}
+
 void setup()
 {
 	System::init();
@@ -52,11 +59,11 @@ void setup()
 	
 	SerialMonitor::begin();
 	pinMode(13, OUTPUT);
-	if (!storage::SDCard::init()) SerialMonitor::println(F("Failed to initialize SD card."));
+	if (!storage::SDCard::init()) _LOG(F("STORAGE"), F("Failed to initialize SD card."));
 	ethernet::begin(IPAddress(192, 168, 56, 177));
 	server.begin();
 
-	SerialMonitor::println (F("HTTP server running at: "), ethernet::localIP());
+	_LOG(F("SERVER"), F("HTTP server running at: "), ethernet::localIP());
 
 	controller += &btn1;
 	controller += &btn2;
@@ -88,18 +95,21 @@ void setup()
 void loop()
 {
 #ifndef _RUN_TESTS
-	while (server.await());
+	while (server.await())
+	{
+		// this should run in a seperate thread, meaning these 2 threads have to be synchronized
+		EventHandler::instance().check_events();
+	}
+
+	_LOG(F("SERVER"), F("Incoming client request"));
 	HTTPClientRequest client = server.get_request();
-
-	//SerialMonitor::println(SerialMonitor::endl(), F("============= New client request ============="), SerialMonitor::endl());
-	//SD.remove(F("/request.log"));
-
+	
 	RequestHandler handler;
-
 	if (!handler.parse(client)) client.bad_request();
 
 	Thread::delay(10);
 	client.stop();
+	_LOG(F("SERVER"), F("Client request processed"));
 #else
 	test_loop();
 #endif

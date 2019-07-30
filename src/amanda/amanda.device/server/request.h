@@ -11,12 +11,13 @@
  * <action task="Echo/hello"></action> -> <message>Hello World.</message>
  * <action task="Echo/reply"><arg>{message}</arg></action> -> <message>{message}</message>
  * 
- * <action process="event-create">{event-xml}</action> -> <action>[success|failure]</action>
+ * <action process="Event/create">{event-xml}</action> -> <action>[success|failure]</action>
  */
 
 #include "../xml/api.h"
 #include "ethernet.h"
 #include "actions/task.h"
+#include "actions/process.h"
 
 class Host final
 {
@@ -34,6 +35,7 @@ class RequestBodyParser final : public xml::SAXParser
 	private: unsigned int level;
 	private: unsigned int l1;
 	private: Task* task;
+	private: Process* proc;
 	
 	public: RequestBodyParser(HTTPClientRequest request) : request(request) { }
 	
