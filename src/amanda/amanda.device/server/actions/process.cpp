@@ -6,8 +6,8 @@ Process* Process::resolve(const char* name, HTTPClientRequest request)
 {
 	Process* proc;
 
-	if (strcmp(name, "") == 0) proc = nullptr;
-	else if (strcmp(name, "Event/create") == 0) proc = EventCreateProcess::instance();
+	if (strcmp_P(name, PSTR("")) == 0) proc = nullptr;
+	else if (strcmp_P(name, PSTR("Event/create")) == 0) proc = EventCreateProcess::instance();
 	// ...
 	else proc = nullptr;
 

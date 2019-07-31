@@ -60,6 +60,7 @@ void setup()
 	SerialMonitor::begin();
 	pinMode(13, OUTPUT);
 	if (!storage::SDCard::init()) _LOG(F("STORAGE"), F("Failed to initialize SD card."));
+	EventHandler::instance().init_storage();
 	ethernet::begin(IPAddress(192, 168, 56, 177));
 	server.begin();
 
@@ -105,9 +106,8 @@ void loop()
 	HTTPClientRequest client = server.get_request();
 	
 	RequestHandler handler;
-	if (!handler.parse(client)) client.bad_request();
+	if (!handler.parse(client)) client.respond_bad_request();
 
-	Thread::delay(10);
 	client.stop();
 	_LOG(F("SERVER"), F("Client request processed"));
 #else
@@ -123,24 +123,29 @@ void loop()
 
 void test_commands(bool _setup = false)
 {
-	Command& cmd = CommandParser::instance().extractCommand();
-
-	bool p1 = CommandParser::instance().parse(data::FlashStream(F("<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"no\"?><command name=\"blink\"><arg>1000</arg></command>")));
-	if (p1)
+	if (_setup)
 	{
-		controller[3]->execute(cmd);
-		controller[4]->execute(cmd);
-		controller[5]->execute(cmd);
-	}
+		Command& cmd = CommandParser::instance().extractCommand();
 
-	bool p2 = CommandParser::instance().parse(data::FlashStream(F("<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"no\"?><command name=\"blink\"><arg>10000</arg></command>")));
-	if (p2)
-	{
-		controller[6]->execute(cmd);
-	}
+		bool p1 = CommandParser::instance().parse(data::FlashStream(F("<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"no\"?><command name=\"blink\"><arg>1000</arg></command>")));
+		if (p1)
+		{
+			_LOG(F("EXECUTE"), cmd.name.c_str(), '(', cmd.args[0].c_str(), F(", "), cmd.args[1].c_str(), F(", "), cmd.args[2].c_str(), F(", "), cmd.args[3].c_str(), F(", "), cmd.args[4].c_str(), ')');
+			controller[3]->execute(cmd);
+			controller[4]->execute(cmd);
+			controller[5]->execute(cmd);
+		}
 
-	if (!p1) SerialMonitor::println(F("P1 failed."));
-	if (!p2) SerialMonitor::println(F("P2 failed."));
+		bool p2 = CommandParser::instance().parse(data::FlashStream(F("<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"no\"?><command name=\"blink\"><arg>10000</arg></command>")));
+		if (p2)
+		{
+			_LOG(F("EXECUTE"), cmd.name.c_str(), '(', cmd.args[0].c_str(), F(", "), cmd.args[1].c_str(), F(", "), cmd.args[2].c_str(), F(", "), cmd.args[3].c_str(), F(", "), cmd.args[4].c_str(), ')');
+			controller[6]->execute(cmd);
+		}
+
+		if (!p1) SerialMonitor::println(F("P1 failed."));
+		if (!p2) SerialMonitor::println(F("P2 failed."));
+	}
 }
 void test_events(bool _setup = false)
 {
@@ -168,6 +173,8 @@ void test_events(bool _setup = false)
 
 	if (_setup)
 	{
+		_LOG(F("EVENTS"), F("Setting up..."));
+
 		cnd_ldr = cond::_new(&ldr)->compare("leq", 100.0f);
 		cnd_pir = cond::_new(&pir)->compare("equ", HIGH);
 
@@ -183,6 +190,8 @@ void test_events(bool _setup = false)
 		evt->append(pck);
 		evt->appendRaise(raise);
 		evt->appendExpire(expire);
+
+		_LOG(F("EVENTS"), F("Done!"));
 	}
 
 	bool newv = evt->check();
@@ -196,11 +205,15 @@ void test_event_parser(bool _setup = false)
 
 	if (_setup)
 	{
+		_LOG(F("EVENTS"), F("Setting up..."));
+
 		EventParser parser(&controller);
 		bool p = parser.parse(data::FlashStream(F("<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"no\"?><event repeat=\"3\"><requirements><pack><condition vid=\"4\" ctype=\"AS\"><lss>100.0</lss></condition><condition vid=\"3\" ctype=\"DS\"><equ>1</equ></condition></pack></requirements><actions><raise><write vid=\"3\" ctype=\"DE\"><state>1</state></write></raise><expire><write vid=\"3\" ctype=\"DE\"><state>0</state></write></expire></actions></event>")));
 
 		if (p) evt = parser.extractEvent();
 		else SerialMonitor::println(F("Parsing event failed."));
+
+		_LOG(F("EVENTS"), F("Done!"));
 	}
 
 	if (evt)
@@ -220,11 +233,12 @@ void test_setup()
 
 void test_loop()
 {
+	//SerialScanner sscanner;
 	//SerialMonitor::print(F("<scan>"));
 	//controller.scan(&sscanner);
 	//SerialMonitor::println(F("</scan>"));
 
-	//Thread::delay(100);
+	//test_commands();
 	//test_events();
 	//test_event_parser();
 }

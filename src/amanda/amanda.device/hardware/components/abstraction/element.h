@@ -7,7 +7,7 @@ class IElement : public IComponent
 	public: virtual ~IElement() override = 0;
 	public: virtual byte pin() const = 0;
 	public: virtual Type ctype() const override { return Type::ELEMENT; };
-	public: virtual const char* description() const override { return "generic element"; }
+	public: virtual const __FlashStringHelper* description() const override { return F("generic element"); }
 };
 
 class DigitalElement : public IElement
@@ -28,7 +28,7 @@ class DigitalElement : public IElement
 	public: virtual VID ID() const final override { return _id; }
 	public: virtual byte pin() const final override { return _pin; }
 	public: virtual Type ctype() const override { return (Type)(IElement::ctype() | Type::DIGITAL); }
-	public: virtual const char* description() const override { return "digital element"; }
+	public: virtual const __FlashStringHelper* description() const override { return F("digital element"); }
 	
 	public: virtual void write(DigitalState state) const { digitalWrite(_pin, state); };
 };
@@ -51,8 +51,8 @@ class AnalogElement : public IElement
 	public: virtual VID ID() const final override { return _id; }
 	public: virtual byte pin() const final override { return _pin; }
 	public: virtual Type ctype() const override { return (Type)(IElement::ctype() | Type::ANALOG); }
-	public: virtual const char* description() const override { return "analog element"; }
+	public: virtual const __FlashStringHelper* description() const override { return F("analog element"); }
 	
 	public: virtual void write(AnalogValue value) const { analogWrite(_pin, value); }
-	public: virtual const char* const unit() const { return nullptr; };
+	public: virtual unit e_unit() const { unit u; u.to_default(); return u; }
 };

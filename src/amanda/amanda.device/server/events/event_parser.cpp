@@ -77,12 +77,12 @@ void EventParser::tag_opened(const char* tagname)
 	{
 		case 1:
 		{
-			if (strcmp(tagname, "event") != 0) cancel(); // invalid tag
+			if (strcmp_P(tagname, PSTR("event")) != 0) cancel(); // invalid tag
 		} break;
 		case 2:
 		{
-			if (strcmp(tagname, "requirements") == 0) l2 = 1;
-			else if (strcmp(tagname, "actions") == 0) l2 = 2;
+			if (strcmp_P(tagname, PSTR("requirements")) == 0) l2 = 1;
+			else if (strcmp_P(tagname, PSTR("actions")) == 0) l2 = 2;
 			else cancel(); // invalid tag
 		} break;
 		case 3:
@@ -91,7 +91,7 @@ void EventParser::tag_opened(const char* tagname)
 			{
 				case 1: // inside requirements
 				{
-					if (strcmp(tagname, "pack") == 0)
+					if (strcmp_P(tagname, PSTR("pack")) == 0)
 					{
 #ifdef _DEBUG_EVENT_PARSER_
 						if (pck == nullptr)
@@ -109,8 +109,8 @@ void EventParser::tag_opened(const char* tagname)
 				} break;
 				case 2: // inside actions
 				{
-					if (strcmp(tagname, "raise") == 0) l3 = 1;
-					else if (strcmp(tagname, "expire") == 0) l3 = 2;
+					if (strcmp_P(tagname, PSTR("raise")) == 0) l3 = 1;
+					else if (strcmp_P(tagname, PSTR("expire")) == 0) l3 = 2;
 					else cancel(); // invalid tag
 				} break;
 
@@ -126,7 +126,7 @@ void EventParser::tag_opened(const char* tagname)
 			{
 				case 1: // inside requirements
 				{
-					if (strcmp(tagname, "condition") == 0)
+					if (strcmp_P(tagname, PSTR("condition")) == 0)
 					{
 						if (cnd != nullptr) cancel(); // previous condition not closed
 					}
@@ -134,7 +134,7 @@ void EventParser::tag_opened(const char* tagname)
 				} break;
 				case 2: // inside actions
 				{
-					if (strcmp(tagname, "write") != 0)
+					if (strcmp_P(tagname, PSTR("write")) != 0)
 					{
 						cancel(); // invalid tag
 					}
@@ -178,8 +178,8 @@ void EventParser::tag_opened(const char* tagname)
 				} break;
 				case 2: // inside actions
 				{
-					if (strcmp(tagname, "value") == 0) l5 = 1;
-					else if (strcmp(tagname, "state") == 0) l5 = 2;
+					if (strcmp_P(tagname, PSTR("value")) == 0) l5 = 1;
+					else if (strcmp_P(tagname, PSTR("state")) == 0) l5 = 2;
 					else cancel(); // invalid tag
 				} break;
 
@@ -202,7 +202,7 @@ void EventParser::attribute_spec(const char* attrname, const char* attrvalue)
 	{
 		case 1: // event
 		{
-			if (strcmp(attrname, "repeat") == 0)
+			if (strcmp_P(attrname, PSTR("repeat")) == 0)
 			{
 #ifdef _DEBUG_EVENT_PARSER_
 				if (evt == nullptr)
@@ -221,7 +221,7 @@ void EventParser::attribute_spec(const char* attrname, const char* attrvalue)
 		} break;
 		case 4: // vid & ctype
 		{
-			if (strcmp(attrname, "vid") == 0)
+			if (strcmp_P(attrname, PSTR("vid")) == 0)
 			{
 				if (comp_details.vid == 0)
 				{
@@ -229,9 +229,9 @@ void EventParser::attribute_spec(const char* attrname, const char* attrvalue)
 				}
 				else cancel(); // vid attribute duplicate
 			}
-			else if (strcmp(attrname, "ctype") == 0)
+			else if (strcmp_P(attrname, PSTR("ctype")) == 0)
 			{
-				if (strcmp(comp_details.ctype, "") == 0)
+				if (strcmp_P(comp_details.ctype, PSTR("")) == 0)
 				{
 					if (attrvalue[2] == 0)
 					{
@@ -249,7 +249,7 @@ void EventParser::attribute_spec(const char* attrname, const char* attrvalue)
 		{
 			if (l2 == 2 && l5 == 1)
 			{
-				if (strcmp(attrname, "unit") == 0)
+				if (strcmp_P(attrname, PSTR("unit")) == 0)
 				{
 					if (unt.isset()) cancel(); // unit already set (duplicate attribute)
 					else if (!unt.set(attrvalue)) cancel(); // invalid or unknown unit
@@ -283,7 +283,7 @@ void EventParser::attribute_spec_end()
 		case 4: // vid & ctype (for both <condition> and <write>)
 		{
 			// [DECISION DEPENDENCY: component vid must not be equal to 0]
-			if (comp_details.vid != 0 && strcmp(comp_details.ctype, "") != 0)
+			if (comp_details.vid != 0 && strcmp_P(comp_details.ctype, PSTR("")) != 0)
 			{
 				if (comp == nullptr)
 				{
@@ -478,16 +478,16 @@ void EventParser::tag_closed(const char* tagname)
 	{
 		case 1:
 		{
-			if (strcmp(tagname, "event") != 0) cancel(); // invalid tag
+			if (strcmp_P(tagname, PSTR("event")) != 0) cancel(); // invalid tag
 		} break;
 		case 2:
 		{
-			if (strcmp(tagname, "requirements") == 0)
+			if (strcmp_P(tagname, PSTR("requirements")) == 0)
 			{
 				if (l2 == 1) l2 = 0;
 				else cancel(); // closing tag mismatch
 			}
-			else if (strcmp(tagname, "actions") == 0)
+			else if (strcmp_P(tagname, PSTR("actions")) == 0)
 			{
 				if (l2 == 2) l2 = 0;
 				else cancel(); // closing tag mismatch
@@ -500,7 +500,7 @@ void EventParser::tag_closed(const char* tagname)
 			{
 				case 1: // inside requirements
 				{
-					if (strcmp(tagname, "pack") == 0)
+					if (strcmp_P(tagname, PSTR("pack")) == 0)
 					{
 						if (evt != nullptr)
 						{
@@ -526,12 +526,12 @@ void EventParser::tag_closed(const char* tagname)
 				} break;
 				case 2: // inside actions
 				{
-					if (strcmp(tagname, "raise") == 0)
+					if (strcmp_P(tagname, PSTR("raise")) == 0)
 					{
 						if (l3 == 1) l3 = 0;
 						else cancel(); // closing tag mismatch
 					}
-					else if (strcmp(tagname, "expire") == 0)
+					else if (strcmp_P(tagname, PSTR("expire")) == 0)
 					{
 						if (l3 == 2) l3 = 0;
 						else cancel(); // closing tag mismatch
@@ -551,7 +551,7 @@ void EventParser::tag_closed(const char* tagname)
 			{
 				case 1: // inside requirements
 				{
-					if (strcmp(tagname, "condition") == 0)
+					if (strcmp_P(tagname, PSTR("condition")) == 0)
 					{
 						if (pck != nullptr)
 						{
@@ -579,7 +579,7 @@ void EventParser::tag_closed(const char* tagname)
 				} break;
 				case 2: // inside actions
 				{
-					if (strcmp(tagname, "write") == 0)
+					if (strcmp_P(tagname, PSTR("write")) == 0)
 					{
 						comp = nullptr;
 						comp_details.reset();
@@ -612,7 +612,7 @@ void EventParser::tag_closed(const char* tagname)
 				} break;
 				case 2: // inside actions
 				{
-					if (strcmp(tagname, "value") == 0)
+					if (strcmp_P(tagname, PSTR("value")) == 0)
 					{
 						if (l5 == 1)
 						{
@@ -622,7 +622,7 @@ void EventParser::tag_closed(const char* tagname)
 						}
 						else cancel(); // closing tag mismatch
 					}
-					else if (strcmp(tagname, "state") == 0)
+					else if (strcmp_P(tagname, PSTR("state")) == 0)
 					{
 						if (l5 == 2) l5 = 0;
 						else cancel(); // closing tag mismatch

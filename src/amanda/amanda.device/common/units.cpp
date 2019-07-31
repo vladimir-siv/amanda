@@ -1,9 +1,12 @@
 #include "units.h"
 
+// If given a certain value of any measurement other than volts, which function should convert such value in volts
 namespace converters
 {
+	auto nullout = [](double value) -> double { return 0.0; };
 	auto direct = [](double value) -> double { return value; };
-	auto lux = [](double value) -> double { return log(value); }; // not valid!
+	auto percent = [](double value) -> double { return value / 20.0; };
+	auto lux = [](double value) -> double { return log(value); }; // not valid! should be inverse of interpolation used at ldr.cpp
 	auto celsius = [](double value) -> double { return value * unitconstants::celsius(); };
 }
 
@@ -12,13 +15,15 @@ measurement measurement::known[]
 {
 	{ "n", converters::direct },
 	{ "V", converters::direct },
+	{ "%", converters::percent },
 	{ "lux", converters::lux },
-	{ "*C", converters::celsius }
+	{ "*C", converters::celsius },
+	{ "s", converters::nullout }
 };
 
 measurement* measurement::resolve(const char* label)
 {
-	if (label == nullptr || strcmp(label, "") == 0) return nullptr;
+	if (label == nullptr || strcmp_P(label, PSTR("")) == 0) return nullptr;
 
 	for (unsigned int i = 0; i < sizeof(known) / sizeof(measurement); ++i)
 	{

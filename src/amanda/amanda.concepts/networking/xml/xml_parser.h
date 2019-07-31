@@ -8,7 +8,7 @@ class XmlParser final
 {
 	private: enum State { DECLARATION_DETECT, START, TAG_OPEN_CLOSE, TAG_OPENING, AWAIT_SPACE, ATTRIBUTE_DETECT, ATTRIBUTE_VALUE_START, ATTRIBUTE_VALUE_DETECT, ATTRIBUTE_END, IMMEDIATE_CLOSE, TAG_OPENED, TEXT_DETECT, TAG_CLOSE, TAG_CLOSING };
 	
-	private: ConstantParser _cparser;
+	private: ConstantParser _header;
 	private: State _state = DECLARATION_DETECT;
 	private: char _name[65] = { };
 	private: byte _ncurrent = 0;
@@ -20,17 +20,17 @@ class XmlParser final
 	
 	public: XmlEventDispatcher events;
 	
+	public: explicit XmlParser(ConstantParser::CStream& header) : _header(header) { }
+	
 	public: void reset()
 	{
-		_cparser.reset();
+		_header.reset(false);
 		_state = DECLARATION_DETECT;
 		_name[64] = 0;
 		_value[64] = 0;
 		_level = 0;
 		_hasRoot = false;
 		_afterSpace = ATTRIBUTE_DETECT;
-
-		_cparser.parse("<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"no\"?>");
 	}
 	
 	public: bool nextchar(char c)
@@ -39,7 +39,7 @@ class XmlParser final
 		{
 			case DECLARATION_DETECT:
 			{
-				ConstantParser::Result res = _cparser.next(c);
+				ConstantParser::Result res = _header.next(c);
 				if (res == ConstantParser::ERROR) return false;
 				if (res == ConstantParser::DONE) _state = START;
 			} break;

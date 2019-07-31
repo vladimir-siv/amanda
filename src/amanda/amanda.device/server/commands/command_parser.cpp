@@ -12,14 +12,14 @@ void CommandParser::tag_opened(const char* tagname)
 
 	if (level == 1)
 	{
-		if (strcmp(tagname, "command") != 0)
+		if (strcmp_P(tagname, PSTR("command")) != 0)
 		{
 			cancel(); // invalid tag
 		}
 	}
 	else if (level == 2)
 	{
-		if (arg > 4 || strcmp(tagname, "arg") != 0)
+		if (arg > 4 || strcmp_P(tagname, PSTR("arg")) != 0)
 		{
 			cancel(); // too many args or invalid tag
 		}
@@ -30,7 +30,7 @@ void CommandParser::attribute_spec(const char* attrname, const char* attrvalue)
 {
 	if (level == 1)
 	{
-		if (strcmp(attrname, "name") == 0)
+		if (strcmp_P(attrname, PSTR("name")) == 0)
 		{
 			command.name = attrvalue;
 		}
@@ -54,14 +54,14 @@ void CommandParser::tag_closed(const char* tagname)
 {
 	if (level == 1)
 	{
-		if (tagname != nullptr && strcmp(tagname, "command") != 0)
+		if (tagname != nullptr && strcmp_P(tagname, PSTR("command")) != 0)
 		{
 			cancel(); // closing tag not correct
 		}
 	}
 	else if (level == 2)
 	{
-		if (tagname != nullptr && strcmp(tagname, "arg") == 0)
+		if (tagname != nullptr && strcmp_P(tagname, PSTR("arg")) == 0)
 		{
 			++arg;
 		}

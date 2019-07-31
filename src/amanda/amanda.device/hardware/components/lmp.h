@@ -9,7 +9,7 @@
 class LMP : public DigitalElement
 {
 	public: explicit LMP(byte pin) : DigitalElement(pin) { }
-	public: virtual const char* description() const override { return "Lamp"; }
+	public: virtual const __FlashStringHelper* description() const override { return F("Lamp"); }
 };
 
 class BlinkingLMP : public LMP
@@ -21,11 +21,11 @@ class BlinkingLMP : public LMP
 	
 	public: explicit BlinkingLMP(byte pin) : LMP(pin), _sync(1), _blinker(_delegate, this) { }
 	
-	public: virtual const char* commands() const override { return "|blink|stop|"; }
+	public: virtual const __FlashStringHelper* commands() const override { return F("|blink|stop|"); }
 	public: virtual CommandResult execute(const Command& command) override
 	{
-		if (command.name == "") { }
-		else if (command.name == "blink")
+		if (command.name == F("")) { }
+		else if (command.name == F("blink"))
 		{
 			if (!command.args[0].empty() && command.args[1].empty())
 			{
@@ -33,7 +33,7 @@ class BlinkingLMP : public LMP
 				blink(freq);
 			}
 		}
-		else if (command.name == "stop")
+		else if (command.name == F("stop"))
 		{
 			if (command.args[0].empty())
 			{

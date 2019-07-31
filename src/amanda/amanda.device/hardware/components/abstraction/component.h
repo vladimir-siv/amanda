@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Arduino.h>
+#include "../../../common/units.h"
 #include "../../../lib/string64.h"
 
 using VID = const unsigned long;
@@ -56,10 +57,10 @@ class IComponent
 	public: static const Type AnalogElement = (Type)(ANALOG | ELEMENT);
 	public: static Type resolveType(const char* name)
 	{
-		if (strcmp(name, "DS") == 0) return DigitalSensor;
-		if (strcmp(name, "AS") == 0) return AnalogSensor;
-		if (strcmp(name, "DE") == 0) return DigitalElement;
-		if (strcmp(name, "AE") == 0) return AnalogElement;
+		if (strcmp_P(name, PSTR("DS")) == 0) return DigitalSensor;
+		if (strcmp_P(name, PSTR("AS")) == 0) return AnalogSensor;
+		if (strcmp_P(name, PSTR("DE")) == 0) return DigitalElement;
+		if (strcmp_P(name, PSTR("AE")) == 0) return AnalogElement;
 
 		return Type::NONE;
 	}
@@ -68,7 +69,7 @@ class IComponent
 	
 	public: virtual VID ID() const = 0;
 	public: virtual Type ctype() const = 0;
-	public: virtual const char* description() const { return "component"; }
+	public: virtual const __FlashStringHelper* description() const { return F("component"); }
 	
 	public: bool is(Type type) const
 	{
@@ -82,29 +83,29 @@ class IComponent
 		Type ty = (Type)(this_type & type);
 		return this_type != Type::NONE && ty != Type::NONE;
 	}
-	public: const char* type_str() const
+	public: const __FlashStringHelper* type_str() const
 	{
-		if (ctype() == NONE) return "";
+		if (ctype() == NONE) return F("");
 
-		if (is((Type)1)) return "D";
-		if (is((Type)2)) return "A";
-		if (is((Type)3)) return "DA";
-		if (is((Type)4)) return "S";
-		if (is((Type)5)) return "DS";
-		if (is((Type)6)) return "AS";
-		if (is((Type)7)) return "DAS";
-		if (is((Type)8)) return "E";
-		if (is((Type)9)) return "DE";
-		if (is((Type)10)) return "AE";
-		if (is((Type)11)) return "DAE";
-		if (is((Type)12)) return "SE";
-		if (is((Type)13)) return "DSE";
-		if (is((Type)14)) return "ASE";
-		if (is((Type)15)) return "DASE";
+		if (is((Type)1)) return F("D");
+		if (is((Type)2)) return F("A");
+		if (is((Type)3)) return F("DA");
+		if (is((Type)4)) return F("S");
+		if (is((Type)5)) return F("DS");
+		if (is((Type)6)) return F("AS");
+		if (is((Type)7)) return F("DAS");
+		if (is((Type)8)) return F("E");
+		if (is((Type)9)) return F("DE");
+		if (is((Type)10)) return F("AE");
+		if (is((Type)11)) return F("DAE");
+		if (is((Type)12)) return F("SE");
+		if (is((Type)13)) return F("DSE");
+		if (is((Type)14)) return F("ASE");
+		if (is((Type)15)) return F("DASE");
 
-		return "";
+		return F("");
 	}
 	
-	public: virtual const char* commands() const { return "||"; }
+	public: virtual const __FlashStringHelper* commands() const { return F("||"); }
 	public: virtual CommandResult execute(const Command& command) { return CommandResult::null(); };
 };

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <Arduino.h>
+
 #include "../../hardware/components/abstraction/component.h"
 #include "../../xml/api.h"
 #include "../../lib/string64.h"

@@ -68,7 +68,7 @@ namespace ethernet
 		public: operator bool() const { return const_cast<EthernetClient&>(_client); }
 		
 		public: void inquire_request() { next(); }
-		public: void stop() { _client.stop(); }
+		public: void stop() { respond_blank(); _client.stop(); }
 		
 		public: uint8_t connected() const { return const_cast<EthernetClient&>(_client).connected(); }
 		public: int available() const { return const_cast<EthernetClient&>(_client).available(); }
@@ -124,7 +124,7 @@ namespace ethernet
 		}
 		public: void respond(data::InputStream&& stream) { respond(stream); }
 		
-		public: void bad_request()
+		public: void respond_bad_request()
 		{
 			if (header_sent) return;
 			header_sent = true;
@@ -146,6 +146,33 @@ namespace ethernet
 					"\t</meta>\r\n"
 					"\t<content>\r\n"
 					"\t\t<message>Error 400: Bad Request</message>\r\n"
+					"\t</content>\r\n"
+					"</response>"
+				)
+			);
+
+			while (!fs.eos()) _client.write(fs.advance());
+		}
+		public: void respond_blank()
+		{
+			if (header_sent) return;
+			header_sent = true;
+
+			data::FlashStream fs
+			(
+				F
+				(
+					"HTTP/1.1 200 OK\r\n"
+					"Content-Type: application/xml\r\n"
+					"Connection: close\r\n"
+					"\r\n"
+					"<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"no\"?>\r\n"
+					"<response>\r\n"
+					"\t<meta>\r\n"
+					"\t\t<status>200</status>\r\n"
+					"\t\t<title>Arduino</title>\r\n"
+					"\t</meta>\r\n"
+					"\t<content>\r\n"
 					"\t</content>\r\n"
 					"</response>"
 				)

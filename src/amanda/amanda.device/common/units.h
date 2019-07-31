@@ -103,8 +103,10 @@ class measurements final
 	
 	public: static measurement& unnamed() { return measurement::known[0]; }
 	public: static measurement& volts() { return measurement::known[1]; }
-	public: static measurement& lux() { return measurement::known[2]; }
-	public: static measurement& celsius() { return measurement::known[3]; }
+	public: static measurement& percent() { return measurement::known[2]; }
+	public: static measurement& lux() { return measurement::known[3]; }
+	public: static measurement& celsius() { return measurement::known[4]; }
+	public: static measurement& seconds() { return measurement::known[5]; }
 };
 
 class unit final
@@ -155,7 +157,7 @@ class unit final
 	}
 	public: bool set(const char* unit)
 	{
-		if (unit == nullptr || strcmp(unit, "") == 0) return false;
+		if (unit == nullptr || strcmp_P(unit, PSTR("")) == 0) return false;
 		if (set(*unit, unit + 1)) return true;
 		if (set(' ', unit)) return true;
 		return false;

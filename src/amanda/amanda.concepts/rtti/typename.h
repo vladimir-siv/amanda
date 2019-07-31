@@ -62,5 +62,5 @@ template <typename Type> TypeName<Type>* TypeName<Type>::instance = TypeName<Typ
 #ifndef _TYPENAME_DISABLE_
 #define type_name(type) (TypeName<type>::resolve().name)
 #else
-#define type_name(type) ("<TypeName Disabled>")
+#define type_name(type) ("<unknown>")
 #endif

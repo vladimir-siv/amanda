@@ -31,8 +31,8 @@ class LM35 : public AnalogSensor
 	}
 	
 	public: explicit LM35(byte pin) : AnalogSensor(pin) { }
-	public: virtual const char* description() const override { return "LM35"; }
+	public: virtual const __FlashStringHelper* description() const override { return F("LM35"); }
 	
 	public: virtual AnalogValue read() const { return const_cast<LM35* const>(this)->measure() / unitconstants::celsius(); }
-	public: virtual const char* const unit() const override { return "*C"/*"°C"*/; };
+	public: virtual unit s_unit() const override { char lbl[] { '*', 'C', 0 }; unit u(lbl); return u; }
 };

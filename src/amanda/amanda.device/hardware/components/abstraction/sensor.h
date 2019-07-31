@@ -7,7 +7,7 @@ class ISensor : public IComponent
 	public: virtual ~ISensor() override = 0;
 	public: virtual byte pin() const = 0;
 	public: virtual Type ctype() const override { return Type::SENSOR; };
-	public: virtual const char* description() const override { return "generic sensor"; }
+	public: virtual const __FlashStringHelper* description() const override { return F("generic sensor"); }
 };
 
 class DigitalSensor : public ISensor
@@ -28,7 +28,7 @@ class DigitalSensor : public ISensor
 	public: virtual VID ID() const final override { return _id; }
 	public: virtual byte pin() const final override { return _pin; }
 	public: virtual Type ctype() const override { return (Type)(ISensor::ctype() | Type::DIGITAL); }
-	public: virtual const char* description() const override { return "digital sensor"; }
+	public: virtual const __FlashStringHelper* description() const override { return F("digital sensor"); }
 	
 	public: virtual DigitalState read() const { return digitalRead(_pin); };
 };
@@ -51,8 +51,8 @@ class AnalogSensor : public ISensor
 	public: virtual VID ID() const final override { return _id; }
 	public: virtual byte pin() const final override { return _pin; }
 	public: virtual Type ctype() const override { return (Type)(ISensor::ctype() | Type::ANALOG); }
-	public: virtual const char* description() const override { return "analog sensor"; }
+	public: virtual const __FlashStringHelper* description() const override { return F("analog sensor"); }
 	
 	public: virtual AnalogValue read() const { return (AnalogValue)analogRead(_pin); }
-	public: virtual const char* const unit() const { return nullptr; };
+	public: virtual unit s_unit() const { unit u; u.to_default(); return u; }
 };

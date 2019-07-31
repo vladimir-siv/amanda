@@ -7,6 +7,8 @@
 #include <server/storage/sdcard.h>
 #include <common/data/flash_stream.h>
 
+#include <hardware/hardware_controller.h>
+
 class Req2Hndl : public RequestHandler
 {
 	private: storage::OutputFileStream log;
@@ -48,7 +50,33 @@ class Req2Hndl : public RequestHandler
 		log.println();
 		RequestHandler::request_header_end();
 	}
+	protected: virtual bool request_body(HTTPClientRequest request) override
+	{
+		request.inquire_request();
+
+		for (unsigned int i = 0; i < content_length; )
+		{
+			char c = request.current();
+
+			Serial.print(c);
+			log.print(c);
+
+			if (++i >= content_length) break;
+			request.next();
+		}
+
+		Serial.println();
+		log.println();
+
+		return true;
+	}
 };
+
+HardwareController& default_hw_controller()
+{
+	HardwareController* hw_ctrl = nullptr;
+	return *hw_ctrl;
+}
 
 ethernet::HTTPServer server;
 
@@ -87,9 +115,8 @@ void loop(void)
 	SD.remove(F("/request.log"));
 	Req2Hndl handler;
 
-	if (!handler.parse(client)) client.bad_request();
-
-	delay(10);
+	if (!handler.parse(client)) client.respond_bad_request();
+	
 	client.stop();
 
 	Serial.println(F("client disconnected"));

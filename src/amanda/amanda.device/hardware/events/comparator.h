@@ -40,14 +40,14 @@ class comparator final
 	}
 	public: static cmp resolve(const char* name)
 	{
-		char cname[] = "???";
+		char cname[4] = { '?', '?', '?', 0 };
 		for (int i = 0; i < sizeof(cname) / sizeof(char) - 1; ++i) cname[i] = name[i];
-		if (strcmp(cname, "equ") == 0) return equ();
-		if (strcmp(cname, "neq") == 0) return neq();
-		if (strcmp(cname, "gtr") == 0) return gtr();
-		if (strcmp(cname, "lss") == 0) return lss();
-		if (strcmp(cname, "geq") == 0) return geq();
-		if (strcmp(cname, "leq") == 0) return leq();
+		if (strcmp_P(cname, PSTR("equ")) == 0) return equ();
+		if (strcmp_P(cname, PSTR("neq")) == 0) return neq();
+		if (strcmp_P(cname, PSTR("gtr")) == 0) return gtr();
+		if (strcmp_P(cname, PSTR("lss")) == 0) return lss();
+		if (strcmp_P(cname, PSTR("geq")) == 0) return geq();
+		if (strcmp_P(cname, PSTR("leq")) == 0) return leq();
 		return nullptr;
 	}
 	

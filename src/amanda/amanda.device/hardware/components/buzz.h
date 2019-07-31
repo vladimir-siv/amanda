@@ -8,15 +8,15 @@ class BUZZ : public AnalogElement
 	protected: static BUZZ* _playing;
 	
 	public: explicit BUZZ(byte pin) : AnalogElement(pin) { }
-	public: virtual const char* description() const override { return "buzzer"; }
+	public: virtual const __FlashStringHelper* description() const override { return F("buzzer"); }
 	
 	public: virtual void write(AnalogValue value) const override { }
 	
-	public: virtual const char* commands() const override { return "|play|stop|"; }
+	public: virtual const __FlashStringHelper* commands() const override { return F("|play|stop|"); }
 	public: virtual CommandResult execute(const Command& command) override
 	{
-		if (command.name == "") { }
-		else if (command.name == "play")
+		if (command.name == F("")) { }
+		else if (command.name == F("play"))
 		{
 			if (!command.args[0].empty())
 			{
@@ -31,7 +31,7 @@ class BUZZ : public AnalogElement
 				play(freq, dur);
 			}
 		}
-		else if (command.name == "stop")
+		else if (command.name == F("stop"))
 		{
 			if (command.args[0].empty())
 			{

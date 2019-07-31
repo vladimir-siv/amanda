@@ -26,13 +26,13 @@ void RequestBodyParser::tag_opened(const char* tagname)
 	{
 		case 1:
 		{
-			if (strcmp(tagname, "action") != 0) cancel(); // invalid tag
+			if (strcmp_P(tagname, PSTR("action")) != 0) cancel(); // invalid tag
 		} break;
 		case 2:
 		{
 			if (l1 == 1)
 			{
-				if (strcmp(tagname, "arg") != 0) cancel(); // invalid tag
+				if (strcmp_P(tagname, PSTR("arg")) != 0) cancel(); // invalid tag
 			}
 			else cancel(); // invalid nesting level
 		} break;
@@ -49,12 +49,12 @@ void RequestBodyParser::attribute_spec(const char* attrname, const char* attrval
 	{
 		case 1:
 		{
-			if (strcmp(attrname, "task") == 0)
+			if (strcmp_P(attrname, PSTR("task")) == 0)
 			{
 				l1 = 1;
 				task = Task::resolve(attrvalue, request);
 			}
-			else if (strcmp(attrname, "process") == 0)
+			else if (strcmp_P(attrname, PSTR("process")) == 0)
 			{
 				l1 = 2;
 				proc = Process::resolve(attrvalue, request);
@@ -117,7 +117,7 @@ void RequestBodyParser::tag_closed(const char* tagname)
 	{
 		case 1:
 		{
-			if (strcmp(tagname, "action") == 0)
+			if (strcmp_P(tagname, PSTR("action")) == 0)
 			{
 				if (l1 == 1)
 				{
@@ -146,7 +146,7 @@ void RequestBodyParser::tag_closed(const char* tagname)
 		{
 			if (l1 == 1)
 			{
-				if (strcmp(tagname, "arg") != 0) cancel(); // invalid tag
+				if (strcmp_P(tagname, PSTR("arg")) != 0) cancel(); // invalid tag
 			}
 			else cancel(); // invalid nesting level
 		} break;

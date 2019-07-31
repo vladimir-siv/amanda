@@ -3,6 +3,7 @@
 #include <networking/xml/xml_parser.h>
 
 #include "../common/data/stream.h"
+#include "../common/data/flash_stream.h"
 
 namespace xml
 {
@@ -40,6 +41,22 @@ namespace xml
 				private: void text_value(const char* value) { if (_executing) _executing->text_value(value); }
 				private: void tag_closed(const char* tagname) { if (_executing) _executing->tag_closed(tagname); }
 			};
+			private: class XMLHeader final : public ConstantParser::CStream
+			{
+				friend class Context;
+
+				private: static XMLHeader& instance() { static XMLHeader header; return header; }
+				
+				private: data::FlashStream header;
+				
+				private: XMLHeader() : header(F("<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"no\"?>")) { }
+				public: virtual ~XMLHeader() { }
+				
+				public: virtual char current() const override { return header.current(); }
+				public: virtual void next() override { header.next(); }
+				public: virtual bool eos() const override { return header.eos(); }
+				public: virtual bool reset() override { return header.reset(); }
+			};
 			
 			private: XmlParser _exec_unit;
 			private: Dispatcher _dispatcher;
@@ -51,6 +68,7 @@ namespace xml
 			private: Callback<Dispatcher, void, const char*> _tag_closed;
 			
 			private: Context() :
+				_exec_unit(XMLHeader::instance()),
 				_tag_opened(_dispatcher, &Dispatcher::tag_opened),
 				_attribute_spec(_dispatcher, &Dispatcher::attribute_spec),
 				_attribute_spec_end(_dispatcher, &Dispatcher::attribute_spec_end),

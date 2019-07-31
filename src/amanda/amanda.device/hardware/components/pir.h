@@ -19,7 +19,7 @@ class PIR : public DigitalSensor
 	}
 	
 	public: explicit PIR(byte pin) : DigitalSensor(pin) { }
-	public: virtual const char* description() const override { return "PIR"; }
+	public: virtual const __FlashStringHelper* description() const override { return F("PIR"); }
 	
 	public: virtual DigitalState read() const override { return (DigitalState)const_cast<PIR* const>(this)->detect(); }
 };

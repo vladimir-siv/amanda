@@ -36,7 +36,9 @@ class ComponentScanner
 		if (asen != nullptr)
 		{
 			scanner->scan(F("<value unit=\""));
-			scanner->scan(asen->unit());
+			unit u = asen->s_unit();
+			if (u.scale() != 0) scanner->scan(u.prefix());
+			scanner->scan(u.measure()->label);
 			scanner->scan(F("\">"));
 			scanner->scan(asen->read());
 			scanner->scan(F("</value>"));

@@ -14,6 +14,8 @@
  * <action process="Event/create">{event-xml}</action> -> <action>[success|failure]</action>
  */
 
+#include <Arduino.h>
+
 #include "../xml/api.h"
 #include "ethernet.h"
 #include "actions/task.h"
@@ -72,32 +74,32 @@ class RequestHandler : public ethernet::HTTPRequestParser
 	}
 	protected: virtual void request_uri(const char* uri) override
 	{
-		if (strcmp(uri, "POST / HTTP/1.1") != 0) cancel();
+		if (strcmp_P(uri, PSTR("POST / HTTP/1.1")) != 0) cancel();
 	}
 	protected: virtual void request_header(const char* hname, const char* hvalue) override
 	{
-		if (strcmp(hname, "Host") == 0)
+		if (strcmp_P(hname, PSTR("Host")) == 0)
 		{
 			if (host) cancel();
 			else host = hvalue;
 		}
-		else if (strcmp(hname, "Content-Length") == 0)
+		else if (strcmp_P(hname, PSTR("Content-Length")) == 0)
 		{
 			if (content_length > 0) cancel();
 			else content_length = strtoul(hvalue, nullptr, 0);
 		}
-		else if (strcmp(hname, "Expect") == 0)
+		else if (strcmp_P(hname, PSTR("Expect")) == 0)
 		{
-			if (strcmp(hvalue, "100-continue") == 0)
+			if (strcmp_P(hvalue, PSTR("100-continue")) == 0)
 			{
 				if (expect100continue) cancel();
 				else expect100continue = true;
 			}
 			else cancel();
 		}
-		else if (strcmp(hname, "Connection") == 0)
+		else if (strcmp_P(hname, PSTR("Connection")) == 0)
 		{
-			if (strcmp(hvalue, "Keep-Alive") == 0)
+			if (strcmp_P(hvalue, PSTR("Keep-Alive")) == 0)
 			{
 				if (keepAlive) cancel();
 				else keepAlive = true;

@@ -5,6 +5,22 @@
 
 #include <string>
 
+class XMLHeader final : public ConstantParser::CStream
+{
+	public: static XMLHeader& instance() { static XMLHeader header; return header; }
+	
+	private: const char* _header = "<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"no\"?>";
+	private: const char* _current = _header;
+	
+	private: XMLHeader() { }
+	public: virtual ~XMLHeader() { }
+	
+	public: virtual char current() const override { return *_current; }
+	public: virtual void next() override { if (!eos()) ++_current; }
+	public: virtual bool eos() const override { return current() == 0; }
+	public: virtual bool reset() override { _current = _header; return true; }
+};
+
 const char* nextxmldoc()
 {
 	static int i = 0;
@@ -171,7 +187,7 @@ void _xml_parser()
 {
 	OutputComparer<std::string>& o = comparer();
 
-	XmlParser parser;
+	XmlParser parser(XMLHeader::instance());
 
 	Executable<void, const char*> tag_opened(&_tag_opened);
 	Executable<void, const char*, const char*> attribute_spec(&_attribute_spec);

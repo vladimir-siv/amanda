@@ -1,5 +1,7 @@
 #pragma once
 
+#include <Arduino.h>
+
 #include "../../hardware/components/abstraction/component.h"
 #include "../../hardware/hardware_controller.h"
 #include "../../hardware/events.h"
