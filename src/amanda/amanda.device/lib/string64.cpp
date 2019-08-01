@@ -7,6 +7,12 @@ unsigned int String64::index_of(char c)
 	return current - _str;
 }
 
+void String64::cut(unsigned int index)
+{
+	if (index >= _length) return;
+	_str[_length = index] = 0;
+}
+
 bool String64::equals(const String64& other) const
 {
 	if (_length != other._length) return false;
@@ -60,9 +66,17 @@ bool String64::equals(const __FlashStringHelper* str) const
 
 String64& String64::operator=(const char* str)
 {
-	_length = 0;
-	_str[64] = 0;
+	clear();
+	return operator+=(str);
+}
 
+String64& String64::operator+=(const String64& str)
+{
+	return operator+=(str.c_str());
+}
+
+String64& String64::operator+=(const char* str)
+{
 	if (str != nullptr)
 	{
 		while (*str != 0 && _length < 64)

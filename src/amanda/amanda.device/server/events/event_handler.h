@@ -1,9 +1,8 @@
 #pragma once
 
-#include <SPI.h>
-#include <SD.h>
-
 #include <structures/specialized/vlist.h>
+
+#include "../storage/sdcard.h"
 
 #include "../../hardware/components/abstraction/component.h"
 #include "../../hardware/hardware_controller.h"
@@ -110,6 +109,22 @@ class EventHandler final
 			EventHandlerInfo info;
 			info.save(EV_SYS_INFO);
 		}
+	}
+	public: bool clean_storage() const
+	{
+		bool succ = true;
+
+		if (SD.exists(EV_ROOT_DIR))
+		{
+			succ = storage::SDCard::rmdir_f(EV_ROOT_DIR);
+		}
+
+		if (SD.exists(EV_SYS_INFO))
+		{
+			SD.remove(EV_SYS_INFO);
+		}
+
+		return succ;
 	}
 	
 	public: void append(const event* e)

@@ -18,12 +18,15 @@ class String64
 	public: String64& clear() { _str[_length = 0] = 0; return *this; }
 	
 	public: unsigned int index_of(char c);
+	public: void cut(unsigned int index);
 	
 	public: virtual bool equals(const String64& other) const;
 	public: virtual bool equals(const char* str) const;
 	public: virtual bool equals(const __FlashStringHelper* str) const;
 	
 	public: String64& operator=(const char* str);
+	public: String64& operator+=(const String64& str);
+	public: String64& operator+=(const char* str);
 	public: String64& operator+=(char c);
 	
 	public: friend bool operator==(const String64& str1, const String64& str2) { return str1.equals(str2); }

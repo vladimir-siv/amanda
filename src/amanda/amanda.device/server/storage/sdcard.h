@@ -5,6 +5,7 @@
 #include <SD/src/SD.h>
 
 #include "../../common/data/stream.h"
+#include "../../lib/string64.h"
 
 namespace storage
 {
@@ -105,8 +106,8 @@ namespace storage
 			return true;
 		}
 		public: static bool WriteToFile(File& file, data::InputStream&& content) { return WriteToFile(file, content); }
-		public: static bool WriteToFile(File&& file, data::InputStream& content) { return WriteToFile(file, content); }
-		public: static bool WriteToFile(File&& file, data::InputStream&& content) { return WriteToFile(file, content); }
+		public: static bool WriteToFile(File&& file, data::InputStream& content) { return WriteToFile(file, content); file.close(); }
+		public: static bool WriteToFile(File&& file, data::InputStream&& content) { return WriteToFile(file, content); file.close(); }
 		public: template <typename T> static bool WriteToFile(T&& file, data::InputStream& content)
 		{
 			File f = SD.open(file, FILE_WRITE);
@@ -124,5 +125,64 @@ namespace storage
 		}
 		public: static bool PrintFileToSerial(InputFileStream&& file) { return PrintFileToSerial(file); }
 		public: template <typename T> static bool PrintFileToSerial(T&& file) { return PrintFileToSerial(InputFileStream(file)); }
+		
+		private: static bool rmdir_f(File& dir, String64& path)
+		{
+			dir.rewindDirectory();
+
+			while (true)
+			{
+				File entry = dir.openNextFile();
+				if (!entry) break;
+
+				bool is_dir = entry.isDirectory();
+
+				unsigned int length = path.length();
+				path += '/';
+				path += entry.name();
+
+				if (is_dir)
+				{
+					if (!rmdir_f(entry, path))
+					{
+						entry.close();
+						return false;
+					}
+				}
+
+				entry.close();
+
+				const char* e = path.c_str();
+
+				if (!SD.exists(e)) return false; // String64 overflow
+
+				if (is_dir) SD.rmdir(e);
+				else SD.remove(e);
+				
+				path.cut(length);
+			}
+
+			return true;
+		}
+		public: template <typename T> static bool rmdir_f(T&& dirname)
+		{
+			if (!SD.exists(dirname)) return false;
+
+			File dir = SD.open(dirname);
+
+			if (!dir.isDirectory())
+			{
+				dir.close();
+				return false;
+			}
+
+			String64 path = dir.name();
+			bool succ = rmdir_f(dir, path);
+
+			if (!succ) return false;
+			
+			SD.rmdir(dirname);
+			return true;
+		}
 	};
 }
