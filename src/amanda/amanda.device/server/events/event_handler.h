@@ -203,7 +203,7 @@ class EventHandler final
 			id = ++info.designator;
 			if (id == 0) id = ++info.designator;
 
-			path.append(id, 61);
+			path.append(id, 36);
 			if (!SD.exists(path.c_str())) break;
 			path.cut(len);
 		}
@@ -231,7 +231,7 @@ class EventHandler final
 		String64 path;
 		path += EV_ROOT_DIR;
 		path += '/';
-		path.append(id, 61);
+		path.append(id, 36);
 
 		if (!SD.exists(path.c_str())) return false;
 
@@ -290,7 +290,7 @@ class EventHandler final
 
 					if (entry.isDirectory())
 					{
-						unsigned long id = String64::parse(entry.name(), 61);
+						unsigned long id = String64::parse(entry.name(), 36);
 						succ = succ && destroy(id);
 					}
 

@@ -61,8 +61,9 @@ void setup()
 	pinMode(13, OUTPUT);
 
 	if (!storage::SDCard::init()) _LOG(F("STORAGE"), F("Failed to initialize SD card."));
-	
+
 	EventHandler& e_handler = EventHandler::instance();
+	//if (!e_handler.clean_storage()) _LOG(F("EVENTS"), F("Failed to clean the storage."));
 	e_handler.init_storage();
 
 	ethernet::begin(IPAddress(192, 168, 56, 177));

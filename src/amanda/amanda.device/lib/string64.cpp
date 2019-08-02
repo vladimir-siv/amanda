@@ -6,13 +6,13 @@ unsigned long String64::parse(const char* str, unsigned int base = DEC)
 	{
 		if ('0' <= chr && chr <= '9') return (unsigned long)(chr - '0');
 		if ('A' <= chr && chr <= 'Z') return (unsigned long)(chr - 'A') + 10ul;
-		if ('a' <= chr && chr <= 'z') return (unsigned long)(chr - 'a') + 36ul;
+		if ('a' <= chr && chr <= 'z') return (unsigned long)(chr - 'a') + 10ul;
 		return 0;
 	};
 
 	if (str == nullptr || strcmp_P(str, PSTR("")) == 0) return 0;
 
-	if (base < 2 || base >= 62) return 0;
+	if (base < 2 || base > 36) return 0;
 
 	unsigned long value = 0;
 
@@ -155,11 +155,11 @@ String64& String64::append(unsigned long val, unsigned int base = DEC)
 	{
 		if (val < 10) return '0' + val;
 		if (val < 36) return 'A' + (val - 10);
-		if (val < 62) return 'a' + (val - 36);
+		//if (val < 62) return 'a' + (val - 36);
 		return 0;
 	};
 
-	if (base < 2 || base >= 62) return *this;
+	if (base < 2 || base > 36) return *this;
 
 	if (val == 0)
 	{
