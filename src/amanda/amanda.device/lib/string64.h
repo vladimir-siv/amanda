@@ -4,6 +4,8 @@
 
 class String64
 {
+	public: static unsigned long parse(const char* str, unsigned int base = DEC);
+
 	protected: char _str[65] = { };
 	protected: unsigned int _length = 0;
 	
@@ -27,7 +29,10 @@ class String64
 	public: String64& operator=(const char* str);
 	public: String64& operator+=(const String64& str);
 	public: String64& operator+=(const char* str);
+	public: String64& operator+=(const __FlashStringHelper* str);
 	public: String64& operator+=(char c);
+	
+	public: String64& append(unsigned long val, unsigned int base = DEC);
 	
 	public: friend bool operator==(const String64& str1, const String64& str2) { return str1.equals(str2); }
 	public: friend bool operator!=(const String64& str1, const String64& str2) { return !(str1 == str2); }

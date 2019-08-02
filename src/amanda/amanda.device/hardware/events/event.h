@@ -5,6 +5,8 @@
 #include <dependency.h>
 #include <structures/specialized/vlist.h>
 
+#include "../../common/data/stream.h"
+
 #include "pack.h"
 #include "activity.h"
 
@@ -69,5 +71,21 @@ class event final
 		}
 
 		return acty.real->setReq(result);
+	}
+	
+	public: void to_xml(data::OutputStream& stream)
+	{
+		stream.print(F("<event repeat=\"")); stream.print(getRepeat()); stream.print(F("\">"));
+
+		stream.print(F("<requirements>"));
+		for (auto i = packs.real->begin(); i != packs.real->end(); ++i)
+		{
+			i->to_xml(stream);
+		}
+		stream.print(F("</requirements>"));
+
+		acty.real->to_xml(stream);
+
+		stream.print(F("</event>"));
 	}
 };

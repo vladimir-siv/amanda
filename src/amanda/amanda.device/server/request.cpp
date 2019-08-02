@@ -1,4 +1,5 @@
 #include "request.h"
+#include "../lib/string64.h"
 
 // level legend:
 //	l1 == 1 => task
@@ -10,6 +11,7 @@ void RequestBodyParser::reset()
 	l1 = 0;
 	task = nullptr;
 	proc = nullptr;
+	action_name = nullptr; // [WARNING] Deallocate!
 }
 void RequestBodyParser::oncancel()
 {
@@ -17,6 +19,7 @@ void RequestBodyParser::oncancel()
 	l1 = 0;
 	task = nullptr;
 	proc = nullptr;
+	action_name = nullptr; // [WARNING] Deallocate!
 }
 void RequestBodyParser::tag_opened(const char* tagname)
 {
@@ -45,6 +48,22 @@ void RequestBodyParser::tag_opened(const char* tagname)
 }
 void RequestBodyParser::attribute_spec(const char* attrname, const char* attrvalue)
 {
+	// [WARNING] THIS METHOD SHOULD RETURN A COPY OF THE SUBSTRING, INSTEAD
+	// IT'S CHANGING THE GIVEN ONE & RETURNING IT AS AN OPTIMIZATION WHICH
+	// ENTIRELY DEPENDS ON XML_PARSER ACCIDENTLY STILL HAVING THE CORRECT VALUE
+	// OF THE LAST ATTRIBUTE SPECIFICATION STILL IN ATTRIBUTE SPEC END EVENT.
+	// THUS, THERE IS NO NEED FOR ANY NEW ALLOCATION/COPY/DEALLOCATION BUT WILL
+	// WORK ONLY IF THE ABOVE IS CORRECT. SHOULD YOU EVER CHANGE THAT, THIS
+	// PIECE OF CODE WILL NOT WORK!
+	static auto split = [](const char* value) -> const char*
+	{
+		while (*value != 0 && *value != ':') value++;
+		if (*value == 0) return nullptr; // colon not found
+
+		*((char*)value) = 0;
+		return value + 1;
+	};
+
 	switch (level)
 	{
 		case 1:
@@ -52,11 +71,13 @@ void RequestBodyParser::attribute_spec(const char* attrname, const char* attrval
 			if (strcmp_P(attrname, PSTR("task")) == 0)
 			{
 				l1 = 1;
+				action_name = split(attrvalue);
 				task = Task::resolve(attrvalue, request);
 			}
 			else if (strcmp_P(attrname, PSTR("process")) == 0)
 			{
 				l1 = 2;
+				action_name = split(attrvalue);
 				proc = Process::resolve(attrvalue, request);
 			}
 			else cancel(); // invalid attribute specification
@@ -74,16 +95,46 @@ void RequestBodyParser::attribute_spec_end()
 	{
 		case 1:
 		{
-			if (l1 == 2)
+			switch (l1)
 			{
-				if (proc != nullptr)
+				case 1:
 				{
-					xml::SAXParser& parser = proc->parser();
-					bool succ = swap(parser);
-					proc->invoke(succ);
-					if (!succ) cancel(); // invalid request
-				}
-				else cancel(); // proc not set
+					if (task != nullptr)
+					{
+						task->accept_name(action_name);
+
+						if (action_name != nullptr)
+						{
+							((char*)action_name)[-1] = ':';
+							action_name = nullptr; // [WARNING] Deallocate!
+						}
+					}
+					else cancel(); // task not set
+				} break;
+				case 2:
+				{
+					if (proc != nullptr)
+					{
+						xml::SAXParser& parser = proc->parser();
+						String64 name = action_name;
+
+						if (action_name != nullptr)
+						{
+							((char*)action_name)[-1] = ':';
+							action_name = nullptr; // [WARNING] Deallocate!
+						}
+
+						bool succ = swap(parser);
+						proc->invoke(succ, name.c_str());
+						if (!succ) cancel(); // invalid request
+					}
+					else cancel(); // proc not set
+				} break;
+
+				default:
+				{
+					cancel(); // invalid state (should not be possible to happen)
+				} break;
 			}
 		} break;
 	}

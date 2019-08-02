@@ -18,7 +18,7 @@ class EventCreateProcess : public Process
 		e.setDefaultController();
 		return e;
 	}
-	public: virtual void invoke(bool success = true) override
+	public: virtual void invoke(bool success = true, const char* name = nullptr) override
 	{
 		if (success)
 		{
@@ -26,7 +26,7 @@ class EventCreateProcess : public Process
 
 			if (ev != nullptr)
 			{
-				EventHandler::instance().append(ev);
+				EventHandler::instance().append(ev, name);
 				client->respond(data::FlashStream(F("<action>success</action>")));
 				return;
 			}

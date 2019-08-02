@@ -1,5 +1,29 @@
 #include "string64.h"
 
+unsigned long String64::parse(const char* str, unsigned int base = DEC)
+{
+	static auto val = [](char chr) -> unsigned long
+	{
+		if ('0' <= chr && chr <= '9') return (unsigned long)(chr - '0');
+		if ('A' <= chr && chr <= 'Z') return (unsigned long)(chr - 'A') + 10ul;
+		if ('a' <= chr && chr <= 'z') return (unsigned long)(chr - 'a') + 36ul;
+		return 0;
+	};
+
+	if (str == nullptr || strcmp_P(str, PSTR("")) == 0) return 0;
+
+	if (base < 2 || base >= 62) return 0;
+
+	unsigned long value = 0;
+
+	for (; *str != 0; ++str)
+	{
+		value = value * base + val(*str);
+	}
+
+	return value;
+}
+
 unsigned int String64::index_of(char c)
 {
 	char* current = _str;
@@ -90,12 +114,71 @@ String64& String64::operator+=(const char* str)
 	return *this;
 }
 
+String64& String64::operator+=(const __FlashStringHelper* str)
+{
+	PGM_P _current = reinterpret_cast<PGM_P>(str);
+	char c = pgm_read_byte(_current);
+	auto advance = [&]() -> char
+	{
+		char t = c;
+		if (c != 0) c = pgm_read_byte(++_current);
+		return t;
+	};
+
+	if (str != nullptr)
+	{
+		while (c != 0 && _length < 64)
+		{
+			_str[_length++] = advance();
+		}
+	}
+
+	_str[_length] = 0;
+
+	return *this;
+}
+
 String64& String64::operator+=(char c)
 {
 	if (_length < 64)
 	{
 		_str[_length++] = c;
 		_str[_length] = 0;
+	}
+
+	return *this;
+}
+
+String64& String64::append(unsigned long val, unsigned int base = DEC)
+{
+	static auto chr = [](unsigned long val) -> char
+	{
+		if (val < 10) return '0' + val;
+		if (val < 36) return 'A' + (val - 10);
+		if (val < 62) return 'a' + (val - 36);
+		return 0;
+	};
+
+	if (base < 2 || base >= 62) return *this;
+
+	if (val == 0)
+	{
+		operator+=('0');
+		return *this;
+	}
+
+	char digits[64];
+	byte len = 0;
+
+	while (val > 0)
+	{
+		digits[len++] = chr(val % base);
+		val /= base;
+	}
+
+	while (len > 0)
+	{
+		operator+=(digits[--len]);
 	}
 
 	return *this;

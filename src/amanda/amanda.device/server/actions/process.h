@@ -11,5 +11,5 @@ class Process
 	
 	public: virtual ~Process() { }
 	public: virtual xml::SAXParser& parser() const = 0;
-	public: virtual void invoke(bool success = true) = 0;
+	public: virtual void invoke(bool success = true, const char* name = nullptr) = 0;
 };

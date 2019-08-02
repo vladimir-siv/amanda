@@ -4,6 +4,8 @@
 
 #include <dependency.h>
 
+#include "../../common/data/stream.h"
+
 class comparator final
 {
 	public: using cmp = bool (*)(float val, float ref);
@@ -66,4 +68,26 @@ class comparator final
 	public: comparator(const char* name, float ref) : _compare(resolve(name)), _ref(ref) { }
 	
 	public: bool operator()(float val) const { if (_compare.real == nullptr) return false; return (*_compare.real)(val, _ref.real); }
+	
+	public: void to_xml(data::OutputStream& stream)
+	{
+		const __FlashStringHelper* name = nullptr;
+
+		if (_compare.real == nullptr) return;
+		else if (_compare.real == equ()) name = F("equ");
+		else if (_compare.real == neq()) name = F("neq");
+		else if (_compare.real == gtr()) name = F("gtr");
+		else if (_compare.real == lss()) name = F("lss");
+		else if (_compare.real == geq()) name = F("geq");
+		else if (_compare.real == leq()) name = F("leq");
+		else return;
+
+		stream.print('<');
+		stream.print(name);
+		stream.print('>');
+		stream.print(_ref.real);
+		stream.print(F("</"));
+		stream.print(name);
+		stream.print('>');
+	}
 };

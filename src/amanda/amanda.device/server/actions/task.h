@@ -9,6 +9,7 @@ class Task
 	protected: ethernet::HTTPClient* client;
 	
 	public: virtual ~Task() { }
+	public: virtual void accept_name(const char* name = nullptr) { }
 	public: virtual void accept(const char* arg) = 0;
 	public: virtual void invoke() = 0;
 };

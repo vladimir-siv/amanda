@@ -4,6 +4,8 @@
 
 #include <dependency.h>
 
+#include "../../common/data/stream.h"
+
 #include "actions.h"
 
 class record final
@@ -52,7 +54,7 @@ class record final
 	{
 		if (acts.real) acts.real->appendExpire(act);
 	}
-
+	
 	public: void raise() const
 	{
 		if (acts.real) acts.real->raise();
@@ -60,5 +62,10 @@ class record final
 	public: void expire() const
 	{
 		if (acts.real) acts.real->expire();
+	}
+	
+	public: void to_xml(data::OutputStream& stream)
+	{
+		acts.real->to_xml(stream);
 	}
 };

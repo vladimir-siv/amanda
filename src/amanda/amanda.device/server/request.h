@@ -38,6 +38,7 @@ class RequestBodyParser final : public xml::SAXParser
 	private: unsigned int l1;
 	private: Task* task;
 	private: Process* proc;
+	private: const char* action_name;
 	
 	public: RequestBodyParser(HTTPClientRequest request) : request(request) { }
 	

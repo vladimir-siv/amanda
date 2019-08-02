@@ -5,6 +5,8 @@
 #include <dependency.h>
 #include <structures/specialized/vlist.h>
 
+#include "../../common/data/stream.h"
+
 #include "cond.h"
 
 class pack final
@@ -48,5 +50,17 @@ class pack final
 		}
 
 		return result;
+	}
+	
+	public: void to_xml(data::OutputStream& stream)
+	{
+		stream.print(F("<pack>"));
+
+		for (auto i = conds.real->begin(); i != conds.real->end(); ++i)
+		{
+			i->to_xml(stream);
+		}
+
+		stream.print(F("</pack>"));
 	}
 };

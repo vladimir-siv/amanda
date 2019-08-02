@@ -248,7 +248,7 @@ class vlist final
 		_first->next = second->next;
 		--_size;
 
-		// delete second
+		// delete second;
 		_allocator->dealloc(second);
 	}
 	
@@ -309,6 +309,19 @@ class vlist_enumerator : public enumerator<T*>
 		ptr->next = lst->_allocator->template alloc<volatile Node*>()->construct(value, ptr->next);
 		if (lst->_last == ptr) lst->_last = ptr->next;
 		++lst->_size;
+
+		return true;
+	}
+	public: virtual bool removeNext()
+	{
+		if (ptr == nullptr || ptr->next == nullptr) return false;
+
+		volatile Node* removing = ptr->next;
+		ptr->next = removing->next;
+		if (lst->_last == removing) lst->_last = ptr;
+		//delete removing;
+		lst->_allocator->dealloc(removing);
+		--lst->_size;
 
 		return true;
 	}

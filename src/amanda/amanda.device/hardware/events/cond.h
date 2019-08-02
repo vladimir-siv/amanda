@@ -5,6 +5,8 @@
 #include <dependency.h>
 #include <structures/specialized/vlist.h>
 
+#include "../../common/data/stream.h"
+
 #include "../components.h"
 
 #include "comparator.h"
@@ -69,5 +71,21 @@ class cond final
 		}
 
 		return 0;
+	}
+	
+	public: void to_xml(data::OutputStream& stream)
+	{
+		stream.print(F("<condition vid=\""));
+		stream.print(sensor.real->ID());
+		stream.print(F("\" ctype=\""));
+		stream.print(sensor.real->type_str());
+		stream.print(F("\">"));
+
+		for (auto i = comps.real->begin(); i != comps.real->end(); ++i)
+		{
+			i->to_xml(stream);
+		}
+
+		stream.print(F("</condition>"));
 	}
 };

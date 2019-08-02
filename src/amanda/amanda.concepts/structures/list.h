@@ -240,6 +240,18 @@ class list_enumerator : public enumerator<T>
 
 		return true;
 	}
+	public: virtual bool removeNext()
+	{
+		if (ptr == nullptr || ptr->next == nullptr) return false;
+
+		typename list<T>::Node* removing = ptr->next;
+		ptr->next = removing->next;
+		if (lst->_last == removing) lst->_last = ptr;
+		delete removing;
+		--lst->_size;
+
+		return true;
+	}
 	
 	public: virtual T& next() const { return ptr->next->value; }
 };

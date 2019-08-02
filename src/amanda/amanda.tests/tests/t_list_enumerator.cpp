@@ -76,4 +76,42 @@ void _list_enumerator()
 	}
 
 	assert::areEqual(i, lst.end(), "[A28] Enumerator is not on end");
+
+	i.begin();
+
+	++i; ++i; ++i;
+
+	i.removeNext();
+
+	++i;
+
+	i.removeNext();
+
+	++i; ++i;
+
+	i.removeNext();
+
+	++i; ++i; ++i; ++i;
+
+	i.removeNext();
+
+	i.begin();
+
+	const int N3 = 11;
+	int data3[N3] = { 3, 7, 4, -7, 1, -5, 0, 2, -2, -9, -4 };
+	message = "[Axx] Data not equal";
+
+	// lst: { 3, 7, 4, -7, 1, -5, 0, 2, -2, -9, -4 }
+	assert::areEqual(lst.size(), N3, "[A29] Size not equal to 11");
+	
+	assert::areEqual(lst.peek_back(), -4, "[A30] Last element not equal to -4");
+
+	for (int c = 0; i != lst.end(); ++i, ++c)
+	{
+		message[2] = '0' + (c + 1) / 10 + 3;
+		message[3] = '0' + (c + 1) % 10;
+		assert::areEqual(*i, data3[c], message.c_str());
+	}
+
+	assert::areEqual(i, lst.end(), "[A42] Enumerator is not on end");
 }

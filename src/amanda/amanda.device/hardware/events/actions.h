@@ -4,6 +4,8 @@
 
 #include <dependency.h>
 
+#include "../../common/data/stream.h"
+
 #include "../components.h"
 
 class action final
@@ -40,6 +42,36 @@ class action final
 			ael->write((AnalogValue)value.real);
 			return;
 		}
+	}
+	
+	public: void to_xml(data::OutputStream& stream)
+	{
+		stream.print(F("<write vid=\""));
+		stream.print(element.real->ID());
+		stream.print(F("\" ctype=\""));
+		stream.print(element.real->type_str());
+		stream.print(F("\">"));
+
+		DigitalElement* del = ComponentCaster::digital_element(element.real);
+		if (del != nullptr)
+		{
+			stream.print(F("<state>"));
+			stream.print((long)value.real);
+			stream.print(F("</state>"));
+			goto done;
+		}
+
+		AnalogElement* ael = ComponentCaster::analog_element(element.real);
+		if (ael != nullptr)
+		{
+			stream.print(F("<value unit=\"V\">"));
+			stream.print(value.real);
+			stream.print(F("</value>"));
+			goto done;
+		}
+
+	done:
+		stream.print(F("</write>"));
 	}
 };
 
@@ -101,5 +133,26 @@ class actions final
 				i->execute();
 			}
 		}
+	}
+	
+	public: void to_xml(data::OutputStream& stream)
+	{
+		stream.print(F("<actions>"));
+
+		stream.print(F("<raise>"));
+		for (auto i = _raise.real->begin(); i != _raise.real->end(); ++i)
+		{
+			i->to_xml(stream);
+		}
+		stream.print(F("</raise>"));
+
+		stream.print(F("<expire>"));
+		for (auto i = _expire.real->begin(); i != _expire.real->end(); ++i)
+		{
+			i->to_xml(stream);
+		}
+		stream.print(F("</expire>"));
+
+		stream.print(F("</actions>"));
 	}
 };

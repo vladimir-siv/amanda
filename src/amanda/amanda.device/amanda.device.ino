@@ -59,12 +59,18 @@ void setup()
 	
 	SerialMonitor::begin();
 	pinMode(13, OUTPUT);
+
 	if (!storage::SDCard::init()) _LOG(F("STORAGE"), F("Failed to initialize SD card."));
-	EventHandler::instance().init_storage();
+	
+	EventHandler& e_handler = EventHandler::instance();
+	e_handler.init_storage();
+
 	ethernet::begin(IPAddress(192, 168, 56, 177));
 	server.begin();
 
 	_LOG(F("SERVER"), F("HTTP server running at: "), ethernet::localIP());
+	_LOG(F("EVENTS"), F("Storage initialized at \""), e_handler.EV_ROOT_DIR, F("\" with system information at \""), e_handler.EV_SYS_INFO, F("\""));
+	_LOG(F("EVENTS"), F("Designator continuing from: "), e_handler.designator());
 
 	controller += &btn1;
 	controller += &btn2;
@@ -85,7 +91,7 @@ void setup()
 	controller += &ldr;
 
 	controller += &pir;
-	
+
 	System::unlock();
 
 #ifdef _RUN_TESTS
@@ -96,11 +102,8 @@ void setup()
 void loop()
 {
 #ifndef _RUN_TESTS
-	while (server.await())
-	{
-		// this should run in a seperate thread, meaning these 2 threads have to be synchronized
-		EventHandler::instance().check_events();
-	}
+	// this should run in a seperate thread, meaning these 2 threads have to be synchronized
+	do EventHandler::instance().check_events(); while (server.await());
 
 	_LOG(F("SERVER"), F("Incoming client request"));
 	HTTPClientRequest client = server.get_request();

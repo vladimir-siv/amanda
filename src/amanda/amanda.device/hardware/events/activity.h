@@ -4,6 +4,8 @@
 
 #include <dependency.h>
 
+#include "../../common/data/stream.h"
+
 #include "record.h"
 
 class activity final
@@ -66,5 +68,10 @@ class activity final
 			if (!rec.real->occur(true)) return;
 			rec.real->expire();
 		}
+	}
+	
+	public: void to_xml(data::OutputStream& stream)
+	{
+		rec.real->to_xml(stream);
 	}
 };
