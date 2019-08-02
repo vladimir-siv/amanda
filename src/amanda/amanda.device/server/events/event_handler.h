@@ -11,6 +11,7 @@
 #include "../../lib/string64.h"
 
 #include "event_handle.h"
+#include "event_parser.h"
 
 class EventHandler final
 {
@@ -266,6 +267,54 @@ class EventHandler final
 			info.save(EV_SYS_INFO);
 		}
 		else info.load(EV_SYS_INFO);
+	}
+	public: void load_events()
+	{
+		String64 path;
+		path += EV_ROOT_DIR;
+		path += '/';
+		unsigned int len = path.length();
+
+		File root = SD.open(EV_ROOT_DIR);
+
+		if (root.isDirectory())
+		{
+			EventParser ev_parser;
+			ev_parser.setDefaultController();
+
+			root.rewindDirectory();
+
+			while (true)
+			{
+				File entry = root.openNextFile();
+				if (!entry) break;
+
+				if (entry.isDirectory())
+				{
+					unsigned long id = String64::parse(entry.name(), 36);
+
+					if (id != 0)
+					{
+						path += entry.name();
+						path += EV_CONTENT(); // maybe optimize this?
+
+						storage::InputFileStream fs(path.c_str());
+
+						if (ev_parser.parse(fs, 0, true))
+						{
+							event_handle* handle = event_handle::_new(ev_parser.extractEvent(), id);
+							events.push_back(handle);
+						}
+
+						path.cut(len);
+					}
+				}
+
+				entry.close();
+			}
+		}
+
+		root.close();
 	}
 	public: bool clean_storage()
 	{

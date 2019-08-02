@@ -93,6 +93,8 @@ void setup()
 
 	controller += &pir;
 
+	e_handler.load_events();
+
 	System::unlock();
 
 #ifdef _RUN_TESTS

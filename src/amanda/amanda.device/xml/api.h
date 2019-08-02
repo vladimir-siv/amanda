@@ -84,9 +84,10 @@ namespace xml
 			
 			private: bool isExecuting() const { return _dispatcher.isExecuting(); }
 			private: bool set(SAXParser* parser) { return _dispatcher.set(parser); }
-			private: void reset(data::InputStream* stream) { _exec_unit.reset(); _stream = stream; }
+			private: void reset(data::InputStream* stream, bool skip_header = false) { _exec_unit.reset(skip_header); _stream = stream; }
 			private: SAXParser* swap(SAXParser* parser) { return _dispatcher.swap(parser); }
 			private: bool eos() const { return _stream == nullptr || _stream->eos(); }
+			/* [unused] */ private: char current() const { return _stream->current(); }
 			private: bool nextchar() { return _exec_unit.nextchar(_stream->current()); }
 			private: void advance() { _stream->next(); }
 			private: bool finish(bool success = true) { _stream = nullptr; return _dispatcher.finish(success); }
@@ -142,12 +143,12 @@ namespace xml
 
 			return true;
 		}
-		public: bool parse(data::InputStream&& xml, unsigned long content_length = 0) { return parse(xml, content_length); }
-		public: bool parse(data::InputStream& xml, unsigned long content_length = 0)
+		public: bool parse(data::InputStream&& xml, unsigned long content_length = 0, bool skip_header = false) { return parse(xml, content_length, skip_header); }
+		public: bool parse(data::InputStream& xml, unsigned long content_length = 0, bool skip_header = false)
 		{
 			if (!_context.set(this)) return false;
 
-			_context.reset(&xml);
+			_context.reset(&xml, skip_header);
 
 			_finish = false;
 			_cancel = false;

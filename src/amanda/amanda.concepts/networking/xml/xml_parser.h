@@ -22,10 +22,11 @@ class XmlParser final
 	
 	public: explicit XmlParser(ConstantParser::CStream& header) : _header(header) { }
 	
-	public: void reset()
+	public: void reset(bool skip_header = false)
 	{
 		_header.reset(false);
-		_state = DECLARATION_DETECT;
+		if (skip_header) _state = START;
+		else _state = DECLARATION_DETECT;
 		_name[64] = 0;
 		_value[64] = 0;
 		_level = 0;

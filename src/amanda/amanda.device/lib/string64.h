@@ -5,7 +5,7 @@
 class String64
 {
 	public: static unsigned long parse(const char* str, unsigned int base = DEC);
-
+	
 	protected: char _str[65] = { };
 	protected: unsigned int _length = 0;
 	
