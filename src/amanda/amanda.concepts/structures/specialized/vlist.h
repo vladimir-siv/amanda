@@ -271,7 +271,7 @@ class vlist_enumerator : public enumerator<T*>
 	protected: volatile Node* ptr;
 	protected: vlist_enumerator(volatile vlist<T>* lst, volatile Node* ptr) : lst(lst), ptr(ptr) { }
 	
-	public: virtual ~vlist_enumerator() override { }
+	public: virtual ~vlist_enumerator() { }
 	public: virtual vlist_enumerator* clone() const override { return new vlist_enumerator(lst, ptr); }
 	
 	public: virtual T*& operator*() const override { return const_cast<T*&>(ptr->value); }

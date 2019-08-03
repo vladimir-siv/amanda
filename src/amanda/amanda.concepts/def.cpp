@@ -4,7 +4,7 @@
 volatile NodeAllocator* NodeAllocator::_default()
 {
 	// number of nodes available in system
-	static volatile VNodeAllocator<96> _default_nodes;
+	static volatile VNodeAllocator<64> _default_nodes;
 	return &_default_nodes;
 }
 

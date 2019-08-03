@@ -190,7 +190,7 @@ class list_enumerator : public enumerator<T>
 	protected: typename list<T>::Node* ptr;
 	protected: list_enumerator(list<T>* lst, typename list<T>::Node* ptr) : lst(lst), ptr(ptr) { }
 	
-	public: virtual ~list_enumerator() override { }
+	public: virtual ~list_enumerator() { }
 	public: virtual list_enumerator* clone() const override { return new list_enumerator(lst, ptr); }
 	
 	public: virtual T& operator*() const override { return ptr->value; }

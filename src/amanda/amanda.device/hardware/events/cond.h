@@ -3,7 +3,7 @@
 #include <Arduino.h>
 
 #include <dependency.h>
-#include <structures/specialized/vlist.h>
+#include <extensions/memory_management/sdd_list.h>
 
 #include "../../common/data/stream.h"
 
@@ -14,43 +14,49 @@
 class cond final
 {
 	private: sdd::type<ISensor*> sensor;
-	private: sdd::type<vlist<comparator>*> comps;
+	private: sdd::type<sdd_list<comparator>*> comps;
 	
 	public: static cond* _new(ISensor* sensor)
 	{
-		auto comps = D::vlists->alloc<comparator>(D::nodes);
+		auto comps = sdd_list<comparator>::_new();
 		return D::sdds->alloc<cond>(sdd::cast(sensor), sdd::cast(comps));
 	}
 	public: cond(ISensor* sensor) :
 		sensor(sensor),
-		comps(D::vlists->alloc<comparator>(D::nodes))
+		comps(sdd_list<comparator>::_new())
 	{ }
 	public: ~cond()
 	{
-		for (auto i = comps.real->begin(); i != comps.real->end(); ++i) D::sdds->dealloc(*i);
-		comps.real->clear();
-		D::vlists->dealloc(comps.real);
+		auto comps = sdd_assume::list(this->comps.real);
+
+		for (auto i = comps.begin(); i != comps.end(); ++i) D::sdds->dealloc(*i);
+		
+		comps.clear();
+		//D::vlists->dealloc(comps.real);
+		this->comps.real = nullptr;
 
 		sensor.real = nullptr;
-		comps.real = nullptr;
 	}
 	
 	public: cond* compare(comparator::cmp cmp, float ref)
 	{
-		comps.real->push_back(comparator::_new(cmp, ref));
+		auto comps = sdd_assume::list(this->comps.real);
+		comps.push(comparator::_new(cmp, ref));
 		return this;
 	}
 	public: cond* compare(const char* cmp, float ref)
 	{
-		comps.real->push_back(comparator::_new(cmp, ref));
+		auto comps = sdd_assume::list(this->comps.real);
+		comps.push(comparator::_new(cmp, ref));
 		return this;
 	}
 	public: bool check() const
 	{
+		auto comps = sdd_assume::list(this->comps.real);
 		float val = value();
 		bool result = true;
 
-		for (auto i = comps.real->begin(); result && i != comps.real->end(); ++i)
+		for (auto i = comps.begin(); result && i != comps.end(); ++i)
 		{
 			result = result && (**i)(val);
 		}
@@ -75,13 +81,15 @@ class cond final
 	
 	public: void to_xml(data::OutputStream& stream)
 	{
+		auto comps = sdd_assume::list(this->comps.real);
+
 		stream.print(F("<condition vid=\""));
 		stream.print(sensor.real->ID());
 		stream.print(F("\" ctype=\""));
 		stream.print(sensor.real->type_str());
 		stream.print(F("\">"));
 
-		for (auto i = comps.real->begin(); i != comps.real->end(); ++i)
+		for (auto i = comps.begin(); i != comps.end(); ++i)
 		{
 			i->to_xml(stream);
 		}

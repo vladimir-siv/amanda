@@ -3,6 +3,7 @@
 #include <Arduino.h>
 
 #include <dependency.h>
+#include <extensions/memory_management/sdd_list.h>
 
 #include "../../common/data/stream.h"
 
@@ -77,77 +78,83 @@ class action final
 
 class actions final
 {
-	private: sdd::type<vlist<action>*> _raise;
-	private: sdd::type<vlist<action>*> _expire;
+	private: sdd::type<sdd_list<action>*> _raise;
+	private: sdd::type<sdd_list<action>*> _expire;
 	
 	public: static actions* _new()
 	{
-		auto _raise = D::vlists->alloc<action>(D::nodes);
-		auto _expire = D::vlists->alloc<action>(D::nodes);
+		auto _raise = sdd_list<action>::_new();
+		auto _expire = sdd_list<action>::_new();
 		return D::sdds->alloc<actions>(sdd::cast(_raise), sdd::cast(_expire));
 	}
 	public: actions() :
-		_raise(D::vlists->alloc<action>(D::nodes)),
-		_expire(D::vlists->alloc<action>(D::nodes))
+		_raise(sdd_list<action>::_new()),
+		_expire(sdd_list<action>::_new())
 	{ }
 	public: ~actions()
 	{
-		for (auto i = _raise.real->begin(); i != _raise.real->end(); ++i) D::sdds->dealloc(*i);
-		for (auto i = _expire.real->begin(); i != _expire.real->end(); ++i) D::sdds->dealloc(*i);
+		auto _raise = sdd_assume::list(this->_raise.real);
+		auto _expire = sdd_assume::list(this->_expire.real);
 
-		_raise.real->clear();
-		_expire.real->clear();
+		for (auto i = _raise.begin(); i != _raise.end(); ++i) D::sdds->dealloc(*i);
+		for (auto i = _expire.begin(); i != _expire.end(); ++i) D::sdds->dealloc(*i);
 
-		D::vlists->dealloc(_raise.real);
-		D::vlists->dealloc(_expire.real);
+		_raise.clear();
+		_expire.clear();
 
-		_raise.real = nullptr;
-		_expire.real = nullptr;
+		//D::vlists->dealloc(_raise.real);
+		//D::vlists->dealloc(_expire.real);
+
+		this->_raise.real = nullptr;
+		this->_expire.real = nullptr;
 	}
 	
 	public: void appendRaise(action* act)
 	{
-		if (_raise.real) _raise.real->push_back(act);
+		auto _raise = sdd_assume::list(this->_raise.real);
+		_raise.push(act);
 	}
 	public: void appendExpire(action* act)
 	{
-		if (_expire.real) _expire.real->push_back(act);
+		auto _expire = sdd_assume::list(this->_expire.real);
+		_expire.push(act);
 	}
 	
 	public: void raise() const
 	{
-		if (_raise.real)
+		auto _raise = sdd_assume::list(this->_raise.real);
+
+		for (auto i = _raise.cbegin(); i != _raise.cend(); ++i)
 		{
-			for (auto i = _raise.real->cbegin(); i != _raise.real->cend(); ++i)
-			{
-				i->execute();
-			}
+			i->execute();
 		}
 	}
 	public: void expire() const
 	{
-		if (_expire.real)
+		auto _expire = sdd_assume::list(this->_expire.real);
+		
+		for (auto i = _expire.cbegin(); i != _expire.cend(); ++i)
 		{
-			for (auto i = _expire.real->cbegin(); i != _expire.real->cend(); ++i)
-			{
-				i->execute();
-			}
+			i->execute();
 		}
 	}
 	
 	public: void to_xml(data::OutputStream& stream)
 	{
+		auto _raise = sdd_assume::list(this->_raise.real);
+		auto _expire = sdd_assume::list(this->_expire.real);
+
 		stream.print(F("<actions>"));
 
 		stream.print(F("<raise>"));
-		for (auto i = _raise.real->begin(); i != _raise.real->end(); ++i)
+		for (auto i = _raise.begin(); i != _raise.end(); ++i)
 		{
 			i->to_xml(stream);
 		}
 		stream.print(F("</raise>"));
 
 		stream.print(F("<expire>"));
-		for (auto i = _expire.real->begin(); i != _expire.real->end(); ++i)
+		for (auto i = _expire.begin(); i != _expire.end(); ++i)
 		{
 			i->to_xml(stream);
 		}

@@ -2,5 +2,5 @@
 
 namespace communication
 {
-	SerialMonitor::Functional SerialMonitor::endl([](void) -> void { Serial.println(); });
+	SerialMonitor::Functional SerialMonitor::endl([](void) -> size_t { return Serial.println(); });
 }

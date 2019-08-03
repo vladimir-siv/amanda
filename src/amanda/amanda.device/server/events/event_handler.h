@@ -408,4 +408,13 @@ class EventHandler final
 			i->e()->check();
 		}
 	}
+	
+	public: void output_events(data::OutputStream&& stream) const { output_events(stream); }
+	public: void output_events(data::OutputStream& stream) const
+	{
+		for (auto i = events.cbegin(); i != events.cend(); ++i)
+		{
+			i->e()->to_xml(stream);
+		}
+	}
 };

@@ -11,13 +11,6 @@ namespace dependency
 		return &_nodes;
 	}
 
-	volatile VListAllocator* vlist_allocator()
-	{
-		// number of vlists available for vsublists
-		static volatile VListAllocatorT<8> _vlists;
-		return &_vlists;
-	}
-
 	volatile SDDAllocator* sdd_allocator()
 	{
 		// number of SDD (8B) objects available in user sketch
@@ -29,6 +22,5 @@ namespace dependency
 namespace D
 {
 	volatile NodeAllocator* nodes = dependency::node_allocator();
-	volatile VListAllocator* vlists = dependency::vlist_allocator();
 	volatile SDDAllocator* sdds = dependency::sdd_allocator();
 };
