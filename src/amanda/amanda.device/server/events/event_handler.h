@@ -141,9 +141,9 @@ class EventHandler final
 	public: class EventDetails final : public StorableInfo
 	{
 		public: unsigned long id;
-		public: const char* name;
+		public: const char*& name;
 		
-		public: EventDetails(unsigned long id, const char* name) : id(id), name(name) { }
+		public: EventDetails(unsigned long id, const char*& name) : id(id), name(name) { }
 		public: virtual ~EventDetails() { }
 		
 		public: virtual void reset() override
@@ -166,7 +166,7 @@ class EventHandler final
 			}
 			else if (strcmp_P(attr, PSTR("name")) == 0)
 			{
-				name = value;
+				strcpy((char*&)name, value);
 			}
 		}
 	};
