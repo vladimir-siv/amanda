@@ -46,11 +46,6 @@ LDR ldr(A15);
 
 PIR pir(36);
 
-HardwareController& default_hw_controller()
-{
-	return controller;
-}
-
 void setup()
 {
 	System::init();
@@ -66,12 +61,14 @@ void setup()
 	//if (!e_handler.clean_storage()) _LOG(F("EVENTS"), F("Failed to clean the storage."));
 	e_handler.init_storage();
 
-	ethernet::begin(IPAddress(192, 168, 56, 177));
-	server.begin();
-
-	_LOG(F("SERVER"), F("HTTP server running at: "), ethernet::localIP());
 	_LOG(F("EVENTS"), F("Storage initialized at \""), e_handler.EV_ROOT_DIR, F("\" with system information at \""), e_handler.EV_SYS_INFO, F("\""));
 	_LOG(F("EVENTS"), F("Designator continuing from: "), e_handler.designator());
+
+	ethernet::begin(IPAddress(192, 168, 56, 177));
+	server.begin();
+	server.bind(controller);
+
+	_LOG(F("SERVER"), F("HTTP server running at: "), ethernet::localIP());
 
 	controller += &btn1;
 	controller += &btn2;
@@ -93,7 +90,7 @@ void setup()
 
 	controller += &pir;
 
-	e_handler.load_events();
+	e_handler.load_events(*server.get_bound_controller());
 
 	System::unlock();
 

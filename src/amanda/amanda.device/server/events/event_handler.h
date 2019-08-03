@@ -268,7 +268,7 @@ class EventHandler final
 		}
 		else info.load(EV_SYS_INFO);
 	}
-	public: void load_events()
+	public: void load_events(HardwareController& controller)
 	{
 		String64 path;
 		path += EV_ROOT_DIR;
@@ -280,7 +280,7 @@ class EventHandler final
 		if (root.isDirectory())
 		{
 			EventParser ev_parser;
-			ev_parser.setDefaultController();
+			ev_parser.controller = &controller;
 
 			root.rewindDirectory();
 

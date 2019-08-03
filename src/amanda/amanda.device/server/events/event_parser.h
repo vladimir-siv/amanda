@@ -31,11 +31,6 @@ class EventParser final : public xml::SAXParser
 	
 	public: explicit EventParser(HardwareController* controller = nullptr) : controller(controller) { }
 	
-	public: void setDefaultController()
-	{
-		controller = &default_hw_controller();
-	}
-	
 	protected: virtual void reset() override;
 	protected: virtual void oncancel() override;
 	protected: virtual void tag_opened(const char* tagname) override;

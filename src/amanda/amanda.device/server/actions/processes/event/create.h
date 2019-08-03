@@ -14,8 +14,12 @@ class EventCreateProcess : public Process
 	public: virtual ~EventCreateProcess() { }
 	public: virtual xml::SAXParser& parser() const override
 	{
+		// [NOTE] Setting controller has to be done here, it cannot be done in the constructor.
+		// The reason is because the client object is set after each resolve, and not upon the
+		// object creation.
+
 		EventParser& e = (EventParser&)ev_parser;
-		e.setDefaultController();
+		e.controller = client->get_handling_server()->get_bound_controller();
 		return e;
 	}
 	public: virtual void invoke(bool success = true, const char* name = nullptr) override

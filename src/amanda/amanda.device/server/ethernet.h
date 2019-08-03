@@ -6,6 +6,8 @@
 
 #include <thread.h>
 
+#include "../hardware/hardware_controller.h"
+
 #include "../common/data/stream.h"
 #include "../common/data/flash_stream.h"
 
@@ -35,6 +37,8 @@ class MACAddress final
 
 namespace ethernet
 {
+	class HTTPServer;
+
 	void begin(IPAddress host, MACAddress mac = { 0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED }, uint8_t _cs_pin = 53, uint8_t _ws_pin = 10);
 	IPAddress localIP();
 	IPAddress gatewayIP();
@@ -51,11 +55,12 @@ namespace ethernet
 		private: HTTPClient& operator=(const HTTPClient&) = default;
 		private: HTTPClient& operator=(HTTPClient&&) = default;
 		
+		private: HTTPServer* _server;
 		private: EthernetClient _client;
 		private: char c;
 		private: bool header_sent;
 		
-		private: HTTPClient() : _client(), c(0), header_sent(false) { }
+		private: HTTPClient(HTTPServer* server) : _server(server), _client(), c(0), header_sent(false) { }
 		public: virtual ~HTTPClient() { /* stop(); */ }
 		
 		private: HTTPClient& operator=(EthernetClient client)
@@ -66,6 +71,8 @@ namespace ethernet
 			return *this;
 		}
 		public: operator bool() const { return const_cast<EthernetClient&>(_client); }
+		
+		public: HTTPServer* get_handling_server() const { return _server; }
 		
 		public: void inquire_request() { next(); }
 		public: void stop() { respond_blank(); _client.stop(); }
@@ -186,11 +193,15 @@ namespace ethernet
 	{
 		protected: EthernetServer server;
 		protected: HTTPClient client;
+		protected: HardwareController* controller;
 		
-		public: explicit HTTPServer(uint16_t port = 80) : server(port) { }
+		public: explicit HTTPServer(uint16_t port = 80) : server(port), client(this), controller(nullptr) { }
 		public: virtual ~HTTPServer() { }
 		
 		public: void begin() { server.begin(); }
+		public: void bind(HardwareController& controller) { this->controller = &controller; }
+		public: HardwareController* get_bound_controller() const { return controller; }
+		
 		public: bool await() { return !(client = server.available()); }
 		public: HTTPClient& get_request() const { return (HTTPClient&)client; }
 		public: size_t write(uint8_t data) { return server.write(data); }
