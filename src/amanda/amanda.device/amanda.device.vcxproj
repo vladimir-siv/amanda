@@ -146,10 +146,10 @@
     <ClInclude Include="lib\string_builder.h" />
     <ClInclude Include="server\actions\process.h" />
     <ClInclude Include="server\actions\processes\event\create.h" />
+    <ClInclude Include="server\actions\tasks\command\execute.h" />
     <ClInclude Include="server\actions\tasks\echo\hello.h" />
     <ClInclude Include="server\actions\task.h" />
     <ClInclude Include="server\actions\tasks\echo\reply.h" />
-    <ClInclude Include="server\commands\command_parser.h" />
     <ClInclude Include="server\ethernet.h" />
     <ClInclude Include="server\events\event_handle.h" />
     <ClInclude Include="server\events\event_handler.h" />
@@ -190,10 +190,10 @@
     <ClCompile Include="lib\string_builder.cpp" />
     <ClCompile Include="server\actions\process.cpp" />
     <ClCompile Include="server\actions\processes\event\create.cpp" />
+    <ClCompile Include="server\actions\tasks\command\execute.cpp" />
     <ClCompile Include="server\actions\tasks\echo\hello.cpp" />
     <ClCompile Include="server\actions\task.cpp" />
     <ClCompile Include="server\actions\tasks\echo\reply.cpp" />
-    <ClCompile Include="server\commands\command_parser.cpp" />
     <ClCompile Include="server\ethernet.cpp" />
     <ClCompile Include="server\events\event_handle.cpp" />
     <ClCompile Include="server\events\event_handler.cpp" />

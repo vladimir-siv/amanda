@@ -8,43 +8,22 @@ using VID = const unsigned long;
 using DigitalState = int;
 using AnalogValue = float;
 
-// struct-like class
-class Command final
-{
-	public: String64 name;
-	public: String64 args[5];
-	
-	public: explicit Command(const char* name = nullptr, const char* arg1 = nullptr, const char* arg2 = nullptr, const char* arg3 = nullptr, const char* arg4 = nullptr, const char* arg5 = nullptr) : name(name), args { arg1, arg2, arg3, arg4, arg5 } {  }
-	public: Command(const char* name, const char* args[5]) : Command(name, args[0], args[1], args[2], args[3], args[4]) { }
-};
+class IComponent;
+namespace ethernet { class HTTPClient; }
 
-// struct-like class
-class CommandResult
+class Command
 {
-	protected: static CommandResult _null_result;
-	public: static const CommandResult& null() { return _null_result; }
+	friend class IComponent;
+
+	protected: IComponent* component = nullptr;
 	
-	protected: union Result final
-	{
-		DigitalState digital;
-		AnalogValue analog;
-		Result(DigitalState digital) : digital(digital) { }
-		Result(AnalogValue analog) : analog(analog) { }
-		bool equals(const Result& other) const { return digital == other.digital || analog == other.analog; }
-	} _result;
-	protected: bool _is_null;
+	public: virtual ~Command() { }
 	
-	public: CommandResult() : CommandResult(0, true) { }
-	public: explicit CommandResult(DigitalState digitalValue, bool is_null = false) : _result(digitalValue), _is_null(is_null) { }
-	public: explicit CommandResult(AnalogValue analogValue, bool is_null = false) : _result(analogValue), _is_null(is_null) { }
-	public: virtual ~CommandResult() { }
-	
-	public: virtual DigitalState as_digital() const { return _result.digital; }
-	public: virtual AnalogValue as_analog() const { return _result.analog; }
-	public: virtual bool is_null() const { return _is_null; }
-	public: virtual bool equals(const CommandResult& other) const { return (_is_null == true && other._is_null == true) || (_is_null == other._is_null && _result.equals(other._result)); }
-	public: friend bool operator==(const CommandResult& r1, const CommandResult& r2) { return r1.equals(r2); }
-	public: friend bool operator!=(const CommandResult& r1, const CommandResult& r2) { return !(r1 == r2); }
+	public: IComponent* get_component() const { return component; }
+	public: virtual void configure() = 0;
+	public: virtual void accept(unsigned long argn, const char* argv) = 0;
+	public: virtual bool execute() = 0;
+	public: virtual bool respond(ethernet::HTTPClient& client, bool succ) const { return false; }
 };
 
 class IComponent
@@ -65,7 +44,7 @@ class IComponent
 		return Type::NONE;
 	}
 	
-	public: virtual ~IComponent() = 0;
+	public: virtual ~IComponent() { }
 	
 	public: virtual VID ID() const = 0;
 	public: virtual Type ctype() const = 0;
@@ -107,5 +86,6 @@ class IComponent
 	}
 	
 	public: virtual const __FlashStringHelper* commands() const { return F("||"); }
-	public: virtual CommandResult execute(const Command& command) { return CommandResult::null(); };
+	public: virtual Command* resolve_cmd(const char* name) const { return nullptr; }
+	protected: void bind_to(Command* cmd) const { if (cmd != nullptr) cmd->component = const_cast<IComponent*>(this); }
 };

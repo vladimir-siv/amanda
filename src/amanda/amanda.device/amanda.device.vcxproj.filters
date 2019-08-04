@@ -4,7 +4,6 @@
     <ClInclude Include="__vm\.amanda.device.vsarduino.h" />
     <ClInclude Include="xml\api.h" />
     <ClInclude Include="server\events\event_parser.h" />
-    <ClInclude Include="server\commands\command_parser.h" />
     <ClInclude Include="lib\string_builder.h" />
     <ClInclude Include="lib\string64.h" />
     <ClInclude Include="hardware\components\abstraction\component.h" />
@@ -45,6 +44,7 @@
     <ClInclude Include="server\actions\process.h" />
     <ClInclude Include="server\actions\processes\event\create.h" />
     <ClInclude Include="server\events\event_handle.h" />
+    <ClInclude Include="server\actions\tasks\command\execute.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="amanda.device.ino" />
@@ -52,7 +52,6 @@
   <ItemGroup>
     <ClCompile Include="xml\api.cpp" />
     <ClCompile Include="server\events\event_parser.cpp" />
-    <ClCompile Include="server\commands\command_parser.cpp" />
     <ClCompile Include="lib\string_builder.cpp" />
     <ClCompile Include="lib\string64.cpp" />
     <ClCompile Include="hardware\components\abstraction\component.cpp" />
@@ -91,5 +90,6 @@
     <ClCompile Include="server\actions\process.cpp" />
     <ClCompile Include="server\actions\processes\event\create.cpp" />
     <ClCompile Include="server\events\event_handle.cpp" />
+    <ClCompile Include="server\actions\tasks\command\execute.cpp" />
   </ItemGroup>
 </Project>

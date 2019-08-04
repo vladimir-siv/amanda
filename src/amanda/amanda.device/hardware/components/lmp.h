@@ -22,28 +22,7 @@ class BlinkingLMP : public LMP
 	public: explicit BlinkingLMP(byte pin) : LMP(pin), _sync(1), _blinker(_delegate, this) { }
 	
 	public: virtual const __FlashStringHelper* commands() const override { return F("|blink|stop|"); }
-	public: virtual CommandResult execute(const Command& command) override
-	{
-		if (command.name == F("")) { }
-		else if (command.name == F("blink"))
-		{
-			if (!command.args[0].empty() && command.args[1].empty())
-			{
-				Time freq = atol(command.args[0].c_str());
-				blink(freq);
-			}
-		}
-		else if (command.name == F("stop"))
-		{
-			if (command.args[0].empty())
-			{
-				stop();
-			}
-		}
-		else { }
-
-		return CommandResult::null();
-	};
+	public: virtual Command* resolve_cmd(const char* name) const override;
 	
 	public: virtual void blink(Time freq)
 	{
@@ -59,3 +38,56 @@ class BlinkingLMP : public LMP
 		_freq = 0;
 	}
 };
+
+namespace lmp_commands
+{
+	class Blink final : public Command
+	{
+		public: static Blink* instance() { static Blink cmd; return &cmd; }
+		
+		protected: Time freq;
+		
+		private: Blink() { }
+		public: virtual ~Blink() { }
+		
+		public: virtual void configure() override
+		{
+			freq = 0;
+		}
+		public: virtual void accept(unsigned long argn, const char* argv) override
+		{
+			if (argn == 0) freq = strtoul(argv, nullptr, 0);
+		}
+		public: virtual bool execute() override
+		{
+			// [WARNING] Typeid check should be performed first
+			BlinkingLMP* lmp = (BlinkingLMP*)component;
+			lmp->blink(freq);
+			return true;
+		}
+	};
+
+	class Stop final : public Command
+	{
+		public: static Stop* instance() { static Stop cmd; return &cmd; }
+		
+		private: Stop() { }
+		public: virtual ~Stop() { }
+		
+		public: virtual void configure() override
+		{
+
+		}
+		public: virtual void accept(unsigned long argn, const char* argv) override
+		{
+
+		}
+		public: virtual bool execute() override
+		{
+			// [WARNING] Typeid check should be performed first
+			BlinkingLMP* lmp = (BlinkingLMP*)component;
+			lmp->stop();
+			return true;
+		}
+	};
+}

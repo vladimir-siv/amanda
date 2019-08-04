@@ -101,7 +101,7 @@ void RequestBodyParser::attribute_spec_end()
 				{
 					if (task != nullptr)
 					{
-						task->accept_name(action_name);
+						task->configure(action_name);
 
 						if (action_name != nullptr)
 						{

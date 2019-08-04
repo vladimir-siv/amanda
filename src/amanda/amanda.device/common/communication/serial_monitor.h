@@ -6,6 +6,8 @@
 
 #include "../data/stream.h"
 
+#define _LOG(TAG, ...) communication::SerialMonitor::println(F(" > ["), TAG, F("] {@"), (unsigned long)System::millis(), F("ms} "), ##__VA_ARGS__)
+
 namespace communication
 {
 	class SerialMonitor final
