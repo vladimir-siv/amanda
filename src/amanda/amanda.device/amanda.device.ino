@@ -25,11 +25,11 @@ HTTPEthernetServer server;
 BTN btn1(32);
 BTN btn2(34);
 
-BlinkingLED led1(22);
+LED led1(22);
 LED led2(23);
 LED led3(24);
 
-BlinkingLMP lmp(7);
+LMP lmp(7);
 
 BUZZ buzz1(33);
 BUZZ buzz2(35);

@@ -124,6 +124,7 @@
     <ClInclude Include="hardware\components\abstraction\sensor.h" />
     <ClInclude Include="hardware\components\btn.h" />
     <ClInclude Include="hardware\components\buzz.h" />
+    <ClInclude Include="hardware\components\functions\toggle.h" />
     <ClInclude Include="hardware\components\ldr.h" />
     <ClInclude Include="hardware\components\led.h" />
     <ClInclude Include="hardware\components\lm35.h" />
@@ -169,6 +170,7 @@
     <ClCompile Include="hardware\components\abstraction\sensor.cpp" />
     <ClCompile Include="hardware\components\btn.cpp" />
     <ClCompile Include="hardware\components\buzz.cpp" />
+    <ClCompile Include="hardware\components\functions\toggle.cpp" />
     <ClCompile Include="hardware\components\ldr.cpp" />
     <ClCompile Include="hardware\components\led.cpp" />
     <ClCompile Include="hardware\components\lm35.cpp" />
