@@ -26,7 +26,6 @@
     <ClInclude Include="hardware\events\pack.h" />
     <ClInclude Include="hardware\events\record.h" />
     <ClInclude Include="hardware\scanning\component_scanner.h" />
-    <ClInclude Include="hardware\scanning\scanner.h" />
     <ClInclude Include="hardware\components.h" />
     <ClInclude Include="hardware\events.h" />
     <ClInclude Include="hardware\hardware_controller.h" />
@@ -48,6 +47,7 @@
     <ClInclude Include="hardware\components\functions\toggle.h" />
     <ClInclude Include="server\actions\tasks\io\basic.h" />
     <ClInclude Include="server\actions\tasks\event\delete.h" />
+    <ClInclude Include="server\actions\tasks\scan\hardware.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="amanda.device.ino" />
@@ -77,7 +77,6 @@
     <ClCompile Include="hardware\events\pack.cpp" />
     <ClCompile Include="hardware\events\record.cpp" />
     <ClCompile Include="hardware\scanning\component_scanner.cpp" />
-    <ClCompile Include="hardware\scanning\scanner.cpp" />
     <ClCompile Include="hardware\hardware_controller.cpp" />
     <ClCompile Include="common\units.cpp" />
     <ClCompile Include="common\data\flash_stream.cpp" />
@@ -97,5 +96,6 @@
     <ClCompile Include="hardware\components\functions\toggle.cpp" />
     <ClCompile Include="server\actions\tasks\io\basic.cpp" />
     <ClCompile Include="server\actions\tasks\event\delete.cpp" />
+    <ClCompile Include="server\actions\tasks\scan\hardware.cpp" />
   </ItemGroup>
 </Project>

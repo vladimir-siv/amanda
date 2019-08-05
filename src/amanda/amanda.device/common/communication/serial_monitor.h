@@ -122,7 +122,6 @@ namespace communication
 		public: virtual size_t print(long data, int base = DEC) override { return SerialMonitor::print_n(data, base); }
 		public: virtual size_t print(unsigned long data, int base = DEC) override { return SerialMonitor::print_n(data, base); }
 		public: virtual size_t print(double data, int base = 2) override { return SerialMonitor::print_n(data, base); }
-		public: virtual size_t print(const Printable& data) override { return SerialMonitor::print(data); }
 		
 		public: virtual size_t println(const __FlashStringHelper* data) override { return SerialMonitor::println(data); }
 		public: virtual size_t println(const String& data) override { return SerialMonitor::println(data); }
@@ -134,7 +133,6 @@ namespace communication
 		public: virtual size_t println(long data, int base = DEC) override { return SerialMonitor::println_n(data, base); }
 		public: virtual size_t println(unsigned long data, int base = DEC) override { return SerialMonitor::println_n(data, base); }
 		public: virtual size_t println(double data, int base = 2) override { return SerialMonitor::println_n(data, base); }
-		public: virtual size_t println(const Printable& data) override { return SerialMonitor::println(data); }
 		public: virtual size_t println(void) override { return SerialMonitor::println(); }
 		
 		public: virtual size_t write(uint8_t data) override { return SerialMonitor::write(data); }

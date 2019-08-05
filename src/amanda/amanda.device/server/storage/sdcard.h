@@ -54,7 +54,6 @@ namespace storage
 		public: virtual size_t print(long data, int base = DEC) override { return _file.print(data, base); }
 		public: virtual size_t print(unsigned long data, int base = DEC) override { return _file.print(data, base); }
 		public: virtual size_t print(double data, int base = 2) override { return _file.print(data, base); }
-		public: virtual size_t print(const Printable& data) override { return _file.print(data); }
 		
 		public: virtual size_t println(const __FlashStringHelper* data) override { return _file.println(data); }
 		public: virtual size_t println(const String& data) override { return _file.println(data); }
@@ -66,7 +65,6 @@ namespace storage
 		public: virtual size_t println(long data, int base = DEC) override { return _file.println(data, base); }
 		public: virtual size_t println(unsigned long data, int base = DEC) override { return _file.println(data, base); }
 		public: virtual size_t println(double data, int base = 2) override { return _file.println(data, base); }
-		public: virtual size_t println(const Printable& data) override { return _file.println(data); }
 		public: virtual size_t println(void) override { return _file.println(); }
 		
 		public: virtual size_t write(uint8_t data) override { return _file.write(data); }

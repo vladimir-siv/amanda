@@ -2,7 +2,8 @@
 
 #include "components.h"
 #include "scanning/component_scanner.h"
-#include "scanning/scanner.h"
+
+#include "../common/data/stream.h"
 
 #include "../xml/api.h"
 #include "../lib/string_builder.h"
@@ -54,9 +55,11 @@ class HardwareController
 		return nullptr;
 	}
 	
-	public: virtual void scan(Scanner* scanner)
+	public: virtual void scan(data::OutputStream* stream)
 	{
-		ComponentScanner csc = scanner;
+		if (stream == nullptr) return;
+
+		ComponentScanner csc = *stream;
 
 		auto it = _components.begin();
 		auto end = _components.end();

@@ -13,8 +13,6 @@ class EventDeleteTask : public Task
 {
 	public: static EventDeleteTask* instance() { static EventDeleteTask task; return &task; }
 	
-	protected: enum Operation { NONE = 0, READ = 1, WRITE = 2 };
-	
 	protected: unsigned long id;
 	
 	public: virtual ~EventDeleteTask() { }

@@ -142,7 +142,6 @@
     <ClInclude Include="hardware\events\record.h" />
     <ClInclude Include="hardware\hardware_controller.h" />
     <ClInclude Include="hardware\scanning\component_scanner.h" />
-    <ClInclude Include="hardware\scanning\scanner.h" />
     <ClInclude Include="lib\string64.h" />
     <ClInclude Include="lib\string_builder.h" />
     <ClInclude Include="server\actions\process.h" />
@@ -153,6 +152,7 @@
     <ClInclude Include="server\actions\tasks\echo\reply.h" />
     <ClInclude Include="server\actions\tasks\event\delete.h" />
     <ClInclude Include="server\actions\tasks\io\basic.h" />
+    <ClInclude Include="server\actions\tasks\scan\hardware.h" />
     <ClInclude Include="server\ethernet.h" />
     <ClInclude Include="server\events\event_handle.h" />
     <ClInclude Include="server\events\event_handler.h" />
@@ -189,7 +189,6 @@
     <ClCompile Include="hardware\events\record.cpp" />
     <ClCompile Include="hardware\hardware_controller.cpp" />
     <ClCompile Include="hardware\scanning\component_scanner.cpp" />
-    <ClCompile Include="hardware\scanning\scanner.cpp" />
     <ClCompile Include="lib\string64.cpp" />
     <ClCompile Include="lib\string_builder.cpp" />
     <ClCompile Include="server\actions\process.cpp" />
@@ -200,6 +199,7 @@
     <ClCompile Include="server\actions\tasks\echo\reply.cpp" />
     <ClCompile Include="server\actions\tasks\event\delete.cpp" />
     <ClCompile Include="server\actions\tasks\io\basic.cpp" />
+    <ClCompile Include="server\actions\tasks\scan\hardware.cpp" />
     <ClCompile Include="server\ethernet.cpp" />
     <ClCompile Include="server\events\event_handle.cpp" />
     <ClCompile Include="server\events\event_handler.cpp" />

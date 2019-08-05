@@ -46,7 +46,7 @@ namespace ethernet
 	IPAddress subnetMask();
 	int maintain();
 
-	class HTTPClient final : public data::InputStream
+	class HTTPClient final : public data::InputStream, public data::OutputStream
 	{
 		friend class HTTPServer;
 
@@ -119,13 +119,20 @@ namespace ethernet
 
 			while (!fs.eos()) _client.write(fs.advance());
 		}
+		
+		public: size_t respond(uint8_t data) { send_header(); return _client.write(data); }
+		public: size_t respond(const uint8_t* buf, size_t size) { send_header(); return _client.write(buf, size); }
+		
+		public: size_t respond(char data) { return respond((uint8_t)data); }
+		public: size_t respond(const char* str) { return respond((const uint8_t*)str, strlen(str)); }
+		
 		public: size_t respond(unsigned long data, int base = DEC)
 		{
 			if (data == 0) return respond('0');
 
 			size_t s = 0;
 
-			char digits[64];
+			char digits[64] = { };
 			byte len = 0;
 
 			while (data > 0)
@@ -138,23 +145,44 @@ namespace ethernet
 
 			return s;
 		}
-		public: size_t respond(double data)
+		public: size_t respond(long data, int base = DEC)
 		{
-			if (data == 0.0) return respond('0') + respond('.') + respond('0') + respond('0');
+			if (data == 0) return respond('0');
 
 			size_t s = 0;
 
 			if (data < 0)
 			{
 				data *= -1;
-				s += respond('-');
+				respond('-');
 			}
-			
+
+			char digits[64] = { };
+			byte len = 0;
+
+			while (data > 0)
+			{
+				digits[len++] = '0' + data % base;
+				data /= base;
+			}
+
+			while (len > 0) s += respond(digits[--len]);
+
+			return s;
+		}
+		
+		public: size_t respond(double data)
+		{
+			if (data == 0.0) return respond('0') + respond('.') + respond('0') + respond('0');
+
+			size_t s = 0;
+
 			s +=
-				respond((unsigned long)data, 10)
+				respond((long)data, 10)
 				+
 				respond('.');
 
+			if (data < 0) data *= -1;
 			data *= 100.0;
 			long point = round(data);
 			//if (point < 0) point *= -1;
@@ -166,10 +194,6 @@ namespace ethernet
 
 			return s;
 		}
-		public: size_t respond(char data) { return respond((uint8_t)data); }
-		public: size_t respond(uint8_t data) { send_header(); return _client.write(data); }
-		public: size_t respond(const char* str) { send_header(); return _client.write((const uint8_t*)str, strlen(str)); }
-		public: size_t respond(const uint8_t* buf, size_t size) { send_header(); return _client.write(buf, size); }
 		
 		public: size_t respond(data::InputStream& stream)
 		{
@@ -177,12 +201,14 @@ namespace ethernet
 
 			while (!stream.eos())
 			{
-				s += respond((uint8_t)stream.advance());
+				s += respond(stream.advance());
 			}
 
 			return s;
 		}
 		public: size_t respond(data::InputStream&& stream) { return respond(stream); }
+		
+		public: size_t respond_crlf() { return respond('\r') + respond('\n'); }
 		
 		public: void respond_bad_request()
 		{
@@ -240,6 +266,45 @@ namespace ethernet
 
 			while (!fs.eos()) _client.write(fs.advance());
 		}
+		
+		// OutputStream INTERFACE
+		
+		public: virtual size_t print(const __FlashStringHelper* data) override
+		{
+			data::FlashStream fs(data);
+
+			size_t s = 0;
+
+			while (!fs.eos()) s += respond(fs.advance());
+
+			return s;
+		}
+		public: virtual size_t print(const String& data) override { return respond((const uint8_t*)data.c_str(), data.length()); }
+		public: virtual size_t print(const char data[]) override { return respond(data); }
+		public: virtual size_t print(char data) override { return respond(data); }
+		public: virtual size_t print(unsigned char data, int base = DEC) override { return respond((unsigned long)data, base); }
+		public: virtual size_t print(int data, int base = DEC) override { return respond((long)data, base); }
+		public: virtual size_t print(unsigned int data, int base = DEC) override { return respond((unsigned long)data, base); }
+		public: virtual size_t print(long data, int base = DEC) override { return respond(data, base); }
+		public: virtual size_t print(unsigned long data, int base = DEC) override { return respond(data, base); }
+		public: virtual size_t print(double data, int base = 2) override { return respond(data); }
+		
+		public: virtual size_t println(const __FlashStringHelper* data) override { return print(data) + respond_crlf(); }
+		public: virtual size_t println(const String& data) override { return print(data) + respond_crlf(); }
+		public: virtual size_t println(const char data[]) override { return print(data) + respond_crlf(); }
+		public: virtual size_t println(char data) override { return print(data) + respond_crlf(); }
+		public: virtual size_t println(unsigned char data, int base = DEC) override { return print(data, base) + respond_crlf(); }
+		public: virtual size_t println(int data, int base = DEC) override { return print(data, base) + respond_crlf(); }
+		public: virtual size_t println(unsigned int data, int base = DEC) { return print(data, base) + respond_crlf(); }
+		public: virtual size_t println(long data, int base = DEC) override { return print(data, base) + respond_crlf(); }
+		public: virtual size_t println(unsigned long data, int base = DEC) override { return print(data, base) + respond_crlf(); }
+		public: virtual size_t println(double data, int base = 2) override { return print(data) + respond_crlf(); }
+		public: virtual size_t println(void) override { return respond_crlf(); }
+		
+		public: virtual size_t write(uint8_t data) override { return respond(data); }
+		public: virtual size_t write(const char* str) override { return respond(str); }
+		public: virtual size_t write(const char* buffer, size_t size) override { return respond((const uint8_t*)buffer, size); }
+		public: virtual size_t write(const uint8_t* buffer, size_t size) override { return respond(buffer, size); }
 	};
 
 	class HTTPServer

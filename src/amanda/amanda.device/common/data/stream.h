@@ -29,7 +29,6 @@ namespace data
 		public: virtual size_t print(long data, int base = DEC) = 0;
 		public: virtual size_t print(unsigned long data, int base = DEC) = 0;
 		public: virtual size_t print(double data, int base = 2) = 0;
-		public: virtual size_t print(const Printable& data) = 0;
 		
 		public: virtual size_t println(const __FlashStringHelper* data) = 0;
 		public: virtual size_t println(const String& data) = 0;
@@ -41,7 +40,6 @@ namespace data
 		public: virtual size_t println(long data, int base = DEC) = 0;
 		public: virtual size_t println(unsigned long data, int base = DEC) = 0;
 		public: virtual size_t println(double data, int base = 2) = 0;
-		public: virtual size_t println(const Printable& data) = 0;
 		public: virtual size_t println(void) = 0;
 		
 		public: virtual size_t write(uint8_t data) = 0;
