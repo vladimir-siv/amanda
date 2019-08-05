@@ -119,17 +119,70 @@ namespace ethernet
 
 			while (!fs.eos()) _client.write(fs.advance());
 		}
+		public: size_t respond(unsigned long data, int base = DEC)
+		{
+			if (data == 0) return respond('0');
+
+			size_t s = 0;
+
+			char digits[64];
+			byte len = 0;
+
+			while (data > 0)
+			{
+				digits[len++] = '0' + data % base;
+				data /= base;
+			}
+
+			while (len > 0) s += respond(digits[--len]);
+
+			return s;
+		}
+		public: size_t respond(double data)
+		{
+			if (data == 0.0) return respond('0') + respond('.') + respond('0') + respond('0');
+
+			size_t s = 0;
+
+			if (data < 0)
+			{
+				data *= -1;
+				s += respond('-');
+			}
+			
+			s +=
+				respond((unsigned long)data, 10)
+				+
+				respond('.');
+
+			data *= 100.0;
+			long point = round(data);
+			//if (point < 0) point *= -1;
+
+			point %= 100;
+
+			s += respond((char)('0' + point / 10));
+			s += respond((char)('0' + point % 10));
+
+			return s;
+		}
+		public: size_t respond(char data) { return respond((uint8_t)data); }
 		public: size_t respond(uint8_t data) { send_header(); return _client.write(data); }
+		public: size_t respond(const char* str) { send_header(); return _client.write((const uint8_t*)str, strlen(str)); }
 		public: size_t respond(const uint8_t* buf, size_t size) { send_header(); return _client.write(buf, size); }
 		
-		public: void respond(data::InputStream& stream)
+		public: size_t respond(data::InputStream& stream)
 		{
+			size_t s = 0;
+
 			while (!stream.eos())
 			{
-				respond((uint8_t)stream.advance());
+				s += respond((uint8_t)stream.advance());
 			}
+
+			return s;
 		}
-		public: void respond(data::InputStream&& stream) { respond(stream); }
+		public: size_t respond(data::InputStream&& stream) { return respond(stream); }
 		
 		public: void respond_bad_request()
 		{

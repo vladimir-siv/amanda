@@ -46,6 +46,7 @@
     <ClInclude Include="server\events\event_handle.h" />
     <ClInclude Include="server\actions\tasks\command\execute.h" />
     <ClInclude Include="hardware\components\functions\toggle.h" />
+    <ClInclude Include="server\actions\tasks\io\basic.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="amanda.device.ino" />
@@ -93,5 +94,6 @@
     <ClCompile Include="server\events\event_handle.cpp" />
     <ClCompile Include="server\actions\tasks\command\execute.cpp" />
     <ClCompile Include="hardware\components\functions\toggle.cpp" />
+    <ClCompile Include="server\actions\tasks\io\basic.cpp" />
   </ItemGroup>
 </Project>
