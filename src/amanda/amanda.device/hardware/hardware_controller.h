@@ -64,6 +64,8 @@ class HardwareController
 		auto it = _components.begin();
 		auto end = _components.end();
 		
+		stream->print(F("<scan>"));
 		for (; it != end; ++it) csc.scan(*it);
+		stream->print(F("</scan>"));
 	}
 };
