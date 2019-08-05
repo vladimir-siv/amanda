@@ -5,8 +5,6 @@
 #include <structures/specialized/vlist.h>
 #include <structures/tuple.h>
 
-#include "extensions/structures/sleep.h"
-
 #define _FIXED_STACK_SIZE_
 
 // constraints:
@@ -28,6 +26,7 @@ class Thread final
 	friend class mutex;
 	friend class condition;
 	friend class semaphore;
+	friend class sleep;
 
 	public: enum State
 	{
@@ -49,7 +48,6 @@ class Thread final
 	private: static volatile Thread* running;
 	private: static volatile bool dispatch_idle;
 	private: static volatile Thread idle;
-	private: static volatile sleep sleeping;
 	
 	private: static void __idle__(void);
 	public: static void tick();
@@ -68,6 +66,7 @@ class Thread final
 	private: volatile uintptr_t sp;
 	private: volatile unsigned int quantum;
 	private: volatile State state;
+	private: volatile Time point;
 	private: volatile vlist<Thread> complete;
 	private: volatile void* context;
 	

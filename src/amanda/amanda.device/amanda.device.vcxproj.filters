@@ -48,6 +48,7 @@
     <ClInclude Include="server\actions\tasks\io\basic.h" />
     <ClInclude Include="server\actions\tasks\event\delete.h" />
     <ClInclude Include="server\actions\tasks\scan\hardware.h" />
+    <ClInclude Include="server\actions\tasks\scan\events.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="amanda.device.ino" />
@@ -97,5 +98,6 @@
     <ClCompile Include="server\actions\tasks\io\basic.cpp" />
     <ClCompile Include="server\actions\tasks\event\delete.cpp" />
     <ClCompile Include="server\actions\tasks\scan\hardware.cpp" />
+    <ClCompile Include="server\actions\tasks\scan\events.cpp" />
   </ItemGroup>
 </Project>

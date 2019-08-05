@@ -5,8 +5,7 @@
 #include <memory_management/specialized/tuple_allocator.h>
 
 #include "../../def.h"
-
-class Thread;
+#include "../../thread.h"
 
 class sleep final
 {
@@ -17,18 +16,15 @@ class sleep final
 		static volatile VNodeAllocator<16> _allocator;
 		return &_allocator;
 	}
-	private: static volatile ITupleAllocator<Thread*, Time>* _tuples()
-	{
-		static volatile TupleAllocator<16, Thread*, Time> _allocator;
-		return &_allocator;
-	}
+	
+	public: static volatile sleep& instance() { static sleep i; return i; }
 	
 	private: sleep(const sleep&) = delete;
 	private: sleep(sleep&&) = delete;
 	private: sleep& operator=(const sleep&) = delete;
 	private: sleep& operator=(sleep&&) = delete;
 	
-	private: volatile vlist<Tuple<Thread*, Time>> sleeping;
+	private: volatile vlist<Thread> sleeping;
 	private: volatile Time ticks;
 	
 	private: sleep() : sleeping(_nodes()), ticks(0) { }
@@ -37,17 +33,10 @@ class sleep final
 	
 	public: void clear() volatile
 	{
-		auto end = sleeping.end();
-
-		for (auto i = sleeping.begin(); i != end; ++i)
-		{
-			_tuples()->dealloc(*i);
-		}
-
 		sleeping.clear();
 	}
 	
-	public: void insert(volatile const Thread* thread, Time time) volatile
+	public: void insert(volatile Thread* thread, Time time) volatile
 	{
 		if (time == 0) return;
 		time += ticks;
@@ -59,15 +48,13 @@ class sleep final
 
 		for (; i != end; prev = i, ++i)
 		{
-			//Time& time = i->e<1>();
-			Time& current = i->TupleLeaf<1, Time>::value;
-			if (time < current) break;
+			if (time < i->point) break;
 		}
 
-		auto tuple = _tuples()->alloc(const_cast<Thread*>(thread), time);
+		thread->point = time;
 
-		if (prev == end) sleeping.push_front(tuple);
-		else prev.insertAfter(tuple);
+		if (prev == end) sleeping.push_front((const Thread*)thread);
+		else prev.insertAfter((const Thread*)thread);
 	}
 	public: Thread* take() volatile
 	{
@@ -75,18 +62,11 @@ class sleep final
 
 		auto first = sleeping.peek_front();
 
-		//Time& time = first->e<1>();
-		Time& time = first->TupleLeaf<1, Time>::value;
-
-		if (ticks < time) return nullptr;
-
-		//Thread* awaken = first->e<0>();
-		Thread* awaken = first->TupleLeaf<0, Thread*>::value;
+		if (ticks < first->point) return nullptr;
 		
 		sleeping.remove_front();
-		_tuples()->dealloc(first);
 
-		return awaken;
+		return first;
 	}
 	public: void tick() volatile
 	{
@@ -96,9 +76,9 @@ class sleep final
 		// all of these assumptions are highly questionable and debatable
 	}
 	
-	public: vlist_enumerator<Tuple<Thread*, Time>> begin() volatile { return sleeping.begin(); }
-	public: vlist_enumerator<Tuple<Thread*, Time>> end() volatile { return sleeping.end(); }
+	public: vlist_enumerator<Thread> begin() volatile { return sleeping.begin(); }
+	public: vlist_enumerator<Thread> end() volatile { return sleeping.end(); }
 	
-	public: const vlist_enumerator<Tuple<Thread*, Time>> cbegin() volatile const { return sleeping.cbegin(); }
-	public: const vlist_enumerator<Tuple<Thread*, Time>> cend() volatile const { return sleeping.cend(); }
+	public: const vlist_enumerator<Thread> cbegin() volatile const { return sleeping.cbegin(); }
+	public: const vlist_enumerator<Thread> cend() volatile const { return sleeping.cend(); }
 };

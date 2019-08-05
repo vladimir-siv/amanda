@@ -4,6 +4,8 @@
 
 #include "fifo.h"
 
+#include "../extensions/structures/sleep.h"
+
 class SystemScheduler final : public Scheduler
 {
 	friend class System;
@@ -20,7 +22,7 @@ class SystemScheduler final : public Scheduler
 	}
 	public: virtual Thread* __attribute__((noinline)) get() volatile override
 	{
-		Thread* thread = Thread::sleeping.take();
+		Thread* thread = sleep::instance().take();
 		if (thread == nullptr) thread = _scheduler->get();
 		if (thread != nullptr) setDefaultQuantum(thread);
 		return thread;

@@ -46,6 +46,22 @@ namespace data
 		public: virtual size_t write(const char* str) = 0;
 		public: virtual size_t write(const char* buffer, size_t size) = 0;
 		public: virtual size_t write(const uint8_t* buffer, size_t size) = 0;
+		
+		public: virtual size_t print(InputStream& stream)
+		{
+			size_t s = 0;
+
+			while (!stream.eos())
+			{
+				s += print(stream.advance());
+			}
+
+			return s;
+		}
+		public: virtual size_t println(InputStream& stream)
+		{
+			return print(stream) + println();
+		}
 	};
 
 	class RAMStream final : public InputStream

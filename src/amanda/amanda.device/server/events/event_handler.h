@@ -141,9 +141,9 @@ class EventHandler final
 	public: class EventDetails final : public StorableInfo
 	{
 		public: unsigned long id;
-		public: const char*& name;
+		public: const char* name;
 		
-		public: EventDetails(unsigned long id, const char*& name) : id(id), name(name) { }
+		public: EventDetails(unsigned long id, const char* name) : id(id), name(name) { }
 		public: virtual ~EventDetails() { }
 		
 		public: virtual void reset() override
@@ -413,9 +413,39 @@ class EventHandler final
 	public: void output_events(data::OutputStream&& stream) const { output_events(stream); }
 	public: void output_events(data::OutputStream& stream) const
 	{
+		String64 temp;
+		EventDetails details(0ul, temp.c_str());
+
+		stream.print(F("<scan>"));
+
 		for (auto i = events.cbegin(); i != events.cend(); ++i)
 		{
-			i->e()->to_xml(stream);
+			temp.clear();
+
+			temp += EV_ROOT_DIR;
+			temp += '/';
+			temp.append(i->id(), 36);
+			temp += EV_DETAILS_INFO();
+
+			if (SD.exists(temp.c_str()))
+			{
+				details.load(temp.c_str());
+
+				if (i->id() == details.id)
+				{
+					stream.print(F("<event_handle id=\""));
+					stream.print(i->id());
+					stream.print(F("\" name=\""));
+					stream.print(details.name);
+					stream.print(F("\">"));
+
+					i->e()->to_xml(stream);
+
+					stream.print(F("</event_handle>"));
+				}
+			}
 		}
+
+		stream.print(F("</scan>"));
 	}
 };
