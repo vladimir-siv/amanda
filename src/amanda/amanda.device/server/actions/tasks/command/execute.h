@@ -6,7 +6,7 @@
 
 #include "../../../../common/data/flash_stream.h"
 
-// example of a command string: "<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"no\"?><action task=\"Cmd/exec\"><arg>{vid}:{ctype}</arg><arg>{cmd_name}</arg><arg>{args...}</arg>...</action>"
+// template: "<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"no\"?><action task=\"Cmd/exec\"><arg>{vid}:{ctype}</arg><arg>{cmd_name}</arg><arg>{args...}</arg>...</action>"
 
 class CommandExecuteTask : public Task
 {

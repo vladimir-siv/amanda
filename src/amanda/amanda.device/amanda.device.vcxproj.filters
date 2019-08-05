@@ -47,6 +47,7 @@
     <ClInclude Include="server\actions\tasks\command\execute.h" />
     <ClInclude Include="hardware\components\functions\toggle.h" />
     <ClInclude Include="server\actions\tasks\io\basic.h" />
+    <ClInclude Include="server\actions\tasks\event\delete.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="amanda.device.ino" />
@@ -95,5 +96,6 @@
     <ClCompile Include="server\actions\tasks\command\execute.cpp" />
     <ClCompile Include="hardware\components\functions\toggle.cpp" />
     <ClCompile Include="server\actions\tasks\io\basic.cpp" />
+    <ClCompile Include="server\actions\tasks\event\delete.cpp" />
   </ItemGroup>
 </Project>

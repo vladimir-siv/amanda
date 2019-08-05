@@ -7,7 +7,7 @@
 #include "../../../../common/units.h"
 #include "../../../../common/data/flash_stream.h"
 
-// example of a command string: "<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"no\"?><action task=\"IO/basic\"><arg>{vid}:{ctype}</arg><arg>{operation}</arg><arg>{value unit}</arg></action>"
+// template: "<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"no\"?><action task=\"IO/basic\"><arg>{vid}:{ctype}</arg><arg>{operation}</arg><arg>{value unit}</arg></action>"
 
 class BasicIOTask : public Task
 {

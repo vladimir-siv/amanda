@@ -360,10 +360,11 @@ class EventHandler final
 	
 	public: unsigned long designator() const { unsigned long val = info.designator + 1; if (val == 0) ++val; return val; }
 	
-	public: void append(const event* e, const char* name = nullptr)
+	public: unsigned long append(const event* e, const char* name = nullptr)
 	{
 		event_handle* handle = create(e, name);
 		events.push_back(handle);
+		return handle->id();
 	}
 	public: bool remove(unsigned long id)
 	{
