@@ -1,0 +1,116 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+	xmlns="http://xamarin.com/schemas/2014/forms"
+	xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+	xmlns:local="clr-namespace:amanda.client"
+	x:Class="amanda.client.ConnectPage"
+    BackgroundColor="Black"
+>
+	<ContentPage.Resources>
+		<ResourceDictionary>
+			<Color x:Key="BackgroundColor">#4f514b</Color>
+			<Color x:Key="TextColor">White</Color>
+			<x:Int32 x:Key="BorderRadius">1</x:Int32>
+			<x:Double x:Key="FontSize">24</x:Double>
+			<OnPlatform x:Key="FontFamily" x:TypeArguments="x:String" iOS="MarkerFelt-Thin" Android="sans-serif-monospace" WinPhone="Segoe UI"/>
+		</ResourceDictionary>
+	</ContentPage.Resources>
+	<ContentPage.Content>
+		<FlexLayout
+			HorizontalOptions="FillAndExpand"
+			VerticalOptions="FillAndExpand"
+			TranslationY="-30"
+			Direction="Column"
+			JustifyContent="Center"
+			AlignItems="Center"
+		>
+			<Label
+				HorizontalOptions="FillAndExpand"
+				Text="Welcome to Amanda"
+				
+				HorizontalTextAlignment="Center"
+				VerticalTextAlignment="Center"
+				BackgroundColor="Black"
+				TextColor="{StaticResource TextColor}"
+				FontFamily="{StaticResource FontFamily}"
+				FontSize="{StaticResource FontSize}"
+			/>
+			<Grid
+				HorizontalOptions="FillAndExpand"
+				RowSpacing="0"
+				ColumnSpacing="0"
+				HeightRequest="48"
+				Margin="0, 115, 0, 15"
+			>
+				<Grid.RowDefinitions>
+					<RowDefinition Height="100.0*"/>
+				</Grid.RowDefinitions>
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="10.0*"/>
+					<ColumnDefinition Width="60.0*"/>
+					<ColumnDefinition Width="5.0*"/>
+					<ColumnDefinition Width="15.0*"/>
+					<ColumnDefinition Width="10.0*"/>
+				</Grid.ColumnDefinitions>
+				
+				<Entry
+					Grid.Row="0"
+					Grid.Column="1"
+					HorizontalOptions="FillAndExpand"
+					VerticalOptions="FillAndExpand"
+					Text="{Binding Address}"
+					Placeholder="Address"
+					
+					HorizontalTextAlignment="Center"
+					BackgroundColor="{StaticResource BackgroundColor}"
+					TextColor="{StaticResource TextColor}"
+					FontFamily="{StaticResource FontFamily}"
+					FontSize="{StaticResource FontSize}"
+				/>
+				<Label
+					Grid.Row="0"
+					Grid.Column="2"
+					HorizontalOptions="FillAndExpand"
+					VerticalOptions="FillAndExpand"
+					Text=":"
+					
+					HorizontalTextAlignment="Center"
+					VerticalTextAlignment="Center"
+					BackgroundColor="{StaticResource BackgroundColor}"
+					TextColor="{StaticResource TextColor}"
+					FontFamily="{StaticResource FontFamily}"
+					FontSize="{StaticResource FontSize}"
+				/>
+				<Entry
+					Grid.Row="0"
+					Grid.Column="3"
+					HorizontalOptions="FillAndExpand"
+					VerticalOptions="FillAndExpand"
+					Text="{Binding Port}"
+					Placeholder="Port"
+					
+					HorizontalTextAlignment="Center"
+					BackgroundColor="{StaticResource BackgroundColor}"
+					TextColor="{StaticResource TextColor}"
+					FontFamily="{StaticResource FontFamily}"
+					FontSize="{StaticResource FontSize}"
+				/>
+			</Grid>
+			<Button
+				HorizontalOptions="Center"
+                Text="Connect"
+				Command="{Binding Connect}"
+				
+				BackgroundColor="{StaticResource BackgroundColor}"
+				TextColor="{StaticResource TextColor}"
+				FontFamily="{StaticResource FontFamily}"
+				FontSize="{StaticResource FontSize}"
+			/>
+			<ActivityIndicator
+				IsRunning="{Binding IsConnecting}"
+				
+				Margin="25, 25, 0, 25"
+			/>
+		</FlexLayout>
+	</ContentPage.Content>
+</ContentPage>

@@ -1,5 +1,4 @@
-﻿using System;
-using Xamarin.Forms;
+﻿using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
 [assembly: XamlCompilation(XamlCompilationOptions.Compile)]
@@ -11,7 +10,9 @@ namespace amanda.client
 		{
 			InitializeComponent();
 
-			MainPage = new MainPage();
+			Dependency.Inject();
+
+			MainPage = new ConnectPage();
 		}
 
 		protected override void OnStart()

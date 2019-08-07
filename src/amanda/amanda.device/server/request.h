@@ -59,6 +59,7 @@ class RequestBodyParser final : public xml::SAXParser
 
 class RequestHandler : public ethernet::HTTPRequestParser
 {
+	protected: bool content_valid_xml;
 	protected: Host host;
 	protected: unsigned long content_length;
 	protected: bool expect100continue;
@@ -68,6 +69,7 @@ class RequestHandler : public ethernet::HTTPRequestParser
 	
 	protected: virtual void reset() override
 	{
+		content_valid_xml = false;
 		host = nullptr;
 		content_length = 0;
 		expect100continue = false;
@@ -79,7 +81,16 @@ class RequestHandler : public ethernet::HTTPRequestParser
 	}
 	protected: virtual void request_header(const char* hname, const char* hvalue) override
 	{
-		if (strcmp_P(hname, PSTR("Host")) == 0)
+		if (strcmp_P(hname, PSTR("Content-Type")) == 0)
+		{
+			if (strcmp_P(hvalue, PSTR("application/xml; charset=utf-8")) == 0)
+			{
+				if (content_valid_xml) cancel();
+				else content_valid_xml = true;
+			}
+			else cancel();
+		}
+		else if (strcmp_P(hname, PSTR("Host")) == 0)
 		{
 			if (host) cancel();
 			else host = hvalue;
@@ -107,11 +118,11 @@ class RequestHandler : public ethernet::HTTPRequestParser
 			}
 			else cancel();
 		}
-		else cancel();
+		//else cancel();
 	}
 	protected: virtual void request_header_end() override
 	{
-		if (!host || !content_length || !expect100continue) cancel();
+		if (!host || !content_valid_xml || !content_length) cancel();
 	}
 	protected: virtual bool request_body(HTTPClientRequest request) override
 	{
