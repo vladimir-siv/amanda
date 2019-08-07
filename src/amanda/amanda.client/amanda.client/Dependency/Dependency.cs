@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Net.Http;
 using System.Collections.Generic;
+using amanda.client.ViewModels;
 
 namespace amanda.client
 {
@@ -11,9 +12,9 @@ namespace amanda.client
 
 		public static void Inject()
 		{
-			Inject(new HttpClient());
+			Inject(new HttpClient { Timeout = TimeSpan.FromSeconds(10) });
 
-			ViewModels.ConnectionEstablishmentViewModel.Inject();
+			ConnectionEstablishmentViewModel.Inject();
 		}
 
 		public static void Inject<T>(string name, T obj)

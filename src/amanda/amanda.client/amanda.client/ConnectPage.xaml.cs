@@ -1,4 +1,5 @@
 ﻿using Xamarin.Forms;
+using amanda.client.ViewModels;
 
 namespace amanda.client
 {
@@ -8,7 +9,7 @@ namespace amanda.client
 		{
 			InitializeComponent();
 
-			BindingContext = ViewModels.ViewModel.Resolve("ConnectionEstablishment");
+			BindingContext = ViewModel.Resolve("ConnectionEstablishment");
 		}
 	}
 }

@@ -1,6 +1,9 @@
-﻿using System.Threading.Tasks;
+﻿using System;
 using System.Net.Http;
+using System.Threading.Tasks;
+using System.Text;
 using Xamarin.Forms;
+using amanda.client.Communication;
 
 namespace amanda.client.ViewModels
 {
@@ -67,27 +70,32 @@ namespace amanda.client.ViewModels
 			StartConnecting();
 			
 			var client = Dependency.Resolve<HttpClient>();
+
 			string content = null;
 
 			try
 			{
-				using (var response = await client.PostAsync("http://" + address + ":" + port + "/", Communication.Protocol.HelloMessage))
+				using (var body = new StringContent(Protocol.HelloMessage, Encoding.UTF8, "application/xml"))
 				{
-					if (response.IsSuccessStatusCode)
+					using (var response = await client.PostAsync("http://" + address + ":" + port + "/", body))
 					{
-						content = await response.Content.ReadAsStringAsync();
+						if (response.IsSuccessStatusCode)
+						{
+							content = await response.Content.ReadAsStringAsync();
+						}
+						else await EndConnecting("Error", "Failed to connect to the device.", "OK");
 					}
-					else await EndConnecting("Error", "Failed to connect to the device.", "OK");
 				}
 			}
-			catch
+			catch (System.Exception ex)
 			{
-				await EndConnecting("Error", "Could not establish the connection with the device.", "OK");
+				await EndConnecting("Error", ex.Message, "OK");
+				//await EndConnecting("Error", "Could not establish the connection with the device.", "OK");
 			}
 
 			if (content != null)
 			{
-				if (content == Communication.Protocol.HelloReply)
+				if (content == Protocol.HelloReply)
 				{
 					await EndConnecting("Success", "Connection established!", "OK");
 				}

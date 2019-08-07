@@ -11,7 +11,8 @@
 			<Color x:Key="BackgroundColor">#4f514b</Color>
 			<Color x:Key="TextColor">White</Color>
 			<x:Int32 x:Key="BorderRadius">1</x:Int32>
-			<x:Double x:Key="FontSize">24</x:Double>
+			<OnPlatform x:Key="ControlHeight" x:TypeArguments="x:Double" iOS="36" Android="36" WinPhone="48"/>
+			<OnPlatform x:Key="FontSize" x:TypeArguments="x:Double" iOS="12" Android="12" WinPhone="24"/>
 			<OnPlatform x:Key="FontFamily" x:TypeArguments="x:String" iOS="MarkerFelt-Thin" Android="sans-serif-monospace" WinPhone="Segoe UI"/>
 		</ResourceDictionary>
 	</ContentPage.Resources>
@@ -31,6 +32,8 @@
 				HorizontalTextAlignment="Center"
 				VerticalTextAlignment="Center"
 				BackgroundColor="Black"
+				Margin="0, 35, 0, 0"
+				HeightRequest="{StaticResource ControlHeight}"
 				TextColor="{StaticResource TextColor}"
 				FontFamily="{StaticResource FontFamily}"
 				FontSize="{StaticResource FontSize}"
@@ -39,8 +42,8 @@
 				HorizontalOptions="FillAndExpand"
 				RowSpacing="0"
 				ColumnSpacing="0"
-				HeightRequest="48"
-				Margin="0, 115, 0, 15"
+				Margin="0, 80, 0, 15"
+				HeightRequest="{StaticResource ControlHeight}"
 			>
 				<Grid.RowDefinitions>
 					<RowDefinition Height="100.0*"/>
@@ -105,11 +108,12 @@
 				TextColor="{StaticResource TextColor}"
 				FontFamily="{StaticResource FontFamily}"
 				FontSize="{StaticResource FontSize}"
+				HeightRequest="{StaticResource ControlHeight}"
 			/>
 			<ActivityIndicator
 				IsRunning="{Binding IsConnecting}"
 				
-				Margin="25, 25, 0, 25"
+				Margin="25, 25, 25, 0"
 			/>
 		</FlexLayout>
 	</ContentPage.Content>
