@@ -12,7 +12,7 @@ namespace amanda.client
 
 			Dependency.Inject();
 
-			MainPage = new ConnectPage();
+			MainPage = new NavigationPage(new ConnectPage());
 		}
 
 		protected override void OnStart()

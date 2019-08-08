@@ -1,5 +1,4 @@
-﻿using System;
-using System.Net.Http;
+﻿using System.Net.Http;
 using System.Threading.Tasks;
 using System.Text;
 using Xamarin.Forms;
@@ -35,6 +34,8 @@ namespace amanda.client.ViewModels
 		private Command connect;
 		public Command Connect { get { return connect; } }
 
+		public event ViewModelEventHandler<ViewModelEventArgs> ConnectionEstablished;
+
 		private ConnectionEstablishmentViewModel(string name) : base(name)
 		{
 			address = string.Empty;
@@ -45,20 +46,9 @@ namespace amanda.client.ViewModels
 
 		private async Task TryConnect()
 		{
-			void StartConnecting()
-			{
-				IsConnecting = true;
-			}
-			async Task EndConnecting(string title = null, string message = null, string cancel = null)
-			{
-				IsConnecting = false;
-				if (title == null || message == null || cancel == null) return;
-				await Application.Current.MainPage.DisplayAlert(title, message, cancel);
-			}
-
 			if (string.IsNullOrWhiteSpace(address))
 			{
-				await Application.Current.MainPage.DisplayAlert("Error", "Please, fill in the Address of the device.", "OK");
+				await DispatchAsync(ConnectionEstablished, ViewModelEventArgs.Error("Please, fill in the Address of the device."));
 				return;
 			}
 
@@ -67,12 +57,11 @@ namespace amanda.client.ViewModels
 				port = "80";
 			}
 
-			StartConnecting();
-			
+			IsConnecting = true;
+
 			var client = Dependency.Resolve<HttpClient>();
-
-			string content = null;
-
+			Task result = null;
+			
 			try
 			{
 				using (var body = new StringContent(Protocol.HelloMessage, Encoding.UTF8, "application/xml"))
@@ -81,26 +70,30 @@ namespace amanda.client.ViewModels
 					{
 						if (response.IsSuccessStatusCode)
 						{
-							content = await response.Content.ReadAsStringAsync();
+							var content = await response.Content.ReadAsStringAsync();
+
+							if (content != null)
+							{
+								if (content == Protocol.HelloReply)
+								{
+									result = DispatchAsync(ConnectionEstablished, ViewModelEventArgs.Information("Success"));
+								}
+								else result = DispatchAsync(ConnectionEstablished, ViewModelEventArgs.Error("Device did not respond correctly. Error may be in the network."));
+							}
+							else result = DispatchAsync(ConnectionEstablished, ViewModelEventArgs.Error("Device is not responding correctly."));
 						}
-						else await EndConnecting("Error", "Failed to connect to the device.", "OK");
+						else result = DispatchAsync(ConnectionEstablished, ViewModelEventArgs.Error("Connection was not properly established with the device."));
 					}
 				}
 			}
 			catch (System.Exception ex)
 			{
-				await EndConnecting("Error", ex.Message, "OK");
-				//await EndConnecting("Error", "Could not establish the connection with the device.", "OK");
+				result = DispatchAsync(ConnectionEstablished, ViewModelEventArgs.Error("Device did not respond. Reason:\r\n" + ex.Message));
 			}
+			
+			IsConnecting = false;
 
-			if (content != null)
-			{
-				if (content == Protocol.HelloReply)
-				{
-					await EndConnecting("Success", "Connection established!", "OK");
-				}
-				else await EndConnecting("Protocol Error", "Device did not respond with a valid message.", "OK");
-			}
+			if (result != null) await result;
 		}
 	}
 }
