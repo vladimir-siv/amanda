@@ -127,6 +127,36 @@ class BasicIOTask : public Task
 						
 						return;
 					}
+
+					AnalogElement* ael = ComponentCaster::analog_element(component);
+
+					if (ael != nullptr)
+					{
+						AnalogValue v = ael->current_value();
+						unit u = ael->e_unit();
+
+						client->respond(data::FlashStream(F("<value unit=\"")));
+						if (u.scale() != 0) client->respond(u.prefix());
+						client->respond(u.measure()->label);
+						client->respond(data::FlashStream(F("\">")));
+						client->respond(v);
+						client->respond(data::FlashStream(F("</value>")));
+
+						return;
+					}
+
+					DigitalElement* del = ComponentCaster::digital_element(component);
+
+					if (del != nullptr)
+					{
+						DigitalState v = del->current_state();
+
+						client->respond(data::FlashStream(F("<state>")));
+						client->respond((unsigned long)v);
+						client->respond(data::FlashStream(F("</state>")));
+
+						return;
+					}
 				} break;
 				case WRITE:
 				{

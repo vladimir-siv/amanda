@@ -13,21 +13,9 @@ class LMP : public DigitalElement, public Toggleable
 	public: virtual const __FlashStringHelper* commands() const override { return F("|blink|stop|"); }
 	public: virtual Command* resolve_cmd(const char* name) const override;
 	
-	protected: virtual void toggling_begin() override
-	{
-		toggle_val = LOW;
-		digitalWrite(_pin, toggle_val);
-	}
-	protected: virtual void toggle() override
-	{
-		toggle_val = !toggle_val;
-		digitalWrite(_pin, toggle_val);
-	}
-	protected: virtual void toggling_end() override
-	{
-		toggle_val = LOW;
-		digitalWrite(_pin, toggle_val);
-	}
+	protected: virtual void _toggling_begin() override { write(LOW); }
+	protected: virtual void _toggle() override { toggle(); }
+	protected: virtual void _toggling_end() override { write(LOW); }
 };
 
 namespace lmp_commands

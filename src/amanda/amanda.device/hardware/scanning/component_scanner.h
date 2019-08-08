@@ -45,6 +45,26 @@ class ComponentScanner
 			output.print(F("</value>"));
 		}
 
+		DigitalElement* del = ComponentCaster::digital_element(component);
+		if (dsen != nullptr)
+		{
+			output.print(F("<state>"));
+			output.print(del->current_state());
+			output.print(F("</state>"));
+		}
+
+		AnalogElement* ael = ComponentCaster::analog_element(component);
+		if (ael != nullptr)
+		{
+			output.print(F("<value unit=\""));
+			unit u = ael->e_unit();
+			if (u.scale() != 0) output.print(u.prefix());
+			output.print(u.measure()->label);
+			output.print(F("\">"));
+			output.print(ael->current_value());
+			output.print(F("</value>"));
+		}
+
 		output.print(F("</component>"));
 	}
 };

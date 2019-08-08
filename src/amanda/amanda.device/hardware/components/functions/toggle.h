@@ -19,9 +19,9 @@ class Toggleable
 	
 	public: virtual ~Toggleable() { }
 	
-	protected: virtual void toggling_begin() { }
-	protected: virtual void toggle() = 0;
-	protected: virtual void toggling_end() { }
+	protected: virtual void _toggling_begin() { }
+	protected: virtual void _toggle() = 0;
+	protected: virtual void _toggling_end() { }
 };
 
 class Toggler final
@@ -67,7 +67,7 @@ class Toggler final
 			rotate(first);
 
 			lck.mtx.unlock();
-			first->toggle();
+			first->_toggle();
 			lck.mtx.lock();
 		}
 	}
@@ -87,7 +87,7 @@ class Toggler final
 		toggleable->freq = freq;
 		toggleable->point = 0;
 
-		toggleable->toggling_begin();
+		toggleable->_toggling_begin();
 		rotate(toggleable);
 		return;
 	}
@@ -107,7 +107,7 @@ class Toggler final
 		{
 			if (prev == lst.end()) lst.remove_front();
 			else prev.removeNext();
-			toggleable->toggling_end();
+			toggleable->_toggling_end();
 		}
 
 		toggleable->freq = 0;
