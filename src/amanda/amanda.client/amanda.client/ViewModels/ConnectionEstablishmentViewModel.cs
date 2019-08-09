@@ -1,4 +1,5 @@
-﻿using System.Net.Http;
+﻿using System;
+using System.Net.Http;
 using System.Threading.Tasks;
 using System.Text;
 using Xamarin.Forms;
@@ -76,6 +77,10 @@ namespace amanda.client.ViewModels
 							{
 								if (content == Protocol.HelloReply)
 								{
+									var connection = Dependency.Resolve<Connection>();
+									connection.Address = address;
+									connection.Port = Convert.ToInt32(port);
+
 									result = DispatchAsync(ConnectionEstablished, ViewModelEventArgs.Information("Success"));
 								}
 								else result = DispatchAsync(ConnectionEstablished, ViewModelEventArgs.Error("Device did not respond correctly. Error may be in the network."));
@@ -86,7 +91,7 @@ namespace amanda.client.ViewModels
 					}
 				}
 			}
-			catch (System.Exception ex)
+			catch (Exception ex)
 			{
 				result = DispatchAsync(ConnectionEstablished, ViewModelEventArgs.Error("Device did not respond. Reason:\r\n" + ex.Message));
 			}

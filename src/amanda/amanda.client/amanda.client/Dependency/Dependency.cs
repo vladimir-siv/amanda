@@ -2,6 +2,7 @@
 using System.Net.Http;
 using System.Collections.Generic;
 using amanda.client.ViewModels;
+using amanda.client.Communication;
 
 namespace amanda.client
 {
@@ -14,6 +15,7 @@ namespace amanda.client
 		{
 			Inject(new HttpClient { Timeout = TimeSpan.FromSeconds(10) });
 
+			Connection.Inject();
 			ConnectionEstablishmentViewModel.Inject();
 		}
 

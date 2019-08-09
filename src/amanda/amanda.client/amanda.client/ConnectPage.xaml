@@ -2,8 +2,8 @@
 <ContentPage
 	xmlns="http://xamarin.com/schemas/2014/forms"
 	xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-	xmlns:local="clr-namespace:amanda.client"
 	x:Class="amanda.client.ConnectPage"
+	Title="Amanda"
     BackgroundColor="Black"
 >
 	<ContentPage.Resources>
@@ -12,8 +12,8 @@
 			<Color x:Key="TextColor">White</Color>
 			<x:Int32 x:Key="BorderRadius">1</x:Int32>
 			<OnPlatform x:Key="ControlHeight" x:TypeArguments="x:Double" iOS="36" Android="36" WinPhone="48"/>
-			<OnPlatform x:Key="FontSize" x:TypeArguments="x:Double" iOS="12" Android="12" WinPhone="24"/>
 			<OnPlatform x:Key="FontFamily" x:TypeArguments="x:String" iOS="MarkerFelt-Thin" Android="sans-serif-monospace" WinPhone="Segoe UI"/>
+			<OnPlatform x:Key="FontSize" x:TypeArguments="x:Double" iOS="12" Android="12" WinPhone="24"/>
 		</ResourceDictionary>
 	</ContentPage.Resources>
 	<ContentPage.Content>
