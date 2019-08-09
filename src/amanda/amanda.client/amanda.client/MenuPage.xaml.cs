@@ -14,7 +14,7 @@ namespace amanda.client
 
 		private async void DeviceMonitoringTapped(object sender, EventArgs e)
 		{
-			await DisplayAlert("Error", "Device monitoring not yet implemented.", "OK");
+			await Navigation.PushAsync(new DeviceMonitoringPage());
 		}
 
 		private async void EventManagementTapped(object sender, EventArgs e)

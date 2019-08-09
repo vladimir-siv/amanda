@@ -5,8 +5,6 @@
 
 class LMP : public DigitalElement, public Toggleable
 {
-	protected: DigitalState toggle_val = LOW;
-	
 	public: explicit LMP(byte pin) : DigitalElement(pin) { }
 	public: virtual const __FlashStringHelper* description() const override { return F("Lamp"); }
 	

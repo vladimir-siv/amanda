@@ -1,0 +1,55 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+	xmlns="http://xamarin.com/schemas/2014/forms"
+	xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+	xmlns:cells="clr-namespace:amanda.client.Views.Cells"
+	x:Class="amanda.client.DeviceMonitoringPage"
+	Title="Amanda"
+	BackgroundColor="Black"
+>
+	<ContentPage.Resources>
+		<ResourceDictionary>
+			<Color x:Key="OuterSepColor">Gray</Color>
+			<Color x:Key="TextColor">White</Color>
+			<OnPlatform x:Key="ControlHeight" x:TypeArguments="x:Double" iOS="36" Android="36" WinPhone="48"/>
+			<OnPlatform x:Key="FontFamily" x:TypeArguments="x:String" iOS="MarkerFelt-Thin" Android="sans-serif-monospace" WinPhone="Segoe UI"/>
+			<OnPlatform x:Key="FontSize" x:TypeArguments="x:Double" iOS="12" Android="12" WinPhone="24"/>
+		</ResourceDictionary>
+	</ContentPage.Resources>
+	<ContentPage.Content>
+		<StackLayout>
+			<Label
+				HorizontalOptions="FillAndExpand"
+				Text="Device monitoring"
+				
+				HorizontalTextAlignment="Center"
+				VerticalTextAlignment="Center"
+				BackgroundColor="Black"
+				Margin="0, 10, 0, 0"
+				HeightRequest="{StaticResource ControlHeight}"
+				TextColor="{StaticResource TextColor}"
+				FontFamily="{StaticResource FontFamily}"
+				FontSize="{StaticResource FontSize}"
+			/>
+			<BoxView HorizontalOptions="FillAndExpand" HeightRequest="1" Color="{StaticResource OuterSepColor}"/>
+			<ListView
+				x:Name="AnalogSensors"
+				ItemsSource="{Binding Items}"
+				CachingStrategy="RecycleElement"
+				Margin="5, 0, 5, 0"
+				SelectionMode="None"
+				ItemTapped="OnItemTapped"
+				
+				RowHeight="108"
+			>
+				<ListView.ItemTemplate>
+					<DataTemplate>
+						<cells:ComponentCell/>
+						<!--Text="{Binding .}"-->
+					</DataTemplate>
+				</ListView.ItemTemplate>
+			</ListView>
+			<BoxView HorizontalOptions="FillAndExpand" HeightRequest="1" Color="{StaticResource OuterSepColor}"/>
+		</StackLayout>
+	</ContentPage.Content>
+</ContentPage>

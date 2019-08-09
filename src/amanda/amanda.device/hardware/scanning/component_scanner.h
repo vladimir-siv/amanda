@@ -46,7 +46,7 @@ class ComponentScanner
 		}
 
 		DigitalElement* del = ComponentCaster::digital_element(component);
-		if (dsen != nullptr)
+		if (del != nullptr)
 		{
 			output.print(F("<state>"));
 			output.print(del->current_state());
