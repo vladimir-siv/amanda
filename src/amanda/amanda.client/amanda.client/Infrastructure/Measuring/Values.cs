@@ -6,7 +6,7 @@ namespace amanda.client.Infrastructure.Measuring
 	public class DirectDisplay : IValueDisplay
 	{
 		private static readonly DirectDisplay instance = new DirectDisplay();
-		public static DirectDisplay Instance() { return instance; }
+		public static DirectDisplay Resolve() { return instance; }
 		private DirectDisplay() { }
 		public DisplayedValue Display<T>(T obj) { return new DisplayedValue(obj.ToString(), Color.Crimson); }
 		public DisplayedValue Display(bool state) { return new DisplayedValue(state.ToString(), Color.Crimson); }
@@ -29,7 +29,7 @@ namespace amanda.client.Infrastructure.Measuring
 		public event EventHandler<EventArgs> OnValueChange;
 
 		public DigitalState() : this(false) { }
-		public DigitalState(bool value) : this(value, DirectDisplay.Instance()) { }
+		public DigitalState(bool value) : this(value, DirectDisplay.Resolve()) { }
 		public DigitalState(bool value, IValueDisplay displayer)
 		{
 			Value = value;
@@ -103,7 +103,7 @@ namespace amanda.client.Infrastructure.Measuring
 
 		public AnalogValue() : this(0) { }
 		public AnalogValue(double value) : this(value, string.Empty) { }
-		public AnalogValue(double value, string unit) : this(value, unit, DirectDisplay.Instance()) { }
+		public AnalogValue(double value, string unit) : this(value, unit, DirectDisplay.Resolve()) { }
 		public AnalogValue(double value, string unit, IValueDisplay displayer)
 		{
 			Value = value;

@@ -7,7 +7,7 @@ namespace amanda.client.Infrastructure.Measuring
 	public class OnOffDisplay : IValueDisplay
 	{
 		private static readonly OnOffDisplay instance = new OnOffDisplay();
-		public static OnOffDisplay Instance() { return instance; }
+		public static OnOffDisplay Resolve() { return instance; }
 		private OnOffDisplay() { }
 		public DisplayedValue Display<T>(T obj)
 		{
@@ -35,7 +35,7 @@ namespace amanda.client.Infrastructure.Measuring
 	public class YesNoDisplay : IValueDisplay
 	{
 		private static readonly YesNoDisplay instance = new YesNoDisplay();
-		public static YesNoDisplay Instance() { return instance; }
+		public static YesNoDisplay Resolve() { return instance; }
 		private YesNoDisplay() { }
 		public DisplayedValue Display<T>(T obj)
 		{
@@ -67,9 +67,9 @@ namespace amanda.client.Infrastructure.Measuring
 			// [NOTE] This method may be suitable to have a string as a second parameter,
 			// which is actually a component description (led, pir, button, ...), if
 			// necessary to distinguish certain components
-			if (ctype == ComponentTypes.DigitalSensor) return YesNoDisplay.Instance();
-			if (ctype == ComponentTypes.DigitalElement) return OnOffDisplay.Instance();
-			return DirectDisplay.Instance();
+			if (ctype == ComponentTypes.DigitalSensor) return YesNoDisplay.Resolve();
+			if (ctype == ComponentTypes.DigitalElement) return OnOffDisplay.Resolve();
+			return DirectDisplay.Resolve();
 		}
 	}
 }

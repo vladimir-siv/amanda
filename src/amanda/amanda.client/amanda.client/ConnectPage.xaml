@@ -20,7 +20,6 @@
 		<FlexLayout
 			HorizontalOptions="FillAndExpand"
 			VerticalOptions="FillAndExpand"
-			TranslationY="-30"
 			Direction="Column"
 			JustifyContent="Center"
 			AlignItems="Center"
@@ -42,7 +41,7 @@
 				HorizontalOptions="FillAndExpand"
 				RowSpacing="0"
 				ColumnSpacing="0"
-				Margin="0, 80, 0, 15"
+				Margin="0, 50, 0, 15"
 				HeightRequest="{StaticResource ControlHeight}"
 			>
 				<Grid.RowDefinitions>
@@ -105,6 +104,17 @@
 				Command="{Binding Connect}"
 				
 				BackgroundColor="{StaticResource BackgroundColor}"
+				TextColor="{StaticResource TextColor}"
+				FontFamily="{StaticResource FontFamily}"
+				FontSize="{StaticResource FontSize}"
+				HeightRequest="{StaticResource ControlHeight}"
+			/>
+			<Button
+				HorizontalOptions="Center"
+                Text="Skip"
+				Command="{Binding Skip}"
+				
+				BackgroundColor="Black"
 				TextColor="{StaticResource TextColor}"
 				FontFamily="{StaticResource FontFamily}"
 				FontSize="{StaticResource FontSize}"

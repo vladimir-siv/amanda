@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Net.Http;
 using System.Collections.Generic;
+using System.Threading.Tasks;
+
 using amanda.client.ViewModels;
 using amanda.client.Communication;
 
@@ -11,7 +13,7 @@ namespace amanda.client
 		private static Dictionary<string, object> context = new Dictionary<string, object>();
 		private static Dictionary<Type, object> typed_context = new Dictionary<Type, object>();
 
-		public static void Inject()
+		public static async Task Inject()
 		{
 			Inject(new HttpClient { Timeout = TimeSpan.FromSeconds(10) });
 

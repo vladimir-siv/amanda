@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Xamarin.Forms;
 
 using amanda.client.Models.Components;
@@ -9,34 +10,34 @@ namespace amanda.client.ViewModels
 {
 	public sealed class ComponentViewModel : ViewModel
 	{
-		private Component component;
+		private Component Component { get; }
 
 		public uint ID
 		{
-			get { return component.ID; }
-			set { component.ID = value; OnPropertyChanged(); }
+			get { return Component.ID; }
+			set { Component.ID = value; OnPropertyChanged(); }
 		}
 		public string CType
 		{
-			get { return component.CType.AsProtocolString(); }
-			set { component.CType = value.AsCType(); OnPropertyChanged(); }
+			get { return Component.CType.AsProtocolString(); }
+			set { Component.CType = value.AsCType(); OnPropertyChanged(); }
 		}
 		public string Description
 		{
-			get { return component.Description; }
-			set { component.Description = value; OnPropertyChanged(); }
+			get { return Component.Description; }
+			set { Component.Description = value; OnPropertyChanged(); }
 		}
 		public IEnumerable<string> Commands
 		{
-			get { return component.Commands; }
-			set { component.Commands = value; OnPropertyChanged(); }
+			get { return Component.Commands; }
+			set { Component.Commands = value; OnPropertyChanged(); }
 		}
 		public IValue Value
 		{
-			get { return component.Value; }
+			get { return Component.Value; }
 			set
 			{
-				component.Value = value;
+				Component.Value = value;
 				OnPropertyChanged();
 				OnValueChange(value, EventArgs.Empty);
 			}
@@ -45,21 +46,57 @@ namespace amanda.client.ViewModels
 		public string ValueText => Value.Display().Value;
 		public Color ValueColor => Value.Display().Color;
 
+		// Extensions
+
+		private bool commandIssued;
+		public bool CommandIssued
+		{
+			get { return commandIssued; }
+			set { if (commandIssued == value) return; commandIssued = value; OnPropertyChanged(); Toggle.ChangeCanExecute(); Set.ChangeCanExecute(); }
+		}
+
+		private string functionArgument;
+		public string FunctionArgument
+		{
+			get { return functionArgument; }
+			set { functionArgument = value; OnPropertyChanged(); }
+		}
+
+		private Command toggle;
+		public Command Toggle => toggle;
+
+		private Command set;
+		public Command Set => set;
+
 		public ComponentViewModel(Component component)
 		{
-			this.component = component ?? throw new ArgumentNullException("Component cannot be null.");
-
+			Component = component ?? throw new ArgumentNullException("Component cannot be null.");
 			component.Value.OnValueChange += OnValueChange;
+
+			commandIssued = false;
+			functionArgument = string.Empty;
+			toggle = new Command(async () => await ToggleValue(), () => !CommandIssued);
+			set = new Command(async () => await SetValue(), () => !CommandIssued);
 		}
 		~ComponentViewModel()
 		{
-			component.Value.OnValueChange -= OnValueChange;
+			Component.Value.OnValueChange -= OnValueChange;
 		}
 
 		private void OnValueChange(object sender, EventArgs e)
 		{
 			OnPropertyChanged(nameof(ValueText));
 			OnPropertyChanged(nameof(ValueColor));
+		}
+
+		private async Task ToggleValue()
+		{
+
+		}
+
+		private async Task SetValue()
+		{
+
 		}
 	}
 }

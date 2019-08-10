@@ -3,6 +3,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using System.Text;
 using Xamarin.Forms;
+
 using amanda.client.Communication;
 
 namespace amanda.client.ViewModels
@@ -33,9 +34,13 @@ namespace amanda.client.ViewModels
 		}
 
 		private Command connect;
-		public Command Connect { get { return connect; } }
+		public Command Connect => connect;
+
+		private Command skip;
+		public Command Skip => skip;
 
 		public event ViewModelEventHandler<ViewModelEventArgs> ConnectionEstablished;
+		public event ViewModelEventHandler<ViewModelEventArgs> SkipConnection;
 
 		private ConnectionEstablishmentViewModel(string name) : base(name)
 		{
@@ -43,6 +48,7 @@ namespace amanda.client.ViewModels
 			port = "80";
 			isConnecting = false;
 			connect = new Command(async () => await TryConnect(), () => !IsConnecting);
+			skip = new Command(async () => await SkipConnecting(), () => !IsConnecting);
 		}
 
 		private async Task TryConnect()
@@ -99,6 +105,11 @@ namespace amanda.client.ViewModels
 			IsConnecting = false;
 
 			if (result != null) await result;
+		}
+
+		private async Task SkipConnecting()
+		{
+			await DispatchAsync(SkipConnection, ViewModelEventArgs.Empty);
 		}
 	}
 }

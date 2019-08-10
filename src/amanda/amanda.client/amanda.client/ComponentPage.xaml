@@ -1,0 +1,221 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+	xmlns="http://xamarin.com/schemas/2014/forms"
+	xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+	x:Class="amanda.client.ComponentPage"
+	Title="Amanda"
+	BackgroundColor="Black"
+>
+	<ContentPage.Resources>
+		<ResourceDictionary>
+			<Color x:Key="InnerSepColor">DarkGray</Color>
+			<Color x:Key="OuterSepColor">Gray</Color>
+
+			<Color x:Key="ComponentBackgroundColor">#4f514b</Color>
+			<Color x:Key="BackgroundColor">Black</Color>
+			<Color x:Key="TextColor">White</Color>
+			
+			<Color x:Key="IdColor">Gold</Color>
+			<Color x:Key="CTypeColor">DimGray</Color>
+			<Color x:Key="DescColor">DeepSkyBlue</Color>
+			<Color x:Key="AcqColor">DimGray</Color>
+
+			<OnPlatform x:Key="ControlHeight" x:TypeArguments="x:Double" iOS="36" Android="36" WinPhone="48"/>
+			<OnPlatform x:Key="FontFamily" x:TypeArguments="x:String" iOS="MarkerFelt-Thin" Android="sans-serif-monospace" WinPhone="Segoe UI"/>
+			<OnPlatform x:Key="FontSize" x:TypeArguments="x:Double" iOS="12" Android="12" WinPhone="24"/>
+		</ResourceDictionary>
+	</ContentPage.Resources>
+	<ContentPage.Content>
+		<StackLayout>
+			<TableView HasUnevenRows="True" Margin="20, 0, 20, 0" Intent="Data">
+				<TableRoot Title="Component">
+					<TableSection Title="Details">
+						
+						<ViewCell><StackLayout Margin="0, 20, 0, 0"/></ViewCell>
+						
+						<ViewCell>
+							<StackLayout Orientation="Horizontal">
+								<Label
+									x:Name="lblId"
+									HorizontalOptions="FillAndExpand"
+									VerticalOptions="FillAndExpand"
+									Text="{Binding ID, StringFormat='ID:   {0}'}"
+									
+									HorizontalTextAlignment="Start"
+									VerticalTextAlignment="Center"
+									
+									BackgroundColor="{StaticResource BackgroundColor}"
+									TextColor="{StaticResource IdColor}"
+									FontFamily="{StaticResource FontFamily}"
+									FontSize="{StaticResource FontSize}"
+								/>
+							</StackLayout>
+						</ViewCell>
+						
+						<ViewCell>
+							<StackLayout Orientation="Horizontal">
+								<Label
+									x:Name="lblCType"
+									HorizontalOptions="FillAndExpand"
+									VerticalOptions="FillAndExpand"
+									Text="{Binding CType, StringFormat='Type: {0}'}"
+									
+									HorizontalTextAlignment="Start"
+									VerticalTextAlignment="Center"
+									
+									BackgroundColor="{StaticResource BackgroundColor}"
+									TextColor="{StaticResource CTypeColor}"
+									FontFamily="{StaticResource FontFamily}"
+									FontSize="{StaticResource FontSize}"
+								/>
+							</StackLayout>
+						</ViewCell>
+						
+						<ViewCell>
+							<StackLayout Orientation="Horizontal">
+								<Label
+									x:Name="lblDescription"
+									HorizontalOptions="FillAndExpand"
+									VerticalOptions="FillAndExpand"
+									Text="{Binding Description, StringFormat='Desc: {0}'}"
+									
+									HorizontalTextAlignment="Start"
+									VerticalTextAlignment="Center"
+									
+									BackgroundColor="{StaticResource BackgroundColor}"
+									TextColor="{StaticResource DescColor}"
+									FontFamily="{StaticResource FontFamily}"
+									FontSize="{StaticResource FontSize}"
+								/>
+							</StackLayout>
+						</ViewCell>
+						
+						<ViewCell>
+							<Grid
+								HorizontalOptions="FillAndExpand"
+								RowSpacing="0"
+								ColumnSpacing="0"
+								HeightRequest="{StaticResource ControlHeight}"
+							>
+								<Grid.RowDefinitions>
+									<RowDefinition Height="100.0*"/>
+								</Grid.RowDefinitions>
+								<Grid.ColumnDefinitions>
+									<ColumnDefinition Width="30.0*"/>
+									<ColumnDefinition Width="70.0*"/>
+								</Grid.ColumnDefinitions>
+
+								<Label
+									Grid.Row="0"
+									Grid.Column="0"
+									
+									x:Name="lblAcq"
+									HorizontalOptions="FillAndExpand"
+									VerticalOptions="FillAndExpand"
+									Text="Acq:"
+									
+									HorizontalTextAlignment="Start"
+									VerticalTextAlignment="Center"
+									
+									BackgroundColor="{StaticResource BackgroundColor}"
+									TextColor="{StaticResource AcqColor}"
+									FontFamily="{StaticResource FontFamily}"
+									FontSize="{StaticResource FontSize}"
+								/>
+								
+								<Label
+									Grid.Row="0"
+									Grid.Column="1"
+									
+									x:Name="lblValue"
+									HorizontalOptions="FillAndExpand"
+									VerticalOptions="FillAndExpand"
+									Text="{Binding ValueText}"
+									
+									HorizontalTextAlignment="Start"
+									VerticalTextAlignment="Center"
+									
+									BackgroundColor="{StaticResource BackgroundColor}"
+									TextColor="{Binding ValueColor}"
+									FontFamily="{StaticResource FontFamily}"
+									FontSize="{StaticResource FontSize}"
+								/>
+							</Grid>
+						</ViewCell>
+						
+					</TableSection>
+					<TableSection x:Name="ComponentFunctions" Title="Functions">
+						
+						<ViewCell><StackLayout Margin="0, 20, 0, 0"/></ViewCell>
+						
+						<ViewCell x:Name="DigitalFunctions">
+							<StackLayout IsVisible="False">
+								<Button
+									HorizontalOptions="Center"
+									Text="Toggle"
+									Command="{Binding Toggle}"
+									
+									BackgroundColor="{StaticResource ComponentBackgroundColor}"
+									TextColor="{StaticResource TextColor}"
+									FontFamily="{StaticResource FontFamily}"
+									FontSize="{StaticResource FontSize}"
+									HeightRequest="{StaticResource ControlHeight}"
+								/>
+							</StackLayout>
+						</ViewCell>
+						
+						<ViewCell x:Name="AnalogFunctions">
+							<StackLayout Orientation="Horizontal" HorizontalOptions="CenterAndExpand" IsVisible="False">
+								<Entry
+									HorizontalOptions="Center"
+									Text="{Binding FunctionArgument}"
+									Placeholder="Analog Value"
+									
+									HorizontalTextAlignment="Center"
+									BackgroundColor="{StaticResource ComponentBackgroundColor}"
+									TextColor="{StaticResource TextColor}"
+									FontFamily="{StaticResource FontFamily}"
+									FontSize="{StaticResource FontSize}"
+								/>
+								<Button
+									HorizontalOptions="Center"
+									Text="Set"
+									Command="{Binding Set}"
+									
+									BackgroundColor="{StaticResource ComponentBackgroundColor}"
+									TextColor="{StaticResource TextColor}"
+									FontFamily="{StaticResource FontFamily}"
+									FontSize="{StaticResource FontSize}"
+									HeightRequest="{StaticResource ControlHeight}"
+								/>
+							</StackLayout>
+						</ViewCell>
+						
+					</TableSection>
+					<TableSection Title="Commands">
+						
+						<ViewCell><StackLayout Margin="0, 20, 0, 0"/></ViewCell>
+						
+						<ViewCell>
+							<StackLayout>
+								<Label
+									HorizontalOptions="FillAndExpand"
+									Text="Issue a command"
+									
+									HorizontalTextAlignment="Center"
+									VerticalTextAlignment="Center"
+									
+									BackgroundColor="{StaticResource BackgroundColor}"
+									TextColor="{StaticResource AcqColor}"
+									FontFamily="{StaticResource FontFamily}"
+									FontSize="{StaticResource FontSize}"
+								/>
+							</StackLayout>
+						</ViewCell>
+						
+					</TableSection>
+				</TableRoot>
+			</TableView>
+		</StackLayout>
+	</ContentPage.Content>
+</ContentPage>

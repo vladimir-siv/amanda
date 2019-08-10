@@ -11,7 +11,7 @@
 		<ResourceDictionary>
 			<Color x:Key="OuterSepColor">Gray</Color>
 			<Color x:Key="TextColor">White</Color>
-			<OnPlatform x:Key="RowHeight" x:TypeArguments="x:Int32" iOS="108" Android="108" WinPhone="144"/>
+			<OnPlatform x:Key="RowHeight" x:TypeArguments="x:Int32" iOS="96" Android="96" WinPhone="128"/>
 			<OnPlatform x:Key="ControlHeight" x:TypeArguments="x:Double" iOS="36" Android="36" WinPhone="48"/>
 			<OnPlatform x:Key="FontFamily" x:TypeArguments="x:String" iOS="MarkerFelt-Thin" Android="sans-serif-monospace" WinPhone="Segoe UI"/>
 			<OnPlatform x:Key="FontSize" x:TypeArguments="x:Double" iOS="12" Android="12" WinPhone="24"/>
@@ -36,7 +36,7 @@
 			<StackLayout x:Name="ComponentView" IsVisible="False">
 				<BoxView HorizontalOptions="FillAndExpand" HeightRequest="1" Color="{StaticResource OuterSepColor}"/>
 				<ListView
-					ItemsSource="{Binding Items}"
+					ItemsSource="{Binding Components}"
 					CachingStrategy="RecycleElement"
 					Margin="5, 0, 5, 0"
 					SelectionMode="None"

@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using System.Text;
 using System.Xml;
 
+using Xamarin.Forms;
+
 using amanda.client.Models.Components;
 using amanda.client.Infrastructure.Measuring;
 using amanda.client.ViewModels;
@@ -21,8 +23,84 @@ namespace amanda.client.Communication
 		public const string TimeMessage = "<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"no\"?><action task=\"IO/basic\"><arg>1:AS</arg><arg>read</arg></action>";
 		public const string ScanHardware = "<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"no\"?><action task=\"Scan/hardware\"></action>";
 		public const string ScanEvents = "<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"no\"?><action task=\"Scan/events\"></action>";
+	}
 
-		public static async Task LoadComponents(ObservableCollection<ComponentViewModel> loadedComponents, string xml_scan)
+	public static class RemoteDevice
+	{
+		public static ObservableCollection<ComponentViewModel> Components { get; } = new ObservableCollection<ComponentViewModel>();
+
+		public class CollectorFailedEventArgs : EventArgs
+		{
+			public string Reason { get; }
+			public CollectorFailedEventArgs(string reason) { Reason = reason; }
+		}
+
+		private static bool isCollecting = false;
+		private static bool collect { get; set; }
+		
+		public static void RunCollector()
+		{
+			collect = true;
+
+			if (isCollecting) return;
+
+			isCollecting = true;
+			
+			Device.StartTimer(TimeSpan.FromMilliseconds(Protocol.RefreshSpeed), () =>
+			{
+				if (collect)
+				{
+					try
+					{
+						Task.Run(async () =>
+						{
+							string xml_scan = await Send(Protocol.ScanHardware);
+							await LoadComponents(xml_scan);
+						});
+					}
+					catch (Exception ex)
+					{
+						collect = false;
+						isCollecting = false;
+						CollectorFailed?.Invoke(new CollectorFailedEventArgs(ex.Message));
+						return false;
+					}
+				}
+
+				return true;
+			});
+		}
+		public static void PauseCollector()
+		{
+			collect = false;
+		}
+		public static event Action<CollectorFailedEventArgs> CollectorFailed;
+
+		public static async Task<string> Send(string xml)
+		{
+			var client = Dependency.Resolve<HttpClient>();
+			Connection con = Dependency.Resolve<Connection>();
+
+			using (var body = new StringContent(xml, Encoding.UTF8, "application/xml"))
+			{
+				using (var response = await client.PostAsync("http://" + con.Address + ":" + con.Port + "/", body))
+				{
+					if (response.IsSuccessStatusCode)
+					{
+						var content = await response.Content.ReadAsStringAsync();
+
+						if (content != null)
+						{
+							return content;
+						}
+					}
+				}
+			}
+
+			return string.Empty;
+		}
+
+		public static async Task LoadComponents(string xml_scan)
 		{
 			await Task.Run(() =>
 			{
@@ -65,41 +143,14 @@ namespace amanda.client.Communication
 						}
 
 						// TODO: Somehow optimize this search (maybe it's not even possible - at least not in an ok way)
-						var search = loadedComponents.FirstOrDefault(c => c.ID == vid && c.CType.AsCType() == ctype);
+						var search = Components.FirstOrDefault(c => c.ID == vid && c.CType.AsCType() == ctype);
 
 						if (search != null) search.Value.Write(value.Read());
-						else loadedComponents.Add(new ComponentViewModel(new Component(vid, ctype, description, commands, value)));
+						else Components.Add(new ComponentViewModel(new Component(vid, ctype, description, commands, value)));
 					}
-					catch (Exception ex) { /* if one component is invalid, skip that one and continue on */ }
+					catch { /* if one component is invalid, skip that one and continue on */ }
 				}
 			});
-		}
-	}
-
-	public static class RemoteDevice
-	{
-		public static async Task<string> Send(string xml)
-		{
-			var client = Dependency.Resolve<HttpClient>();
-			Connection con = Dependency.Resolve<Connection>();
-
-			using (var body = new StringContent(xml, Encoding.UTF8, "application/xml"))
-			{
-				using (var response = await client.PostAsync("http://" + con.Address + ":" + con.Port + "/", body))
-				{
-					if (response.IsSuccessStatusCode)
-					{
-						var content = await response.Content.ReadAsStringAsync();
-
-						if (content != null)
-						{
-							return content;
-						}
-					}
-				}
-			}
-
-			return string.Empty;
 		}
 	}
 }

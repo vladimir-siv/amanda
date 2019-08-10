@@ -9,15 +9,14 @@ namespace amanda.client
 		public App()
 		{
 			InitializeComponent();
-
-			Dependency.Inject();
-
-			MainPage = new NavigationPage(new MenuPage());
+			
+			MainPage = new NavigationPage(new ConnectPage());
 		}
 
-		protected override void OnStart()
+		protected async override void OnStart()
 		{
 			// Handle when your app starts
+			await Dependency.Inject();
 		}
 
 		protected override void OnSleep()
