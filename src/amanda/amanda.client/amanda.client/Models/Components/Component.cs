@@ -51,15 +51,13 @@ namespace amanda.client.Models.Components
 			}
 		}
 
-		public static bool Is(this IComponent component, CType ctype)
+		public static bool Is(this CType this_type, CType ctype)
 		{
-			CType this_type = component.CType;
 			CType ty = (CType)(((int)this_type) ^ ((int)ctype));
 			return this_type != CType.None && ty == CType.None;
 		}
-		public static bool IsAny(this IComponent component, CType ctype)
+		public static bool IsAny(this CType this_type, CType ctype)
 		{
-			CType this_type = component.CType;
 			CType ty = (CType)(((int)this_type) & ((int)ctype));
 			return this_type != CType.None && ty != CType.None;
 		}

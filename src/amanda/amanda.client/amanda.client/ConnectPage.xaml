@@ -110,11 +110,7 @@
 				FontSize="{StaticResource FontSize}"
 				HeightRequest="{StaticResource ControlHeight}"
 			/>
-			<ActivityIndicator
-				IsRunning="{Binding IsConnecting}"
-				
-				Margin="25, 25, 25, 0"
-			/>
+			<ActivityIndicator Margin="25, 25, 25, 0" IsRunning="{Binding IsConnecting}"/>
 		</FlexLayout>
 	</ContentPage.Content>
 </ContentPage>

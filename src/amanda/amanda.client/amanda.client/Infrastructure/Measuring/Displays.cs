@@ -1,5 +1,7 @@
 ﻿using Xamarin.Forms;
 
+using amanda.client.Models.Components;
+
 namespace amanda.client.Infrastructure.Measuring
 {
 	public class OnOffDisplay : IValueDisplay
@@ -55,6 +57,19 @@ namespace amanda.client.Infrastructure.Measuring
 				new DisplayedValue("YES", Color.Cyan)
 				:
 				new DisplayedValue("NO", Color.Brown);
+		}
+	}
+
+	public static class Displays
+	{
+		public static IValueDisplay ResolveDisplay(this CType ctype)
+		{
+			// [NOTE] This method may be suitable to have a string as a second parameter,
+			// which is actually a component description (led, pir, button, ...), if
+			// necessary to distinguish certain components
+			if (ctype == ComponentTypes.DigitalSensor) return YesNoDisplay.Instance();
+			if (ctype == ComponentTypes.DigitalElement) return OnOffDisplay.Instance();
+			return DirectDisplay.Instance();
 		}
 	}
 }

@@ -42,6 +42,7 @@ namespace amanda.client.Infrastructure.Measuring
 			return false;
 		}
 		public DisplayedValue Display() { return Displayer.Display(Value); }
+		public string Read() { return Value.ToString(); }
 		public void Write(string value)
 		{
 			string lstr = value.ToLower();
@@ -120,6 +121,7 @@ namespace amanda.client.Infrastructure.Measuring
 			return false;
 		}
 		public DisplayedValue Display() { return Displayer.Display(Value, Unit); }
+		public string Read() { return Value + " " + Unit; }
 		public void Write(string value)
 		{
 			string[] parts = value.Split(' ');

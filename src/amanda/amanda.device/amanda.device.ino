@@ -96,14 +96,14 @@ void loop()
 	// this should run in a seperate thread, meaning these 2 threads have to be synchronized
 	do EventHandler::instance().check_events(); while (server.await());
 
-	_LOG(F("SERVER"), F("Incoming client request"));
+	//_LOG(F("SERVER"), F("Incoming client request"));
 	HTTPClientRequest client = server.get_request();
 	
 	RequestHandler handler;
 	if (!handler.parse(client)) client.respond_bad_request();
 
 	client.stop();
-	_LOG(F("SERVER"), F("Client request processed"));
+	//_LOG(F("SERVER"), F("Client request processed"));
 }
 
 //*/
