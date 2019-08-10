@@ -4,7 +4,6 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
 using System.Reflection;
-using System.Threading.Tasks;
 
 namespace amanda.client.ViewModels
 {
@@ -62,32 +61,6 @@ namespace amanda.client.ViewModels
 
 			e.RemoveEventHandler(this, callback);
 		}
-
-		protected async Task DispatchAsync<TViewModelEventArgs>(ViewModelEventHandler<TViewModelEventArgs> dispatcher, TViewModelEventArgs e) where TViewModelEventArgs : ViewModelEventArgs
-		{
-			if (dispatcher == null) return;
-
-			Delegate[] invocation_list = dispatcher.GetInvocationList();
-			Task[] callbacks = new Task[invocation_list.Length];
-
-			for (int i = 0; i < invocation_list.Length; ++i)
-			{
-				callbacks[i] = ((ViewModelEventHandler<TViewModelEventArgs>)invocation_list[i]).Invoke(this, e);
-			}
-
-			await Task.WhenAll(callbacks);
-		}
-		protected async Task Dispatch<TViewModelEventArgs>(ViewModelEventHandler<TViewModelEventArgs> dispatcher, TViewModelEventArgs e) where TViewModelEventArgs : ViewModelEventArgs
-		{
-			if (dispatcher == null) return;
-
-			Delegate[] invocation_list = dispatcher.GetInvocationList();
-			
-			for (int i = 0; i < invocation_list.Length; ++i)
-			{
-				await ((ViewModelEventHandler<TViewModelEventArgs>)invocation_list[i]).Invoke(this, e);
-			}
-		}
 	}
 
 	public class ViewModelEventArgs : EventArgs
@@ -111,7 +84,7 @@ namespace amanda.client.ViewModels
 		public ViewModelEventArgs(string name, string message, MessageType mtype) { Name = name ?? string.Empty; Message = message ?? string.Empty; MType = mtype; }
 	}
 
-	public delegate Task ViewModelEventHandler<TViewModelEventArgs>(ViewModel sender, TViewModelEventArgs e) where TViewModelEventArgs : ViewModelEventArgs;
+	public delegate void ViewModelEventHandler<TViewModelEventArgs>(ViewModel sender, TViewModelEventArgs e) where TViewModelEventArgs : ViewModelEventArgs;
 
 	public class DispatcherNotFoundException : Exception
 	{

@@ -48,14 +48,17 @@ namespace amanda.client.ViewModels
 			port = "80";
 			isConnecting = false;
 			connect = new Command(async () => await TryConnect(), () => !IsConnecting);
-			skip = new Command(async () => await SkipConnecting(), () => !IsConnecting);
+			skip = new Command(() => SkipConnection?.Invoke(this, ViewModelEventArgs.Empty), () => !IsConnecting);
 		}
-
+		
 		private async Task TryConnect()
 		{
+			Action<string> ConnectionFailed = message => ConnectionEstablished?.Invoke(this, ViewModelEventArgs.Error(message));
+			Action<string> ConnectionSuccessful = message => ConnectionEstablished?.Invoke(this, ViewModelEventArgs.Information(message));
+			
 			if (string.IsNullOrWhiteSpace(address))
 			{
-				await DispatchAsync(ConnectionEstablished, ViewModelEventArgs.Error("Please, fill in the Address of the device."));
+				ConnectionFailed("Please, fill in the Address of the device.");
 				return;
 			}
 
@@ -67,7 +70,6 @@ namespace amanda.client.ViewModels
 			IsConnecting = true;
 
 			var client = Dependency.Resolve<HttpClient>();
-			Task result = null;
 			
 			try
 			{
@@ -87,29 +89,22 @@ namespace amanda.client.ViewModels
 									connection.Address = address;
 									connection.Port = Convert.ToInt32(port);
 
-									result = DispatchAsync(ConnectionEstablished, ViewModelEventArgs.Information("Success"));
+									ConnectionSuccessful("Success");
 								}
-								else result = DispatchAsync(ConnectionEstablished, ViewModelEventArgs.Error("Device did not respond correctly. Error may be in the network."));
+								else ConnectionFailed("Device did not respond correctly. Error may be in the network.");
 							}
-							else result = DispatchAsync(ConnectionEstablished, ViewModelEventArgs.Error("Device is not responding correctly."));
+							else ConnectionFailed("Device is not responding correctly.");
 						}
-						else result = DispatchAsync(ConnectionEstablished, ViewModelEventArgs.Error("Connection was not properly established with the device."));
+						else ConnectionFailed("Connection was not properly established with the device.");
 					}
 				}
 			}
 			catch (Exception ex)
 			{
-				result = DispatchAsync(ConnectionEstablished, ViewModelEventArgs.Error("Device did not respond. Reason:\r\n" + ex.Message));
+				ConnectionFailed("Device did not respond. Reason:\r\n" + ex.Message);
 			}
 			
 			IsConnecting = false;
-
-			if (result != null) await result;
-		}
-
-		private async Task SkipConnecting()
-		{
-			await DispatchAsync(SkipConnection, ViewModelEventArgs.Empty);
 		}
 	}
 }

@@ -28,7 +28,7 @@ namespace amanda.client
 			vm.Detach<ViewModelEventArgs>("SkipConnection", OnConnectionSkipped);
 		}
 
-		protected async Task OnConnectionEstablished(ViewModel sender, ViewModelEventArgs e)
+		protected async void OnConnectionEstablished(ViewModel sender, ViewModelEventArgs e)
 		{
 			if (e.MType != ViewModelEventArgs.MessageType.Error)
 			{
@@ -38,7 +38,7 @@ namespace amanda.client
 			else await DisplayAlert("Error", e.Message, "OK");
 		}
 
-		private async Task OnConnectionSkipped(ViewModel sender, ViewModelEventArgs e)
+		private async void OnConnectionSkipped(ViewModel sender, ViewModelEventArgs e)
 		{
 			await Navigation.PushAsync(new MenuPage());
 		}

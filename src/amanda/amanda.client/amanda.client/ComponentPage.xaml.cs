@@ -36,13 +36,21 @@ namespace amanda.client
 		protected override void OnAppearing()
 		{
 			base.OnAppearing();
+			RemoteDevice.CollectorFailed += CollectorFailed;
 			RemoteDevice.RunCollector();
 		}
 
 		protected override void OnDisappearing()
 		{
 			RemoteDevice.PauseCollector();
+			RemoteDevice.CollectorFailed -= CollectorFailed;
 			base.OnDisappearing();
+		}
+
+		private async void CollectorFailed(RemoteDevice.CollectorFailedEventArgs e)
+		{
+			await DisplayAlert("Error", "Connection to the device lost. Reason:\r\n" + e.Reason + "\r\nRetrying . . .", "OK");
+			RemoteDevice.RunCollector();
 		}
 	}
 }

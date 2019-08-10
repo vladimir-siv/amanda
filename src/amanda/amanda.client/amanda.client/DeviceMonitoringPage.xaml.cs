@@ -59,16 +59,24 @@ namespace amanda.client
 				PageStack.Children.Remove(LoadingIndicator);
 
 			ComponentView.IsVisible = true;
+			RemoteDevice.CollectorFailed += CollectorFailed;
 			RemoteDevice.RunCollector();
 		}
 
 		protected override void OnDisappearing()
 		{
 			RemoteDevice.PauseCollector();
+			RemoteDevice.CollectorFailed -= CollectorFailed;
 			base.OnDisappearing();
 		}
 
-        private async void OnItemTapped(object sender, ItemTappedEventArgs e)
+		private async void CollectorFailed(RemoteDevice.CollectorFailedEventArgs e)
+		{
+			await DisplayAlert("Error", "Connection to the device lost. Reason:\r\n" + e.Reason + "\r\nRetrying . . .", "OK");
+			RemoteDevice.RunCollector();
+		}
+
+		private async void OnItemTapped(object sender, ItemTappedEventArgs e)
         {
 			ComponentViewModel item = e.Item as ComponentViewModel;
 			if (item == null) return;

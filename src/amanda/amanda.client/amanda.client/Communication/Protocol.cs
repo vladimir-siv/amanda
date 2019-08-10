@@ -56,7 +56,7 @@ namespace amanda.client.Communication
 						{
 							string xml_scan = await Send(Protocol.ScanHardware);
 							await LoadComponents(xml_scan);
-						});
+						}).Wait();
 					}
 					catch (Exception ex)
 					{
