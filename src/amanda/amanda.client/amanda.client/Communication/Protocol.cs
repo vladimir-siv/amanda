@@ -11,6 +11,7 @@ using Xamarin.Forms;
 using amanda.client.Models.Components;
 using amanda.client.Infrastructure.Measuring;
 using amanda.client.ViewModels;
+using amanda.client.Synchronization;
 
 namespace amanda.client.Communication
 {
@@ -23,48 +24,75 @@ namespace amanda.client.Communication
 		public const string TimeMessage = "<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"no\"?><action task=\"IO/basic\"><arg>1:AS</arg><arg>read</arg></action>";
 		public const string ScanHardware = "<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"no\"?><action task=\"Scan/hardware\"></action>";
 		public const string ScanEvents = "<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"no\"?><action task=\"Scan/events\"></action>";
+
+		public static string IODigitalRead(uint id)
+		{
+			const string xml = "<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"no\"?><action task=\"IO/basic\"><arg>{0}:DS</arg><arg>read</arg></action>";
+			return string.Format(xml, id);
+		}
+		public static string IODigitalWrite(uint id, bool state)
+		{
+			const string xml = "<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"no\"?><action task=\"IO/basic\"><arg>{0}:DE</arg><arg>write</arg><arg>{1}</arg></action>";
+			return string.Format(xml, id, state ? 1 : 0);
+		}
+		public static string IOAnalogRead(uint id)
+		{
+			string xml = "<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"no\"?><action task=\"IO/basic\"><arg>{0}:AS</arg><arg>read</arg></action>";
+			return string.Format(xml, id);
+		}
+		public static string IOAnalogWrite(uint id, double value, string unit)
+		{
+			string xml = "<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"no\"?><action task=\"IO/basic\"><arg>{0}:AE</arg><arg>write</arg><arg>{1:F2} {2}</arg></action>";
+			return string.Format(xml, id, value, unit);
+		}
+
+		public const string ActionSuccess = "<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"no\"?><action>success</action>";
+		public const string ActionFailed = "<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"no\"?><action>failure</action>";
 	}
 
 	public static class RemoteDevice
 	{
 		public static ObservableCollection<ComponentViewModel> Components { get; } = new ObservableCollection<ComponentViewModel>();
-
 		public class CollectorFailedEventArgs : EventArgs
 		{
 			public string Reason { get; }
 			public CollectorFailedEventArgs(string reason) { Reason = reason; }
 		}
 
-		private static bool isCollecting = false;
-		private static bool collect { get; set; }
+		private static bool started = false;
+		private static bool collect = false;
+		private static Atomic<bool> cansend = new Atomic<bool>(false);
 		
 		public static void RunCollector()
 		{
 			collect = true;
 
-			if (isCollecting) return;
+			if (started) return;
+			started = true;
 
-			isCollecting = true;
-			
+			cansend.Value = true;
+
 			Device.StartTimer(TimeSpan.FromMilliseconds(Protocol.RefreshSpeed), () =>
 			{
-				if (collect)
+				if (collect && cansend.CompareAndSet(true, false))
 				{
-					try
+					Task.Run(async () =>
 					{
-						Task.Run(async () =>
+						try
 						{
 							string xml_scan = await Send(Protocol.ScanHardware);
 							await LoadComponents(xml_scan);
-						}).Wait();
-					}
-					catch (Exception ex)
-					{
-						collect = false;
-						isCollecting = false;
-						CollectorFailed?.Invoke(new CollectorFailedEventArgs(ex.Message));
-						return false;
-					}
+						}
+						catch (Exception ex)
+						{
+							collect = false;
+							Device.BeginInvokeOnMainThread(() => CollectorFailed?.Invoke(new CollectorFailedEventArgs(ex.Message)));
+						}
+						finally
+						{
+							cansend.Value = true;
+						}
+					});
 				}
 
 				return true;
@@ -100,55 +128,59 @@ namespace amanda.client.Communication
 			return string.Empty;
 		}
 
+		private static object sync = new object();
 		public static async Task LoadComponents(string xml_scan)
 		{
 			await Task.Run(() =>
 			{
-				var doc = new XmlDocument();
-				doc.LoadXml(xml_scan);
-
-				var root = doc.ChildNodes[1];
-				if (root == null || root.Name != "scan") throw new XmlException("Invalid scan format.");
-
-				foreach (XmlNode node in root.ChildNodes)
+				lock (sync)
 				{
-					if (node.Name != "component") throw new XmlException("Invalid scan format.");
+					var doc = new XmlDocument();
+					doc.LoadXml(xml_scan);
 
-					try
+					var root = doc.ChildNodes[1];
+					if (root == null || root.Name != "scan") throw new XmlException("Invalid scan format.");
+
+					foreach (XmlNode node in root.ChildNodes)
 					{
-						uint vid = Convert.ToUInt32(node.Attributes["vid"].Value);
-						CType ctype = node.Attributes["ctype"].Value.AsCType();
-						string description = node.Attributes["description"].Value;
-						string[] commands = node.Attributes["commands"].Value.Split(new char[] { '|' }, StringSplitOptions.RemoveEmptyEntries);
+						if (node.Name != "component") throw new XmlException("Invalid scan format.");
 
-						IValue value = null;
-
-						var vnode = node.FirstChild;
-						if (vnode == null) throw new XmlException("Invalid scan format.");
-
-						switch (vnode.Name)
+						try
 						{
-							case "state":
+							uint vid = Convert.ToUInt32(node.Attributes["vid"].Value);
+							CType ctype = node.Attributes["ctype"].Value.AsCType();
+							string description = node.Attributes["description"].Value;
+							string[] commands = node.Attributes["commands"].Value.Split(new char[] { '|' }, StringSplitOptions.RemoveEmptyEntries);
+
+							IValue value = null;
+
+							var vnode = node.FirstChild;
+							if (vnode == null) throw new XmlException("Invalid scan format.");
+
+							switch (vnode.Name)
 							{
-								bool state = Convert.ToBoolean(Convert.ToInt32(vnode.InnerText));
-								value = new DigitalState(state, ctype.ResolveDisplay());
-							} break;
-							case "value":
-							{
-								string unit = vnode.Attributes["unit"].Value;
-								double analogValue = Convert.ToDouble(vnode.InnerText);
-								value = new AnalogValue(analogValue, unit, ctype.ResolveDisplay());
-							} break;
-							default: throw new XmlException("Invalid scan format.");
+								case "state":
+								{
+									bool state = Convert.ToBoolean(Convert.ToInt32(vnode.InnerText));
+									value = new DigitalState(state, ctype.ResolveDisplay());
+								} break;
+								case "value":
+								{
+									string unit = vnode.Attributes["unit"].Value;
+									double analogValue = Convert.ToDouble(vnode.InnerText);
+									value = new AnalogValue(analogValue, unit, ctype.ResolveDisplay());
+								} break;
+								default: throw new XmlException("Invalid scan format.");
+							}
+
+							// TODO: Somehow optimize this search (maybe it's not even possible - at least not in an ok way)
+							var search = Components.FirstOrDefault(c => c.ID == vid && c.CType.AsCType() == ctype);
+
+							if (search != null) search.Value.Write(value.Read());
+							else Components.Add(new ComponentViewModel(new Component(vid, ctype, description, commands, value)));
 						}
-
-						// TODO: Somehow optimize this search (maybe it's not even possible - at least not in an ok way)
-						var search = Components.FirstOrDefault(c => c.ID == vid && c.CType.AsCType() == ctype);
-
-						if (search != null) search.Value.Write(value.Read());
-						else Components.Add(new ComponentViewModel(new Component(vid, ctype, description, commands, value)));
+						catch { /* if one component is invalid, skip that one and continue on */ }
 					}
-					catch { /* if one component is invalid, skip that one and continue on */ }
 				}
 			});
 		}

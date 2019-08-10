@@ -5,6 +5,7 @@ using Xamarin.Forms;
 
 using amanda.client.Models.Components;
 using amanda.client.Infrastructure.Measuring;
+using amanda.client.Communication;
 
 namespace amanda.client.ViewModels
 {
@@ -68,6 +69,8 @@ namespace amanda.client.ViewModels
 		private Command set;
 		public Command Set => set;
 
+		public event ViewModelEventHandler<ViewModelEventArgs> FunctionExecuted;
+
 		public ComponentViewModel(Component component)
 		{
 			Component = component ?? throw new ArgumentNullException("Component cannot be null.");
@@ -91,12 +94,52 @@ namespace amanda.client.ViewModels
 
 		private async Task ToggleValue()
 		{
+			if (!Component.CType.IsAny(Models.Components.CType.Digital)) return;
 
+			if (!(Component.Value is DigitalState)) return;
+
+			try
+			{
+				CommandIssued = true;
+
+				var val = (DigitalState)Component.Value;
+
+				var result = await RemoteDevice.Send(Protocol.IODigitalWrite(ID, !val.Value));
+
+				ViewModelEventArgs e;
+				if (result == Protocol.ActionSuccess) e = ViewModelEventArgs.Information("Success");
+				else e = ViewModelEventArgs.Error("Toggling failed.");
+
+				FunctionExecuted?.Invoke(this, e);
+			}
+			catch { }
+			finally { CommandIssued = false; }
 		}
 
 		private async Task SetValue()
 		{
+			if (!Component.CType.IsAny(Models.Components.CType.Analog)) return;
 
+			if (!(Component.Value is AnalogValue)) return;
+
+			try
+			{
+				CommandIssued = true;
+
+				double av = Convert.ToDouble(FunctionArgument);
+
+				var val = (AnalogValue)Component.Value;
+
+				var result = await RemoteDevice.Send(Protocol.IOAnalogWrite(ID, av, val.Unit));
+
+				ViewModelEventArgs e;
+				if (result == Protocol.ActionSuccess) e = ViewModelEventArgs.Information("Success");
+				else e = ViewModelEventArgs.Error("Failed to set the value.");
+
+				FunctionExecuted?.Invoke(this, e);
+			}
+			catch { }
+			finally { CommandIssued = false; }
 		}
 	}
 }
