@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using amanda.client.Infrastructure;
 using amanda.client.Infrastructure.Measuring;
 
 namespace amanda.client.Models.Components

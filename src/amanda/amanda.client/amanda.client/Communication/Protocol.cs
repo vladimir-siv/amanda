@@ -43,7 +43,26 @@ namespace amanda.client.Communication
 		public static string IOAnalogWrite(uint id, double value, string unit)
 		{
 			string xml = "<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"no\"?><action task=\"IO/basic\"><arg>{0}:AE</arg><arg>write</arg><arg>{1:F2} {2}</arg></action>";
-			return string.Format(xml, id, value, unit);
+			return string.Format(xml, id, value, unit ?? "n");
+		}
+
+		public static string Command(uint id, CType ctype, string name, params string[] args)
+		{
+			const string xml = "<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"no\"?><action task=\"Cmd/exec\"><arg>{0}:{1}</arg><arg>{2}</arg>{3}</action>";
+
+			var arguments = new StringBuilder();
+
+			if (args != null)
+			{
+				foreach (var arg in args)
+				{
+					arguments.Append("<arg>");
+					arguments.Append(arg ?? string.Empty);
+					arguments.Append("</arg>");
+				}
+			}
+
+			return string.Format(xml, id, ctype.AsProtocolString(), name ?? string.Empty, arguments.ToString());
 		}
 
 		public const string ActionSuccess = "<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"no\"?><action>success</action>";

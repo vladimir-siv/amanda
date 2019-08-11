@@ -20,6 +20,8 @@
 			<Color x:Key="DescColor">DeepSkyBlue</Color>
 			<Color x:Key="AcqColor">DimGray</Color>
 
+			<Color x:Key="SelectedColor">Navy</Color>
+
 			<OnPlatform x:Key="ControlHeight" x:TypeArguments="x:Double" iOS="36" Android="36" WinPhone="48"/>
 			<OnPlatform x:Key="FontFamily" x:TypeArguments="x:String" iOS="MarkerFelt-Thin" Android="sans-serif-monospace" WinPhone="Segoe UI"/>
 			<OnPlatform x:Key="FontSize" x:TypeArguments="x:Double" iOS="12" Android="12" WinPhone="24"/>
@@ -209,6 +211,64 @@
 									TextColor="{StaticResource AcqColor}"
 									FontFamily="{StaticResource FontFamily}"
 									FontSize="{StaticResource FontSize}"
+								/>
+							</StackLayout>
+						</ViewCell>
+						
+						<ViewCell>
+							<StackLayout x:Name="CommandList" Margin="0, 15, 0, 15">
+								
+							</StackLayout>
+						</ViewCell>
+						
+						<ViewCell>
+							<StackLayout>
+								<StackLayout x:Name="ArgumentList" Margin="0, 15, 0, 15">
+									
+								</StackLayout>
+								<StackLayout Orientation="Horizontal" HorizontalOptions="CenterAndExpand">
+									<Button
+										x:Name="btnAddArg"
+										HorizontalOptions="Center"
+										Text="+"
+										Clicked="OnAddArgTap"
+										
+										BackgroundColor="{StaticResource ComponentBackgroundColor}"
+										TextColor="{StaticResource TextColor}"
+										FontFamily="{StaticResource FontFamily}"
+										FontSize="{StaticResource FontSize}"
+										HeightRequest="{StaticResource ControlHeight}"
+									/>
+									<Button
+										x:Name="btnRemoveArg"
+										HorizontalOptions="Center"
+										Text="-"
+										Clicked="OnRemoveArgTap"
+										
+										BackgroundColor="{StaticResource ComponentBackgroundColor}"
+										TextColor="{StaticResource TextColor}"
+										FontFamily="{StaticResource FontFamily}"
+										FontSize="{StaticResource FontSize}"
+										HeightRequest="{StaticResource ControlHeight}"
+									/>
+								</StackLayout>
+							</StackLayout>
+						</ViewCell>
+						
+						<ViewCell>
+							<StackLayout>
+								<Button
+									x:Name="btnSendCommand"
+									HorizontalOptions="Center"
+									Text="Send!"
+									Clicked="OnSendTap"
+									
+									Margin="0, 15, 0, 15"
+									BackgroundColor="{StaticResource ComponentBackgroundColor}"
+									TextColor="{StaticResource TextColor}"
+									FontFamily="{StaticResource FontFamily}"
+									FontSize="{StaticResource FontSize}"
+									HeightRequest="{StaticResource ControlHeight}"
 								/>
 							</StackLayout>
 						</ViewCell>
