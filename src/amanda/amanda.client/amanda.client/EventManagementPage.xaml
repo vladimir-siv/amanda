@@ -1,0 +1,47 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+	xmlns="http://xamarin.com/schemas/2014/forms"
+	xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+	xmlns:views="clr-namespace:amanda.client.Views"
+	x:Class="amanda.client.EventManagementPage"
+	Title="Amanda"
+	BackgroundColor="Black"
+>
+	<ContentPage.Resources>
+		<ResourceDictionary>
+			<Color x:Key="OuterSepColor">Gray</Color>
+			<Color x:Key="BackgroundColor">Black</Color>
+			<Color x:Key="TextColor">White</Color>
+			<OnPlatform x:Key="ControlHeight" x:TypeArguments="x:Double" iOS="36" Android="36" WinPhone="48"/>
+			<OnPlatform x:Key="FontFamily" x:TypeArguments="x:String" iOS="MarkerFelt-Thin" Android="sans-serif-monospace" WinPhone="Segoe UI"/>
+			<OnPlatform x:Key="FontSize" x:TypeArguments="x:Double" iOS="12" Android="12" WinPhone="24"/>
+		</ResourceDictionary>
+	</ContentPage.Resources>
+	<ContentPage.Content>
+		<StackLayout x:Name="PageStack">
+			<Label
+				HorizontalOptions="FillAndExpand"
+				Text="Event management"
+				
+				HorizontalTextAlignment="Center"
+				VerticalTextAlignment="Center"
+				BackgroundColor="Black"
+				Margin="0, 10, 0, 0"
+				HeightRequest="{StaticResource ControlHeight}"
+				TextColor="{StaticResource TextColor}"
+				FontFamily="{StaticResource FontFamily}"
+				FontSize="{StaticResource FontSize}"
+			/>
+			<ActivityIndicator x:Name="LoadingIndicator" Margin="0, 5, 0, 5" IsRunning="{Binding IsLoading}"/>
+			<StackLayout x:Name="EventView" IsVisible="False">
+				<BoxView HorizontalOptions="FillAndExpand" HeightRequest="1" Color="{StaticResource OuterSepColor}"/>
+				<views:StackView
+					x:Name="Events"
+					SelectedColor="Navy"
+					UserControllable="False"
+				/>
+				<BoxView HorizontalOptions="FillAndExpand" HeightRequest="1" Color="{StaticResource OuterSepColor}"/>
+			</StackLayout>
+		</StackLayout>
+	</ContentPage.Content>
+</ContentPage>

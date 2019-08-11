@@ -20,7 +20,7 @@ namespace amanda.client
 
 		private async void EventManagementTapped(object sender, EventArgs e)
 		{
-			await DisplayAlert("Error", "Event management not yet implemented.", "OK");
+			await Navigation.PushAsync(new EventManagementPage());
 		}
 
 		private async void AppSettingsTapped(object sender, EventArgs e)

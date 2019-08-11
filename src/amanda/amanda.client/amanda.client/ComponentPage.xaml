@@ -10,7 +10,7 @@
 		<ResourceDictionary>
 			<Color x:Key="InnerSepColor">DarkGray</Color>
 			<Color x:Key="OuterSepColor">Gray</Color>
-
+			
 			<Color x:Key="ComponentBackgroundColor">#4f514b</Color>
 			<Color x:Key="BackgroundColor">Black</Color>
 			<Color x:Key="TextColor">White</Color>
@@ -19,9 +19,9 @@
 			<Color x:Key="CTypeColor">DimGray</Color>
 			<Color x:Key="DescColor">DeepSkyBlue</Color>
 			<Color x:Key="AcqColor">DimGray</Color>
-
+			
 			<Color x:Key="SelectedColor">Navy</Color>
-
+			
 			<OnPlatform x:Key="ControlHeight" x:TypeArguments="x:Double" iOS="36" Android="36" WinPhone="48"/>
 			<OnPlatform x:Key="FontFamily" x:TypeArguments="x:String" iOS="MarkerFelt-Thin" Android="sans-serif-monospace" WinPhone="Segoe UI"/>
 			<OnPlatform x:Key="FontSize" x:TypeArguments="x:Double" iOS="12" Android="12" WinPhone="24"/>

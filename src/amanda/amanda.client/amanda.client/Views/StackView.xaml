@@ -1,0 +1,52 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<ContentView
+	xmlns="http://xamarin.com/schemas/2014/forms" 
+	xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+	x:Class="amanda.client.Views.StackView"
+>
+	<ContentView.Resources>
+		<ResourceDictionary>
+			<Color x:Key="ComponentBackgroundColor">#4f514b</Color>
+			<Color x:Key="BackgroundColor">Black</Color>
+			<Color x:Key="TextColor">White</Color>
+			<Color x:Key="SelectedColor">Navy</Color>
+			
+			<OnPlatform x:Key="ControlHeight" x:TypeArguments="x:Double" iOS="36" Android="36" WinPhone="48"/>
+			<OnPlatform x:Key="FontFamily" x:TypeArguments="x:String" iOS="MarkerFelt-Thin" Android="sans-serif-monospace" WinPhone="Segoe UI"/>
+			<OnPlatform x:Key="FontSize" x:TypeArguments="x:Double" iOS="12" Android="12" WinPhone="24"/>
+		</ResourceDictionary>
+	</ContentView.Resources>
+	<ContentView.Content>
+		<StackLayout x:Name="ViewStack">
+			<StackLayout x:Name="ContentStack">
+				
+			</StackLayout>
+			<StackLayout Orientation="Horizontal" HorizontalOptions="CenterAndExpand">
+				<Button
+					x:Name="btnAdd"
+					HorizontalOptions="Center"
+					Text="+"
+					Clicked="OnAddTap"
+					
+					BackgroundColor="{StaticResource ComponentBackgroundColor}"
+					TextColor="{StaticResource TextColor}"
+					FontFamily="{StaticResource FontFamily}"
+					FontSize="{StaticResource FontSize}"
+					HeightRequest="{StaticResource ControlHeight}"
+				/>
+				<Button
+					x:Name="btnRemove"
+					HorizontalOptions="Center"
+					Text="-"
+					Clicked="OnRemoveTap"
+					
+					BackgroundColor="{StaticResource ComponentBackgroundColor}"
+					TextColor="{StaticResource TextColor}"
+					FontFamily="{StaticResource FontFamily}"
+					FontSize="{StaticResource FontSize}"
+					HeightRequest="{StaticResource ControlHeight}"
+				/>
+			</StackLayout>
+		</StackLayout>
+	</ContentView.Content>
+</ContentView>
