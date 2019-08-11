@@ -64,8 +64,11 @@ namespace amanda.client
 			lbl = (Label)LabelGenerator();
 			lbl.Text = "Whatever4";
 			Events.Add(lbl);
+		}
 
-
+		private async void OnItemTap(object sender, EventArgs e)
+		{
+			await DisplayAlert("Item Tapped!", ((Label)sender).Text, "OK");
 		}
 	}
 }

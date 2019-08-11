@@ -39,6 +39,7 @@
 					x:Name="Events"
 					SelectedColor="Navy"
 					UserControllable="False"
+					ItemTapped="OnItemTap"
 				/>
 				<BoxView HorizontalOptions="FillAndExpand" HeightRequest="1" Color="{StaticResource OuterSepColor}"/>
 			</StackLayout>

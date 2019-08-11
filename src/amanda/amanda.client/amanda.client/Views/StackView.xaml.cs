@@ -26,6 +26,28 @@ namespace amanda.client.Views
 			set => SetValue(GeneratorProperty, value);
 		}
 
+		public static readonly BindableProperty SelectableProperty = BindableProperty.Create
+		(
+			propertyName: "Selectable",
+			returnType: typeof(bool),
+			declaringType: typeof(StackView),
+			defaultValue: true,
+			defaultBindingMode: BindingMode.TwoWay,
+			propertyChanged: (bindable, oldValue, newValue) =>
+			{
+				var THIS = (StackView)bindable;
+				var oldVal = (bool)oldValue;
+				var newVal = (bool)newValue;
+
+				if (!newVal) THIS.Selected = null;
+			}
+		);
+		public bool Selectable
+		{
+			get => (bool)GetValue(SelectableProperty);
+			set => SetValue(SelectableProperty, value);
+		}
+
 		public static readonly BindableProperty SelectedProperty = BindableProperty.Create
 		(
 			propertyName: "Selected",
@@ -35,6 +57,7 @@ namespace amanda.client.Views
 			defaultBindingMode: BindingMode.TwoWay,
 			propertyChanging: (bindable, oldValue, newValue) =>
 			{
+				if (newValue == null) return;
 				var THIS = (StackView)bindable;
 				var newVal = (View)newValue;
 				if (!THIS.ContentStack.Children.Contains(newVal))
@@ -117,6 +140,8 @@ namespace amanda.client.Views
 			set => SetValue(UserControllableProperty, value);
 		}
 
+		public event EventHandler<EventArgs> ItemTapped;
+
 		public StackView()
 		{
 			InitializeComponent();
@@ -127,27 +152,25 @@ namespace amanda.client.Views
 
 		public void Add(View view)
 		{
+			if (ContentStack.Children.Contains(view)) return;
 			ContentStack.Children.Add(view);
 			view.GestureRecognizers.Add(TapGesture);
 		}
 
 		public void Remove(View view)
 		{
+			if (!ContentStack.Children.Contains(view)) return;
 			ContentStack.Children.Remove(view);
-			if (!ContentStack.Children.Contains(view))
-				view.GestureRecognizers.Remove(TapGesture);
+			view.GestureRecognizers.Remove(TapGesture);
 		}
 
 		public void RemoveLast()
 		{
-			if (ContentStack.Children.Count > 0)
-			{
-				int index = ContentStack.Children.Count - 1;
-				var view = ContentStack.Children[index];
-				ContentStack.Children.RemoveAt(index);
-				if (!ContentStack.Children.Contains(view))
-					view.GestureRecognizers.Remove(TapGesture);
-			}
+			int index = ContentStack.Children.Count - 1;
+			if (index < 0) return;
+			var view = ContentStack.Children[index];
+			ContentStack.Children.RemoveAt(index);
+			view.GestureRecognizers.Remove(TapGesture);
 		}
 
 		private void OnAddTap(object sender, EventArgs e)
@@ -162,7 +185,8 @@ namespace amanda.client.Views
 
 		private void OnItemTap(object sender, EventArgs e)
 		{
-			Selected = (View)sender;
+			if (Selectable) Selected = (View)sender;
+			ItemTapped?.Invoke(sender, e);
 		}
 	}
 }
