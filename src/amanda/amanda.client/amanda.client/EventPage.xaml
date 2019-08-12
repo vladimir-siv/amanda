@@ -3,7 +3,7 @@
 	xmlns="http://xamarin.com/schemas/2014/forms"
 	xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
 	xmlns:views="clr-namespace:amanda.client.Views"
-	x:Class="amanda.client.ComponentPage"
+	x:Class="amanda.client.EventPage"
 	Title="Amanda"
 	BackgroundColor="Black"
 >
@@ -13,13 +13,11 @@
 			<Color x:Key="BackgroundColor">Black</Color>
 			<Color x:Key="TextColor">White</Color>
 			<Color x:Key="HeadingColor">Magenta</Color>
+			<Color x:Key="SubheadingColor">DarkSeaGreen</Color>
 			
 			<Color x:Key="IdColor">Gold</Color>
-			<Color x:Key="CTypeColor">DimGray</Color>
-			<Color x:Key="DescColor">DeepSkyBlue</Color>
-			<Color x:Key="AcqColor">DimGray</Color>
-			
-			<Color x:Key="SelectedColor">Navy</Color>
+			<Color x:Key="NameColor">DeepSkyBlue</Color>
+			<Color x:Key="RepeatColor">DimGray</Color>
 			
 			<OnPlatform x:Key="ControlHeight" x:TypeArguments="x:Double" iOS="36" Android="36" WinPhone="48"/>
 			<OnPlatform x:Key="FontFamily" x:TypeArguments="x:String" iOS="MarkerFelt-Thin" Android="sans-serif-monospace" WinPhone="Segoe UI"/>
@@ -27,15 +25,15 @@
 		</ResourceDictionary>
 	</ContentPage.Resources>
 	<ContentPage.Content>
-		<ScrollView>
+		<ScrollView Margin="0, 0, 0, 20">
 			<StackLayout x:Name="PageStack">
 				<Label
 					HorizontalOptions="FillAndExpand"
 					Text="Details"
-				
+					
 					HorizontalTextAlignment="Start"
 					VerticalTextAlignment="Center"
-				
+					
 					Margin="20, 20, 20, 0"
 					BackgroundColor="{StaticResource BackgroundColor}"
 					TextColor="{StaticResource HeadingColor}"
@@ -48,102 +46,53 @@
 						x:Name="lblId"
 						HorizontalOptions="FillAndExpand"
 						VerticalOptions="FillAndExpand"
-						Text="{Binding ID, StringFormat='ID:   {0}'}"
-				
+						Text="{Binding ID, StringFormat='ID:     {0}'}"
+						
 						HorizontalTextAlignment="Start"
 						VerticalTextAlignment="Center"
-				
+						
 						BackgroundColor="{StaticResource BackgroundColor}"
 						TextColor="{StaticResource IdColor}"
 						FontFamily="{StaticResource FontFamily}"
 						FontSize="{StaticResource FontSize}"
 					/>
 					<Label
-						x:Name="lblCType"
+						x:Name="lblName"
 						HorizontalOptions="FillAndExpand"
 						VerticalOptions="FillAndExpand"
-						Text="{Binding CType, StringFormat='Type: {0}'}"
-				
+						Text="{Binding Name, StringFormat='Name:   {0}'}"
+						
 						HorizontalTextAlignment="Start"
 						VerticalTextAlignment="Center"
-				
+						
 						BackgroundColor="{StaticResource BackgroundColor}"
-						TextColor="{StaticResource CTypeColor}"
+						TextColor="{StaticResource NameColor}"
 						FontFamily="{StaticResource FontFamily}"
 						FontSize="{StaticResource FontSize}"
 					/>
 					<Label
-						x:Name="lblDescription"
+						x:Name="lblRepeat"
 						HorizontalOptions="FillAndExpand"
 						VerticalOptions="FillAndExpand"
-						Text="{Binding Description, StringFormat='Desc: {0}'}"
-				
+						Text="{Binding Repeat, StringFormat='Repeat: {0}'}"
+						
 						HorizontalTextAlignment="Start"
 						VerticalTextAlignment="Center"
-				
+						
 						BackgroundColor="{StaticResource BackgroundColor}"
-						TextColor="{StaticResource DescColor}"
+						TextColor="{StaticResource RepeatColor}"
 						FontFamily="{StaticResource FontFamily}"
 						FontSize="{StaticResource FontSize}"
 					/>
-					<Grid
-						HorizontalOptions="FillAndExpand"
-						RowSpacing="0"
-						ColumnSpacing="0"
-						HeightRequest="{StaticResource ControlHeight}"
-					>
-						<Grid.RowDefinitions>
-							<RowDefinition Height="100.0*"/>
-						</Grid.RowDefinitions>
-						<Grid.ColumnDefinitions>
-							<ColumnDefinition Width="30.0*"/>
-							<ColumnDefinition Width="70.0*"/>
-						</Grid.ColumnDefinitions>
-
-						<Label
-							Grid.Row="0"
-							Grid.Column="0"
-					
-							x:Name="lblAcq"
-							HorizontalOptions="FillAndExpand"
-							VerticalOptions="FillAndExpand"
-							Text="Acq:"
-					
-							HorizontalTextAlignment="Start"
-							VerticalTextAlignment="Center"
-					
-							BackgroundColor="{StaticResource BackgroundColor}"
-							TextColor="{StaticResource AcqColor}"
-							FontFamily="{StaticResource FontFamily}"
-							FontSize="{StaticResource FontSize}"
-						/>
-						<Label
-							Grid.Row="0"
-							Grid.Column="1"
-					
-							x:Name="lblValue"
-							HorizontalOptions="FillAndExpand"
-							VerticalOptions="FillAndExpand"
-							Text="{Binding ValueText}"
-					
-							HorizontalTextAlignment="Start"
-							VerticalTextAlignment="Center"
-					
-							BackgroundColor="{StaticResource BackgroundColor}"
-							TextColor="{Binding ValueColor}"
-							FontFamily="{StaticResource FontFamily}"
-							FontSize="{StaticResource FontSize}"
-						/>
-					</Grid>
 				</StackLayout>
 				
 				<Label
 					HorizontalOptions="FillAndExpand"
-					Text="Functions"
-				
+					Text="Requirements"
+					
 					HorizontalTextAlignment="Start"
 					VerticalTextAlignment="Center"
-				
+					
 					Margin="20, 20, 20, 0"
 					BackgroundColor="{StaticResource BackgroundColor}"
 					TextColor="{StaticResource HeadingColor}"
@@ -151,51 +100,20 @@
 					FontSize="{StaticResource FontSize}"
 				/>
 				<BoxView HorizontalOptions="FillAndExpand" HeightRequest="1" Margin="20, 5, 20, 5" Color="{StaticResource HeadingColor}"/>
-				<StackLayout x:Name="DigitalFunctions" Margin="30, 0, 30, 0" IsVisible="False">
-					<Button
-						HorizontalOptions="Center"
-						Text="Toggle"
-						Command="{Binding Toggle}"
-					
-						BackgroundColor="{StaticResource ComponentBackgroundColor}"
-						TextColor="{StaticResource TextColor}"
-						FontFamily="{StaticResource FontFamily}"
-						FontSize="{StaticResource FontSize}"
-						HeightRequest="{StaticResource ControlHeight}"
-					/>
-				</StackLayout>
-				<StackLayout x:Name="AnalogFunctions" Orientation="Horizontal" HorizontalOptions="CenterAndExpand" Margin="30, 0, 30, 0" IsVisible="False">
-					<Entry
-						HorizontalOptions="Center"
-						Text="{Binding FunctionArgument}"
-						Placeholder="Analog Value"
-					
-						HorizontalTextAlignment="Center"
-						BackgroundColor="{StaticResource ComponentBackgroundColor}"
-						TextColor="{StaticResource TextColor}"
-						FontFamily="{StaticResource FontFamily}"
-						FontSize="{StaticResource FontSize}"
-					/>
-					<Button
-						HorizontalOptions="Center"
-						Text="Set"
-						Command="{Binding Set}"
-					
-						BackgroundColor="{StaticResource ComponentBackgroundColor}"
-						TextColor="{StaticResource TextColor}"
-						FontFamily="{StaticResource FontFamily}"
-						FontSize="{StaticResource FontSize}"
-						HeightRequest="{StaticResource ControlHeight}"
+				<StackLayout Margin="30, 0, 30, 0">
+					<views:StackView
+						x:Name="Requirements"
+						Selectable="False"
 					/>
 				</StackLayout>
 				
 				<Label
 					HorizontalOptions="FillAndExpand"
-					Text="Commands"
-				
+					Text="Actions"
+					
 					HorizontalTextAlignment="Start"
 					VerticalTextAlignment="Center"
-				
+					
 					Margin="20, 20, 20, 0"
 					BackgroundColor="{StaticResource BackgroundColor}"
 					TextColor="{StaticResource HeadingColor}"
@@ -206,40 +124,42 @@
 				<StackLayout Margin="30, 0, 30, 0">
 					<Label
 						HorizontalOptions="FillAndExpand"
-						Text="Issue a command"
+						Text="Raise Actions"
 						
-						HorizontalTextAlignment="Center"
+						HorizontalTextAlignment="Start"
 						VerticalTextAlignment="Center"
 						
+						Margin="10, 0, 10, 0"
 						BackgroundColor="{StaticResource BackgroundColor}"
-						TextColor="{StaticResource AcqColor}"
+						TextColor="{StaticResource SubheadingColor}"
 						FontFamily="{StaticResource FontFamily}"
 						FontSize="{StaticResource FontSize}"
 					/>
+					<BoxView HorizontalOptions="FillAndExpand" HeightRequest="1" Margin="10, 5, 10, 5" Color="{StaticResource SubheadingColor}"/>
 					<views:StackView
-						x:Name="CommandList"
-						SelectedColor="{StaticResource SelectedColor}"
-						Margin="0, 15, 0, 15"
-					/>
-					<views:StackView
-						x:Name="ArgumentList"
-						Generator="{Binding ViewGenerator}"
+						x:Name="RaiseActions"
 						Selectable="False"
-						UserControllable="True"
-						Margin="0, 15, 0, 15"
+						Margin="10, 0, 10, 0"
 					/>
-					<Button
-						x:Name="btnSendCommand"
-						HorizontalOptions="Center"
-						Text="Send!"
-						Clicked="OnSendTap"
+					
+					<Label
+						HorizontalOptions="FillAndExpand"
+						Text="Expire Actions"
 						
-						Margin="0, 15, 0, 15"
-						BackgroundColor="{StaticResource ComponentBackgroundColor}"
-						TextColor="{StaticResource TextColor}"
+						HorizontalTextAlignment="Start"
+						VerticalTextAlignment="Center"
+						
+						Margin="10, 0, 10, 0"
+						BackgroundColor="{StaticResource BackgroundColor}"
+						TextColor="{StaticResource SubheadingColor}"
 						FontFamily="{StaticResource FontFamily}"
 						FontSize="{StaticResource FontSize}"
-						HeightRequest="{StaticResource ControlHeight}"
+					/>
+					<BoxView HorizontalOptions="FillAndExpand" HeightRequest="1" Margin="10, 5, 10, 5" Color="{StaticResource SubheadingColor}"/>
+					<views:StackView
+						x:Name="ExpireActions"
+						Selectable="False"
+						Margin="10, 0, 10, 0"
 					/>
 				</StackLayout>
 			</StackLayout>

@@ -57,7 +57,7 @@ namespace amanda.client.Models.Events
 
 	public struct Comparator
 	{
-		public static string validate(string name)
+		public static string Validate(string name)
 		{
 			name = name.ToLowerInvariant();
 
@@ -74,14 +74,35 @@ namespace amanda.client.Models.Events
 
 			throw new FormatException("No such comparator found.");
 		}
+		public static string Operator(string name)
+		{
+			switch (name)
+			{
+				case "equ": return "=";
+				case "neq": return "≠";
+				case "gtr": return ">";
+				case "lss": return "<";
+				case "geq": return "≥";
+				case "leq": return "≤";
+			}
+
+			throw new FormatException("No such comparator found.");
+		}
 
 		public string Name { get; }
 		public double Value { get; set; }
 
 		public Comparator(string name, double value = 0)
 		{
-			Name = validate(name);
+			Name = Validate(name);
 			Value = value;
+		}
+
+		public string Operator() { return Operator(Name); }
+
+		public override string ToString()
+		{
+			return string.Format("{0} {1:F2}", Operator(), Value);
 		}
 	}
 

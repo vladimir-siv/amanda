@@ -7,6 +7,7 @@ namespace amanda.client.Infrastructure.Measuring
 		DisplayedValue Display();
 		string Read();
 		void Write(string value);
+		IValue Clone();
 		event EventHandler<EventArgs> OnValueChanged;
 	}
 }

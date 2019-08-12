@@ -20,6 +20,14 @@ namespace amanda.client.ViewModels
 			set { Event.Name = value; OnPropertyChanged(); }
 		}
 
+		public uint Repeat
+		{
+			get { return Event.Repeat; }
+			set { Event.Repeat = value; OnPropertyChanged(); }
+		}
+
+		public event EventHandler<EventArgs> EventChanged;
+
 		public EventViewModel(Event e)
 		{
 			Event = e ?? throw new ArgumentNullException("Event cannot be null.");
@@ -34,6 +42,8 @@ namespace amanda.client.ViewModels
 		{
 			OnPropertyChanged(nameof(ID));
 			OnPropertyChanged(nameof(Name));
+			OnPropertyChanged(nameof(Repeat));
+			EventChanged?.Invoke(this, e);
 		}
 	}
 }

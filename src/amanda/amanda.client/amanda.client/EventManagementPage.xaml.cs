@@ -40,7 +40,15 @@ namespace amanda.client
 
 				try
 				{
-					string xml_scan = await RemoteDevice.Send(Protocol.ScanEvents);
+					string xml_scan;
+
+					if (RemoteDevice.Components.Count == 0)
+					{
+						xml_scan = await RemoteDevice.Send(Protocol.ScanHardware);
+						await RemoteDevice.LoadComponents(xml_scan);
+					}
+
+					xml_scan = await RemoteDevice.Send(Protocol.ScanEvents);
 					await RemoteDevice.LoadEvents(xml_scan);
 				}
 				catch (Exception ex)
@@ -65,7 +73,7 @@ namespace amanda.client
 		{
 			EventViewModel item = e.Item as EventViewModel;
 			if (item == null) return;
-			await DisplayAlert("Navigation", "Navigate to: " + item.Name, "OK");
+			await Navigation.PushAsync(new EventPage(item));
 		}
 	}
 }

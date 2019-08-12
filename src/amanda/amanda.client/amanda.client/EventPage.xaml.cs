@@ -1,0 +1,207 @@
+﻿using System;
+
+using Xamarin.Forms;
+using Xamarin.Forms.Xaml;
+
+using amanda.client.Communication;
+using amanda.client.Infrastructure.Measuring;
+using amanda.client.Models.Components;
+using amanda.client.ViewModels;
+using amanda.client.Views;
+using amanda.client.Extensions;
+
+namespace amanda.client
+{
+	[XamlCompilation(XamlCompilationOptions.Compile)]
+	public partial class EventPage : ContentPage
+	{
+		private Label CreateLabel(string text)
+		{
+			return CreateLabel(text, (Color)Resources["TextColor"]);
+		}
+		private Label CreateLabel(string text, Color textColor)
+		{
+			// TODO: Create a label pool.
+			return new Label
+			{
+				HorizontalOptions = LayoutOptions.FillAndExpand,
+				HorizontalTextAlignment = TextAlignment.Center,
+				VerticalTextAlignment = TextAlignment.Center,
+				Text = text,
+
+				BackgroundColor = (Color)Resources["BackgroundColor"],
+				TextColor = textColor,
+				FontFamily = Resources["FontFamily"].PlatformResolve<string>(),
+				FontSize = Resources["FontSize"].PlatformResolve<double>()
+			};
+		}
+		private Label CreateLabel(FormattedString text)
+		{
+			// TODO: Create a label pool.
+			return new Label
+			{
+				HorizontalOptions = LayoutOptions.FillAndExpand,
+				HorizontalTextAlignment = TextAlignment.Center,
+				VerticalTextAlignment = TextAlignment.Center,
+				FormattedText = text,
+
+				BackgroundColor = (Color)Resources["BackgroundColor"],
+				FontFamily = Resources["FontFamily"].PlatformResolve<string>(),
+				FontSize = Resources["FontSize"].PlatformResolve<double>()
+			};
+		}
+		private Span CreateSpan(string text)
+		{
+			return CreateSpan(text, (Color)Resources["TextColor"]);
+		}
+		private Span CreateSpan(string text, Color textColor)
+		{
+			// TODO: Create a span pool.
+			return new Span
+			{
+				Text = text,
+				BackgroundColor = (Color)Resources["BackgroundColor"],
+				TextColor = textColor,
+				FontFamily = Resources["FontFamily"].PlatformResolve<string>(),
+				FontSize = Resources["FontSize"].PlatformResolve<double>()
+			};
+		}
+
+		private Frame CreateWrapper(View content, Color borderColor)
+		{
+			return new Frame
+			{
+				CornerRadius = 0,
+				BackgroundColor = (Color)Resources["BackgroundColor"],
+				Margin = new Thickness(10, 0, 10, 0),
+				Padding = new Thickness(1, 11, 1, 11),
+				BorderColor = borderColor,
+				Content = content
+			};
+		}
+		private Label CreateSubheader(string text)
+		{
+			// TODO: Create a label pool.
+			return new Label
+			{
+				HorizontalOptions = LayoutOptions.FillAndExpand,
+				Text = text,
+
+				Margin = new Thickness(10, 0, 10, 0),
+				BackgroundColor = (Color)Resources["BackgroundColor"],
+				TextColor = (Color)Resources["SubheadingColor"],
+				FontFamily = Resources["FontFamily"].PlatformResolve<string>(),
+				FontSize = Resources["FontSize"].PlatformResolve<double>()
+			};
+		}
+		private BoxView CreateLine()
+		{
+			// TODO: Create a BoxView pool.
+			return new BoxView
+			{
+				HorizontalOptions = LayoutOptions.FillAndExpand,
+				HeightRequest = 1,
+				Margin = new Thickness(10, 5, 10, 5),
+				Color = (Color)Resources["SubheadingColor"]
+			};
+		}
+		private StackView CreateView()
+		{
+			// TODO: Create a StackView pool.
+			return new StackView
+			{
+				Selectable = false,
+				Margin = new Thickness(10, 0, 10, 0)
+			};
+		}
+		
+		public EventPage(EventViewModel vm)
+		{
+			InitializeComponent();
+			BindingContext = vm;
+
+			vm.EventChanged += OnEventChanged;
+			OnEventChanged(vm, EventArgs.Empty);
+		}
+
+		private void OnEventChanged(object sender, EventArgs e)
+		{
+			// TODO: Optimize this.
+
+			var vm = BindingContext as EventViewModel;
+			if (vm == null) throw new ApplicationException("Unexpected error occured. Please, restart the application.");
+
+			Requirements.Clear();
+
+			foreach (var req in vm.Event.Requirements)
+			{
+				var ReqView = CreateView();
+
+				Requirements.Add(CreateSubheader("Requirement"));
+				Requirements.Add(CreateLine());
+				Requirements.Add(CreateWrapper(ReqView, (Color)Resources["SubheadingColor"]));
+
+				foreach (var condition in req.Conditions)
+				{
+					var component = RemoteDevice.FindComponent(condition.ID, condition.CType);
+					var desc = component?.Description ?? string.Empty;
+					var subh = desc + "[" + condition.ID + ":" + condition.CType.AsProtocolString() + "]";
+
+					var CondView = CreateView();
+
+					ReqView.Add(CreateSubheader(subh));
+					ReqView.Add(CreateLine());
+					ReqView.Add(CondView);
+
+					foreach (var cmp in condition.Comparators)
+					{
+						Label label = null;
+						
+						if (component != null)
+						{
+							var value = component.Value.Clone();
+							value.Write(cmp.Value.ToString());
+							var displayed = value.Display();
+
+							label = CreateLabel
+							(
+								new FormattedString
+								{
+									Spans =
+									{
+										CreateSpan(cmp.Operator() + ' '),
+										CreateSpan(displayed.Value, displayed.Color)
+									}
+								}
+							);
+						}
+						else label = CreateLabel(cmp.ToString());
+						
+						if (label != null) CondView.Add(label);
+					}
+				}
+			}
+
+			RaiseActions.Clear();
+			ExpireActions.Clear();
+
+			foreach (var write in vm.Event.Raise)
+			{
+				var desc = RemoteDevice.FindComponent(write.ID, write.CType)?.Description ?? string.Empty;
+				var display = write.Value.Display();
+				var text = desc + "[" + write.ID + ":" + write.CType.AsProtocolString() + "] → " + display.Value;
+				var label = CreateLabel(text, display.Color);
+				RaiseActions.Add(label);
+			}
+
+			foreach (var write in vm.Event.Expire)
+			{
+				var desc = RemoteDevice.FindComponent(write.ID, write.CType)?.Description ?? string.Empty;
+				var display = write.Value.Display();
+				var text = desc + "[" + write.ID + ":" + write.CType.AsProtocolString() + "] → " + display.Value;
+				var label = CreateLabel(text, display.Color);
+				ExpireActions.Add(label);
+			}
+		}
+	}
+}

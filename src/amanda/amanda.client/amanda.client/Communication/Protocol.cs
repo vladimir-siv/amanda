@@ -356,5 +356,10 @@ namespace amanda.client.Communication
 				}
 			});
 		}
+
+		public static ComponentViewModel FindComponent(uint id, CType ctype)
+		{
+			return Components.FirstOrDefault(c => c.ID == id && c.CType.AsCType() == ctype);
+		}
 	}
 }

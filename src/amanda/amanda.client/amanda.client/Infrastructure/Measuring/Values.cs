@@ -35,6 +35,7 @@ namespace amanda.client.Infrastructure.Measuring
 			Value = value;
 			Displayer = displayer;
 		}
+		public IValue Clone() { return new DigitalState(Value, Displayer); }
 		
 		public bool Equals(IValue other)
 		{
@@ -46,6 +47,9 @@ namespace amanda.client.Infrastructure.Measuring
 		public void Write(string value)
 		{
 			string lstr = value.ToLower();
+
+			try { lstr = Convert.ToInt32(lstr).ToString(); }
+			catch { }
 
 			if
 			(
@@ -81,7 +85,7 @@ namespace amanda.client.Infrastructure.Measuring
 				return;
 			}
 
-			throw new FormatException("State value not correct.");
+			throw new FormatException("Digital value not correct.");
 		}
 	}
 
@@ -110,6 +114,7 @@ namespace amanda.client.Infrastructure.Measuring
 			Unit = unit;
 			Displayer = displayer;
 		}
+		public IValue Clone() { return new AnalogValue(Value, Unit, Displayer); }
 
 		public bool Equals(IValue other)
 		{
@@ -125,8 +130,9 @@ namespace amanda.client.Infrastructure.Measuring
 		public void Write(string value)
 		{
 			string[] parts = value.Split(' ');
+			if (parts.Length != 1 && parts.Length != 2) throw new FormatException("Analog value not correct.");
 			Value = Convert.ToDouble(parts[0]);
-			Unit = parts[1];
+			if (parts.Length == 2) Unit = parts[1];
 			OnValueChanged?.Invoke(this, EventArgs.Empty);
 		}
 	}

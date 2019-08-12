@@ -179,6 +179,13 @@ namespace amanda.client.Views
 			view.GestureRecognizers.Remove(TapGesture);
 		}
 
+		public void Clear()
+		{
+			foreach (var view in ContentStack.Children)
+				view.GestureRecognizers.Remove(TapGesture);
+			ContentStack.Children.Clear();
+		}
+
 		private void OnAddTap(object sender, EventArgs e)
 		{
 			Add(Generator());
