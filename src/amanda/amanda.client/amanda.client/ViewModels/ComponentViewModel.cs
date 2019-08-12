@@ -63,6 +63,13 @@ namespace amanda.client.ViewModels
 			set { functionArgument = value; OnPropertyChanged(); }
 		}
 
+		private Func<View> viewGenerator;
+		public Func<View> ViewGenerator
+		{
+			get { return viewGenerator; }
+			set { viewGenerator = value; OnPropertyChanged(); }
+		}
+
 		private Command toggle;
 		public Command Toggle => toggle;
 

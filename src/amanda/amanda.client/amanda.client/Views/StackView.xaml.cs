@@ -65,6 +65,8 @@ namespace amanda.client.Views
 			},
 			propertyChanged: (bindable, oldValue, newValue) =>
 			{
+				if (oldValue == newValue) return;
+
 				var THIS = (StackView)bindable;
 
 				var oldVal = oldValue as View;
@@ -108,7 +110,7 @@ namespace amanda.client.Views
 			propertyName: "UserControllable",
 			returnType: typeof(bool),
 			declaringType: typeof(StackView),
-			defaultValue: true,
+			defaultValue: false,
 			defaultBindingMode: BindingMode.TwoWay,
 			propertyChanged: (bindable, oldValue, newValue) =>
 			{
@@ -146,9 +148,13 @@ namespace amanda.client.Views
 		{
 			InitializeComponent();
 			ControlStackReference = (StackLayout)ViewStack.Children[1];
+			if (!UserControllable) ViewStack.Children.RemoveAt(1);
 			TapGesture = new TapGestureRecognizer();
 			TapGesture.Tapped += OnItemTap;
 		}
+
+		public int Count => ContentStack.Children.Count;
+		public View this[int index] => ContentStack.Children[index];
 
 		public void Add(View view)
 		{
