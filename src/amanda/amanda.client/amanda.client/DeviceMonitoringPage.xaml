@@ -9,9 +9,8 @@
 >
 	<ContentPage.Resources>
 		<ResourceDictionary>
-			<Color x:Key="OuterSepColor">Gray</Color>
 			<Color x:Key="TextColor">White</Color>
-			<OnPlatform x:Key="RowHeight" x:TypeArguments="x:Int32" iOS="96" Android="96" WinPhone="128"/>
+			<OnPlatform x:Key="RowHeight" x:TypeArguments="x:Int32" iOS="72" Android="72" WinPhone="96"/>
 			<OnPlatform x:Key="ControlHeight" x:TypeArguments="x:Double" iOS="36" Android="36" WinPhone="48"/>
 			<OnPlatform x:Key="FontFamily" x:TypeArguments="x:String" iOS="MarkerFelt-Thin" Android="sans-serif-monospace" WinPhone="Segoe UI"/>
 			<OnPlatform x:Key="FontSize" x:TypeArguments="x:Double" iOS="12" Android="12" WinPhone="24"/>
@@ -34,7 +33,6 @@
 			/>
 			<ActivityIndicator x:Name="LoadingIndicator" Margin="0, 5, 0, 5" IsRunning="{Binding IsLoading}"/>
 			<StackLayout x:Name="ComponentView" IsVisible="False">
-				<BoxView HorizontalOptions="FillAndExpand" HeightRequest="1" Color="{StaticResource OuterSepColor}"/>
 				<ListView
 					ItemsSource="{Binding Components}"
 					CachingStrategy="RecycleElement"
@@ -49,7 +47,6 @@
 						</DataTemplate>
 					</ListView.ItemTemplate>
 				</ListView>
-				<BoxView HorizontalOptions="FillAndExpand" HeightRequest="1" Color="{StaticResource OuterSepColor}"/>
 			</StackLayout>
 		</StackLayout>
 	</ContentPage.Content>

@@ -1,5 +1,7 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+
 using Xamarin.Forms;
+
 using amanda.client.ViewModels;
 
 namespace amanda.client
@@ -40,7 +42,11 @@ namespace amanda.client
 
 		private async void OnConnectionSkipped(ViewModel sender, ViewModelEventArgs e)
 		{
-			await Navigation.PushAsync(new MenuPage());
+			var vm = BindingContext as ConnectionEstablishmentViewModel;
+			if (vm == null) throw new ApplicationException("Unexpected error occured. Please, restart the application.");
+
+			if (vm.HasConnection) await Navigation.PushAsync(new MenuPage());
+			else await DisplayAlert("Error", "No connections were previously established.", "OK");
 		}
 	}
 }

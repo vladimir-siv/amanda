@@ -113,6 +113,7 @@
 				HorizontalOptions="Center"
                 Text="Skip"
 				Command="{Binding Skip}"
+				IsVisible="{Binding HasConnection}"
 				
 				BackgroundColor="Black"
 				TextColor="{StaticResource TextColor}"

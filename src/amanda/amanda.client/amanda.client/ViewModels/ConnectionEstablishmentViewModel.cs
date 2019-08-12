@@ -33,6 +33,19 @@ namespace amanda.client.ViewModels
 			set { if (isConnecting == value) return; isConnecting = value; OnPropertyChanged(); Connect.ChangeCanExecute(); }
 		}
 
+		public bool HasConnection
+		{
+			get
+			{
+				var connection = Dependency.Resolve<Connection>();
+				return !string.IsNullOrWhiteSpace(connection.Address) && connection.Port > 0;
+			}
+			private set
+			{
+				OnPropertyChanged();
+			}
+		}
+
 		private Command connect;
 		public Command Connect => connect;
 
@@ -89,6 +102,7 @@ namespace amanda.client.ViewModels
 									connection.Address = address;
 									connection.Port = Convert.ToInt32(port);
 
+									HasConnection = true;
 									ConnectionSuccessful("Success");
 								}
 								else ConnectionFailed("Device did not respond correctly. Error may be in the network.");

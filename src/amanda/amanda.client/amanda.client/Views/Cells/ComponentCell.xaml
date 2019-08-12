@@ -5,12 +5,14 @@
 	x:Class="amanda.client.Views.Cells.ComponentCell"
 >
 	<ViewCell.View>
-		<StackLayout>
-			<StackLayout.Resources>
+		<Frame
+			CornerRadius="0"
+			Padding="1"
+            OutlineColor="DarkMagenta"
+			Margin="0, 0, 0, 5"
+		>
+			<Frame.Resources>
 				<ResourceDictionary>
-					<Color x:Key="InnerSepColor">DarkGray</Color>
-					<Color x:Key="OuterSepColor">Gray</Color>
-					
 					<Color x:Key="BackgroundColor">Black</Color>
 					<Color x:Key="TextColor">White</Color>
 					
@@ -23,125 +25,123 @@
 					<OnPlatform x:Key="FontFamily" x:TypeArguments="x:String" iOS="MarkerFelt-Thin" Android="sans-serif-monospace" WinPhone="Segoe UI"/>
 					<OnPlatform x:Key="FontSize" x:TypeArguments="x:Double" iOS="12" Android="12" WinPhone="24"/>
 				</ResourceDictionary>
-			</StackLayout.Resources>
-			<BoxView HorizontalOptions="FillAndExpand" HeightRequest="1" Color="{StaticResource OuterSepColor}"/>
-			
-			<Grid
-				HorizontalOptions="FillAndExpand"
-				RowSpacing="0"
-				ColumnSpacing="0"
-				HeightRequest="{StaticResource ControlHeight}"
-			>
-				<Grid.RowDefinitions>
-					<RowDefinition Height="100.0*"/>
-				</Grid.RowDefinitions>
-				<Grid.ColumnDefinitions>
-					<ColumnDefinition Width="50.0*"/>
-					<ColumnDefinition Width="50.0*"/>
-				</Grid.ColumnDefinitions>
-				
-				<Label
-					Grid.Row="0"
-					Grid.Column="0"
+			</Frame.Resources>
+			<Frame.Content>
+				<StackLayout Spacing="0">
+					<Grid
+						HorizontalOptions="FillAndExpand"
+						RowSpacing="0"
+						ColumnSpacing="0"
+						Margin="0"
+						HeightRequest="{StaticResource ControlHeight}"
+					>
+						<Grid.RowDefinitions>
+							<RowDefinition Height="100.0*"/>
+						</Grid.RowDefinitions>
+						<Grid.ColumnDefinitions>
+							<ColumnDefinition Width="50.0*"/>
+							<ColumnDefinition Width="50.0*"/>
+						</Grid.ColumnDefinitions>
+						
+						<Label
+							Grid.Row="0"
+							Grid.Column="0"
+							
+							x:Name="lblId"
+							HorizontalOptions="FillAndExpand"
+							VerticalOptions="FillAndExpand"
+							Text="{Binding ID, StringFormat='ID: {0}'}"
+							
+							HorizontalTextAlignment="Center"
+							VerticalTextAlignment="Center"
+							
+							BackgroundColor="{StaticResource BackgroundColor}"
+							TextColor="{StaticResource IdColor}"
+							FontFamily="{StaticResource FontFamily}"
+							FontSize="{StaticResource FontSize}"
+						/>
+						<Label
+							Grid.Row="0"
+							Grid.Column="1"
+							
+							x:Name="lblCType"
+							HorizontalOptions="FillAndExpand"
+							VerticalOptions="FillAndExpand"
+							Text="{Binding CType, StringFormat='Type: {0}'}"
+							
+							HorizontalTextAlignment="Center"
+							VerticalTextAlignment="Center"
+							
+							BackgroundColor="{StaticResource BackgroundColor}"
+							TextColor="{StaticResource CTypeColor}"
+							FontFamily="{StaticResource FontFamily}"
+							FontSize="{StaticResource FontSize}"
+						/>
+					</Grid>
 					
-					x:Name="lblId"
-					HorizontalOptions="FillAndExpand"
-					VerticalOptions="FillAndExpand"
-					Text="{Binding ID, StringFormat='ID: {0}'}"
+					<Label
+						x:Name="lblDescription"
+						HorizontalOptions="FillAndExpand"
+						Text="{Binding Description}"
+						
+						HorizontalTextAlignment="Center"
+						VerticalTextAlignment="Center"
+						
+						BackgroundColor="{StaticResource BackgroundColor}"
+						TextColor="{StaticResource DescColor}"
+						FontFamily="{StaticResource FontFamily}"
+						FontSize="{StaticResource FontSize}"
+					/>
 					
-					HorizontalTextAlignment="Center"
-					VerticalTextAlignment="Center"
-					
-					BackgroundColor="{StaticResource BackgroundColor}"
-					TextColor="{StaticResource IdColor}"
-					FontFamily="{StaticResource FontFamily}"
-					FontSize="{StaticResource FontSize}"
-				/>
-				<Label
-					Grid.Row="0"
-					Grid.Column="1"
-					
-					x:Name="lblCType"
-					HorizontalOptions="FillAndExpand"
-					VerticalOptions="FillAndExpand"
-					Text="{Binding CType, StringFormat='Type: {0}'}"
-					
-					HorizontalTextAlignment="Center"
-					VerticalTextAlignment="Center"
-					
-					BackgroundColor="{StaticResource BackgroundColor}"
-					TextColor="{StaticResource CTypeColor}"
-					FontFamily="{StaticResource FontFamily}"
-					FontSize="{StaticResource FontSize}"
-				/>
-			</Grid>
-			
-			<BoxView HorizontalOptions="FillAndExpand" Margin="20, 0, 20, 0" HeightRequest="1" Color="{StaticResource InnerSepColor}"/>
-			
-			<Label
-				x:Name="lblDescription"
-				HorizontalOptions="FillAndExpand"
-				Text="{Binding Description}"
-				
-				HorizontalTextAlignment="Center"
-				VerticalTextAlignment="Center"
-				
-				BackgroundColor="{StaticResource BackgroundColor}"
-				TextColor="{StaticResource DescColor}"
-				FontFamily="{StaticResource FontFamily}"
-				FontSize="{StaticResource FontSize}"
-			/>
-			
-			<BoxView HorizontalOptions="FillAndExpand" Margin="20, 0, 20, 0" HeightRequest="1" Color="{StaticResource InnerSepColor}"/>
-			
-			<Grid
-				HorizontalOptions="FillAndExpand"
-				RowSpacing="0"
-				ColumnSpacing="0"
-				HeightRequest="{StaticResource ControlHeight}"
-			>
-				<Grid.RowDefinitions>
-					<RowDefinition Height="100.0*"/>
-				</Grid.RowDefinitions>
-				<Grid.ColumnDefinitions>
-					<ColumnDefinition Width="30.0*"/>
-					<ColumnDefinition Width="70.0*"/>
-				</Grid.ColumnDefinitions>
-				
-				<Label
-					Grid.Row="0"
-					Grid.Column="0"
-					
-					HorizontalOptions="FillAndExpand"
-					VerticalOptions="FillAndExpand"
-					Text="Acq:"
-					
-					HorizontalTextAlignment="Center"
-					VerticalTextAlignment="Center"
-					BackgroundColor="{StaticResource BackgroundColor}"
-					TextColor="{StaticResource AcqColor}"
-					FontFamily="{StaticResource FontFamily}"
-					FontSize="{StaticResource FontSize}"
-				/>
-				<Label
-					Grid.Row="0"
-					Grid.Column="1"
-					
-					x:Name="lblValue"
-					HorizontalOptions="FillAndExpand"
-					VerticalOptions="FillAndExpand"
-					Text="{Binding ValueText}"
-					
-					HorizontalTextAlignment="Center"
-					VerticalTextAlignment="Center"
-					BackgroundColor="{StaticResource BackgroundColor}"
-					TextColor="{Binding ValueColor}"
-					FontFamily="{StaticResource FontFamily}"
-					FontSize="{StaticResource FontSize}"
-				/>
-			</Grid>
-			
-			<BoxView HorizontalOptions="FillAndExpand" HeightRequest="1" Color="{StaticResource OuterSepColor}"/>
-		</StackLayout>
+					<Grid
+						HorizontalOptions="FillAndExpand"
+						RowSpacing="0"
+						ColumnSpacing="0"
+						Margin="0"
+						HeightRequest="{StaticResource ControlHeight}"
+					>
+						<Grid.RowDefinitions>
+							<RowDefinition Height="100.0*"/>
+						</Grid.RowDefinitions>
+						<Grid.ColumnDefinitions>
+							<ColumnDefinition Width="30.0*"/>
+							<ColumnDefinition Width="70.0*"/>
+						</Grid.ColumnDefinitions>
+						
+						<Label
+							Grid.Row="0"
+							Grid.Column="0"
+							
+							HorizontalOptions="FillAndExpand"
+							VerticalOptions="FillAndExpand"
+							Text="Acq:"
+							
+							HorizontalTextAlignment="Center"
+							VerticalTextAlignment="Center"
+							BackgroundColor="{StaticResource BackgroundColor}"
+							TextColor="{StaticResource AcqColor}"
+							FontFamily="{StaticResource FontFamily}"
+							FontSize="{StaticResource FontSize}"
+						/>
+						<Label
+							Grid.Row="0"
+							Grid.Column="1"
+							
+							x:Name="lblValue"
+							HorizontalOptions="FillAndExpand"
+							VerticalOptions="FillAndExpand"
+							Text="{Binding ValueText}"
+							
+							HorizontalTextAlignment="Center"
+							VerticalTextAlignment="Center"
+							BackgroundColor="{StaticResource BackgroundColor}"
+							TextColor="{Binding ValueColor}"
+							FontFamily="{StaticResource FontFamily}"
+							FontSize="{StaticResource FontSize}"
+						/>
+					</Grid>
+				</StackLayout>
+			</Frame.Content>
+		</Frame>
 	</ViewCell.View>
 </ViewCell>

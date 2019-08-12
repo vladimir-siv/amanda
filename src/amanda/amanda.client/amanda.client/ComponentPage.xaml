@@ -9,9 +9,6 @@
 >
 	<ContentPage.Resources>
 		<ResourceDictionary>
-			<Color x:Key="InnerSepColor">DarkGray</Color>
-			<Color x:Key="OuterSepColor">Gray</Color>
-			
 			<Color x:Key="ComponentBackgroundColor">#4f514b</Color>
 			<Color x:Key="BackgroundColor">Black</Color>
 			<Color x:Key="TextColor">White</Color>
