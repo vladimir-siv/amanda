@@ -28,6 +28,8 @@ namespace amanda.client
 			ViewModel vm = ViewModel.Resolve("ConnectionEstablishment");
 			vm.Detach<ViewModelEventArgs>("ConnectionEstablished", OnConnectionEstablished);
 			vm.Detach<ViewModelEventArgs>("SkipConnection", OnConnectionSkipped);
+
+			base.OnDisappearing();
 		}
 
 		protected async void OnConnectionEstablished(ViewModel sender, ViewModelEventArgs e)

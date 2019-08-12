@@ -162,6 +162,45 @@
 						Margin="10, 0, 10, 0"
 					/>
 				</StackLayout>
+				
+				<Label
+					HorizontalOptions="FillAndExpand"
+					Text="Control"
+					
+					HorizontalTextAlignment="Start"
+					VerticalTextAlignment="Center"
+					
+					Margin="20, 20, 20, 0"
+					BackgroundColor="{StaticResource BackgroundColor}"
+					TextColor="{StaticResource HeadingColor}"
+					FontFamily="{StaticResource FontFamily}"
+					FontSize="{StaticResource FontSize}"
+				/>
+				<BoxView HorizontalOptions="FillAndExpand" HeightRequest="1" Margin="20, 5, 20, 5" Color="{StaticResource HeadingColor}"/>
+				<StackLayout Margin="30, 0, 30, 0" Orientation="Horizontal" HorizontalOptions="CenterAndExpand">
+					<Button
+						HorizontalOptions="Center"
+						Text="Refresh"
+						Command="{Binding Refresh}"
+						
+						BackgroundColor="{StaticResource ComponentBackgroundColor}"
+						TextColor="{StaticResource TextColor}"
+						FontFamily="{StaticResource FontFamily}"
+						FontSize="{StaticResource FontSize}"
+						HeightRequest="{StaticResource ControlHeight}"
+					/>
+					<Button
+						HorizontalOptions="Center"
+						Text="Delete"
+						Command="{Binding Delete}"
+						
+						BackgroundColor="{StaticResource ComponentBackgroundColor}"
+						TextColor="{StaticResource TextColor}"
+						FontFamily="{StaticResource FontFamily}"
+						FontSize="{StaticResource FontSize}"
+						HeightRequest="{StaticResource ControlHeight}"
+					/>
+				</StackLayout>
 			</StackLayout>
 		</ScrollView>
 	</ContentPage.Content>

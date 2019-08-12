@@ -1,6 +1,7 @@
 ﻿using System;
-using System.Linq;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Text;
@@ -66,6 +67,64 @@ namespace amanda.client.Communication
 			}
 
 			return string.Format(xml, id, ctype.AsProtocolString(), name ?? string.Empty, arguments.ToString());
+		}
+
+		public static string CreateEvent(Event e)
+		{
+			StringBuilder xml = new StringBuilder();
+			xml.AppendFormat("<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"no\"?><action process=\"Event/create:{0}\"><event repeat=\"{1}\">", e.Name, e.Repeat);
+
+			xml.Append("<requirements>");
+			foreach (var req in e.Requirements)
+			{
+				xml.Append("<pack>");
+				foreach (var cond in req.Conditions)
+				{
+					xml.AppendFormat("<condition vid=\"{0}\" ctype=\"{1}\">", cond.ID, cond.CType.AsProtocolString());
+					foreach (var cmp in cond.Comparators)
+					{
+						xml.AppendFormat("<{0}>{1:F2}</{0}>", cmp.Name, cmp.Value);
+					}
+					xml.Append("</condition>");
+				}
+				xml.Append("</pack>");
+			}
+			xml.Append("</requirements>");
+
+			xml.Append("<actions>");
+			{
+				xml.Append("<raise>");
+				foreach (var write in e.Raise)
+				{
+					xml.AppendFormat("<write vid=\"{0}\" ctype=\"{1}\">", write.ID, write.CType.AsProtocolString());
+
+					if (write.Value == null) xml.Append("<unknown></unknown>");
+					else if (write.Value is DigitalState) xml.AppendFormat("<state>{0}</state>", Convert.ToInt32(((DigitalState)write.Value).Value));
+					else if (write.Value is AnalogValue) xml.AppendFormat("<value unit=\"{0}\">{1:F2}</value>", ((AnalogValue)write.Value).Unit, ((AnalogValue)write.Value).Value);
+					else xml.Append("<unknown></unknown>");
+
+					xml.Append("</write>");
+				}
+				xml.Append("</raise>");
+
+				xml.Append("<expire>");
+				foreach (var write in e.Expire)
+				{
+					xml.AppendFormat("<write vid=\"{0}\" ctype=\"{1}\">", write.ID, write.CType.AsProtocolString());
+
+					xml.Append("</write>");
+				}
+				xml.Append("</expire>");
+			}
+			xml.Append("</actions>");
+
+			xml.Append("</event></action>");
+			return xml.ToString();
+		}
+		public static string DeleteEvent(uint id)
+		{
+			const string xml = "<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"no\"?><action task=\"Event/delete\"><arg>{0}</arg></action>";
+			return string.Format(xml, id);
 		}
 
 		public const string ActionSuccess = "<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"no\"?><action>success</action>";
@@ -216,6 +275,8 @@ namespace amanda.client.Communication
 			{
 				lock (LEsync)
 				{
+					var ids = new HashSet<uint>();
+
 					var doc = new XmlDocument();
 					doc.LoadXml(xml_scan);
 
@@ -232,6 +293,8 @@ namespace amanda.client.Communication
 
 							uint id = Convert.ToUInt32(ehNode.Attributes["id"].Value);
 							string name = ehNode.Attributes["name"].Value;
+
+							ids.Add(id);
 
 							// TODO: Somehow optimize this search (maybe it's not even possible - at least not in an ok way)
 							var search = Events.FirstOrDefault(evm => evm.ID == id);
@@ -352,6 +415,11 @@ namespace amanda.client.Communication
 						}
 						catch { e?.Clean(); /* if one event is invalid, skip that one and continue on */ }
 						finally { e?.OnEventChanged(); }
+					}
+
+					foreach (var e in Events)
+					{
+						if (!ids.Contains(e.ID)) Events.Remove(e);
 					}
 				}
 			});

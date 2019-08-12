@@ -1,10 +1,10 @@
 ﻿using System;
+using System.Threading.Tasks;
 
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
 using amanda.client.Communication;
-using amanda.client.Infrastructure.Measuring;
 using amanda.client.Models.Components;
 using amanda.client.ViewModels;
 using amanda.client.Views;
@@ -114,14 +114,38 @@ namespace amanda.client
 				Margin = new Thickness(10, 0, 10, 0)
 			};
 		}
-		
+
 		public EventPage(EventViewModel vm)
 		{
 			InitializeComponent();
 			BindingContext = vm;
+		}
 
-			vm.EventChanged += OnEventChanged;
-			OnEventChanged(vm, EventArgs.Empty);
+		protected override void OnAppearing()
+		{
+			base.OnAppearing();
+
+			EventViewModel vm = BindingContext as EventViewModel;
+			if (vm != null)
+			{
+				vm.EventChanged += OnEventChanged;
+				vm.EventDeleting += OnEventDeleting;
+				vm.EventDeleted += OnEventDeleted;
+				OnEventChanged(vm, EventArgs.Empty);
+			}
+		}
+
+		protected override void OnDisappearing()
+		{
+			EventViewModel vm = BindingContext as EventViewModel;
+			if (vm != null)
+			{
+				vm.EventDeleted -= OnEventDeleted;
+				vm.EventDeleting -= OnEventDeleting;
+				vm.EventChanged -= OnEventChanged;
+			}
+
+			base.OnDisappearing();
 		}
 
 		private void OnEventChanged(object sender, EventArgs e)
@@ -202,6 +226,17 @@ namespace amanda.client
 				var label = CreateLabel(text, display.Color);
 				ExpireActions.Add(label);
 			}
+		}
+
+		private async Task<bool> OnEventDeleting()
+		{
+			var result = await DisplayActionSheet("Are you sure?", null, null, "Yes", "No");
+			return result == "Yes";
+		}
+		private async void OnEventDeleted(object sender, ViewModelEventArgs e)
+		{
+			if (e.MType == ViewModelEventArgs.MessageType.Error) await DisplayAlert("Error", e.Message, "OK");
+			else await DisplayAlert("Success", "The event was successfully deleted.", "OK");
 		}
 	}
 }

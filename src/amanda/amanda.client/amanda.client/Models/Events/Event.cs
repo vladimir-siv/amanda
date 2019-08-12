@@ -118,10 +118,5 @@ namespace amanda.client.Models.Events
 			CType = ctype;
 			Value = value ?? new DigitalState(false);
 		}
-
-		public void ToXml(StringBuilder builder)
-		{
-
-		}
 	}
 }
