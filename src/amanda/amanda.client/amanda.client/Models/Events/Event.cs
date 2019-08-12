@@ -9,9 +9,32 @@ namespace amanda.client.Models.Events
 {
     public class Event
     {
+		public uint ID { get; set; } = 0;
+		public string Name { get; set; } = string.Empty;
+		public uint Repeat { get; set; } = 0;
+
 		public LinkedList<Requirement> Requirements { get; set; } = new LinkedList<Requirement>();
 		public LinkedList<Write> Raise { get; set; } = new LinkedList<Write>();
 		public LinkedList<Write> Expire { get; set; } = new LinkedList<Write>();
+
+		public event EventHandler<EventArgs> EventChanged;
+
+		public Event(uint id, string name = "@unnamed")
+		{
+			ID = id;
+			Name = name;
+		}
+
+		public void OnEventChanged() { EventChanged?.Invoke(this, EventArgs.Empty); }
+
+		public void Clean()
+		{
+			Repeat = 0;
+
+			Requirements.Clear();
+			Raise.Clear();
+			Expire.Clear();
+		}
     }
 
 	public class Requirement // this is the Pack

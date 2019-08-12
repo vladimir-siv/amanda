@@ -2,16 +2,15 @@
 <ContentPage
 	xmlns="http://xamarin.com/schemas/2014/forms"
 	xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-	xmlns:views="clr-namespace:amanda.client.Views"
+	xmlns:cells="clr-namespace:amanda.client.Views.Cells"
 	x:Class="amanda.client.EventManagementPage"
 	Title="Amanda"
 	BackgroundColor="Black"
 >
 	<ContentPage.Resources>
 		<ResourceDictionary>
-			<Color x:Key="OuterSepColor">Gray</Color>
-			<Color x:Key="BackgroundColor">Black</Color>
 			<Color x:Key="TextColor">White</Color>
+			<OnPlatform x:Key="RowHeight" x:TypeArguments="x:Int32" iOS="36" Android="36" WinPhone="48"/>
 			<OnPlatform x:Key="ControlHeight" x:TypeArguments="x:Double" iOS="36" Android="36" WinPhone="48"/>
 			<OnPlatform x:Key="FontFamily" x:TypeArguments="x:String" iOS="MarkerFelt-Thin" Android="sans-serif-monospace" WinPhone="Segoe UI"/>
 			<OnPlatform x:Key="FontSize" x:TypeArguments="x:Double" iOS="12" Android="12" WinPhone="24"/>
@@ -34,14 +33,20 @@
 			/>
 			<ActivityIndicator x:Name="LoadingIndicator" Margin="0, 5, 0, 5" IsRunning="{Binding IsLoading}"/>
 			<StackLayout x:Name="EventView" IsVisible="False">
-				<BoxView HorizontalOptions="FillAndExpand" HeightRequest="1" Color="{StaticResource OuterSepColor}"/>
-				<views:StackView
-					x:Name="Events"
-					SelectedColor="Navy"
-					UserControllable="False"
-					ItemTapped="OnItemTap"
-				/>
-				<BoxView HorizontalOptions="FillAndExpand" HeightRequest="1" Color="{StaticResource OuterSepColor}"/>
+				<ListView
+					ItemsSource="{Binding Events}"
+					CachingStrategy="RecycleElement"
+					Margin="5, 0, 5, 0"
+					SelectionMode="None"
+					RowHeight="{StaticResource RowHeight}"
+					ItemTapped="OnItemTapped"
+				>
+					<ListView.ItemTemplate>
+						<DataTemplate>
+							<cells:EventCell/>
+						</DataTemplate>
+					</ListView.ItemTemplate>
+				</ListView>
 			</StackLayout>
 		</StackLayout>
 	</ContentPage.Content>

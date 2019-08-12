@@ -26,7 +26,7 @@ namespace amanda.client.Infrastructure.Measuring
 
 		public bool Value { get; protected set; }
 
-		public event EventHandler<EventArgs> OnValueChange;
+		public event EventHandler<EventArgs> OnValueChanged;
 
 		public DigitalState() : this(false) { }
 		public DigitalState(bool value) : this(value, DirectDisplay.Resolve()) { }
@@ -60,7 +60,7 @@ namespace amanda.client.Infrastructure.Measuring
 			{
 				if (Value) return;
 				Value = true;
-				OnValueChange?.Invoke(this, EventArgs.Empty);
+				OnValueChanged?.Invoke(this, EventArgs.Empty);
 				return;
 			}
 
@@ -77,7 +77,7 @@ namespace amanda.client.Infrastructure.Measuring
 			{
 				if (!Value) return;
 				Value = false;
-				OnValueChange?.Invoke(this, EventArgs.Empty);
+				OnValueChanged?.Invoke(this, EventArgs.Empty);
 				return;
 			}
 
@@ -99,7 +99,7 @@ namespace amanda.client.Infrastructure.Measuring
 		public double Value { get; protected set; }
 		public string Unit { get; protected set; }
 
-		public event EventHandler<EventArgs> OnValueChange;
+		public event EventHandler<EventArgs> OnValueChanged;
 
 		public AnalogValue() : this(0) { }
 		public AnalogValue(double value) : this(value, string.Empty) { }
@@ -127,7 +127,7 @@ namespace amanda.client.Infrastructure.Measuring
 			string[] parts = value.Split(' ');
 			Value = Convert.ToDouble(parts[0]);
 			Unit = parts[1];
-			OnValueChange?.Invoke(this, EventArgs.Empty);
+			OnValueChanged?.Invoke(this, EventArgs.Empty);
 		}
 	}
 }

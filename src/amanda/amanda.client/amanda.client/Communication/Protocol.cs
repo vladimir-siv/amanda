@@ -9,14 +9,17 @@ using System.Xml;
 using Xamarin.Forms;
 
 using amanda.client.Models.Components;
+using amanda.client.Models.Events;
 using amanda.client.Infrastructure.Measuring;
 using amanda.client.ViewModels;
 using amanda.client.Synchronization;
 
 namespace amanda.client.Communication
 {
-    public static class Protocol
-    {
+	using Condition = Models.Events.Condition;
+
+	public static class Protocol
+	{
 		public const double RefreshSpeed = 2500;
 
 		public const string HelloMessage = "<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"no\"?><action task=\"Echo/hello\"></action>";
@@ -71,12 +74,14 @@ namespace amanda.client.Communication
 
 	public static class RemoteDevice
 	{
-		public static ObservableCollection<ComponentViewModel> Components { get; } = new ObservableCollection<ComponentViewModel>();
 		public class CollectorFailedEventArgs : EventArgs
 		{
 			public string Reason { get; }
 			public CollectorFailedEventArgs(string reason) { Reason = reason; }
 		}
+
+		public static ObservableCollection<ComponentViewModel> Components { get; } = new ObservableCollection<ComponentViewModel>();
+		public static ObservableCollection<EventViewModel> Events { get; } = new ObservableCollection<EventViewModel>();
 
 		private static bool started = false;
 		private static bool collect = false;
@@ -146,13 +151,13 @@ namespace amanda.client.Communication
 
 			return string.Empty;
 		}
-
-		private static object sync = new object();
+		
+		private static object LCsync = new object();
 		public static async Task LoadComponents(string xml_scan)
 		{
 			await Task.Run(() =>
 			{
-				lock (sync)
+				lock (LCsync)
 				{
 					var doc = new XmlDocument();
 					doc.LoadXml(xml_scan);
@@ -162,19 +167,19 @@ namespace amanda.client.Communication
 
 					foreach (XmlNode node in root.ChildNodes)
 					{
-						if (node.Name != "component") throw new XmlException("Invalid scan format.");
-
 						try
 						{
+							if (node.Name != "component") throw new XmlException("Invalid scan format.");
+							
+							var vnode = node.FirstChild;
+							if (vnode == null) throw new XmlException("Invalid scan format.");
+
 							uint vid = Convert.ToUInt32(node.Attributes["vid"].Value);
 							CType ctype = node.Attributes["ctype"].Value.AsCType();
 							string description = node.Attributes["description"].Value;
 							string[] commands = node.Attributes["commands"].Value.Split(new char[] { '|' }, StringSplitOptions.RemoveEmptyEntries);
 
 							IValue value = null;
-
-							var vnode = node.FirstChild;
-							if (vnode == null) throw new XmlException("Invalid scan format.");
 
 							switch (vnode.Name)
 							{
@@ -199,6 +204,154 @@ namespace amanda.client.Communication
 							else Components.Add(new ComponentViewModel(new Component(vid, ctype, description, commands, value)));
 						}
 						catch { /* if one component is invalid, skip that one and continue on */ }
+					}
+				}
+			});
+		}
+		
+		private static object LEsync = new object();
+		public static async Task LoadEvents(string xml_scan)
+		{
+			await Task.Run(() =>
+			{
+				lock (LEsync)
+				{
+					var doc = new XmlDocument();
+					doc.LoadXml(xml_scan);
+
+					var root = doc.ChildNodes[1];
+					if (root == null || root.Name != "scan") throw new XmlException("Invalid scan format.");
+
+					foreach (XmlNode ehNode in root.ChildNodes)
+					{
+						Event e = null;
+
+						try
+						{
+							if (ehNode.Name != "event_handle") throw new XmlException("Invalid scan format.");
+
+							uint id = Convert.ToUInt32(ehNode.Attributes["id"].Value);
+							string name = ehNode.Attributes["name"].Value;
+
+							// TODO: Somehow optimize this search (maybe it's not even possible - at least not in an ok way)
+							var search = Events.FirstOrDefault(evm => evm.ID == id);
+
+							if (search != null)
+							{
+								e = search.Event;
+								e.Clean();
+							}
+							else
+							{
+								e = new Event(id, name);
+								Events.Add(new EventViewModel(e));
+							}
+							
+							var eNode = ehNode.FirstChild;
+							if (eNode == null || eNode.Name != "event") throw new XmlException("Invalid scan format.");
+
+							uint repeat = Convert.ToUInt32(eNode.Attributes["repeat"].Value);
+							e.Repeat = repeat;
+
+							var rNode = eNode.ChildNodes[0];
+							if (rNode == null || rNode.Name != "requirements") throw new XmlException("Invalid scan format.");
+
+							var aNode = eNode.ChildNodes[1];
+							if (aNode == null || aNode.Name != "actions") throw new XmlException("Invalid scan format.");
+
+							var uNode = aNode.ChildNodes[0];
+							if (uNode == null || uNode.Name != "raise") throw new XmlException("Invalid scan format.");
+
+							var dNode = aNode.ChildNodes[1];
+							if (dNode == null || dNode.Name != "expire") throw new XmlException("Invalid scan format.");
+
+							foreach (XmlNode pNode in rNode.ChildNodes)
+							{
+								if (pNode.Name != "pack") throw new XmlException("Invalid scan format.");
+
+								var req = new Requirement();
+								e.Requirements.AddLast(req);
+
+								foreach (XmlNode cNode in pNode.ChildNodes)
+								{
+									if (cNode.Name != "condition") throw new XmlException("Invalid scan format.");
+
+									uint vid = Convert.ToUInt32(cNode.Attributes["vid"].Value);
+									CType ctype = cNode.Attributes["ctype"].Value.AsCType();
+
+									var cond = new Condition(vid, ctype);
+									req.Conditions.AddLast(cond);
+
+									foreach (XmlNode node in cNode.ChildNodes)
+									{
+										var cmp = new Comparator(node.Name, Convert.ToDouble(node.InnerText));
+										cond.Comparators.AddLast(cmp);
+									}
+								}
+							}
+
+							foreach (XmlNode wNode in uNode.ChildNodes)
+							{
+								if (wNode.Name != "write") throw new XmlException("Invalid scan format");
+								
+								var vNode = wNode.FirstChild;
+								if (vNode == null) throw new XmlException("Invalid scan format.");
+
+								uint vid = Convert.ToUInt32(wNode.Attributes["vid"].Value);
+								CType ctype = wNode.Attributes["ctype"].Value.AsCType();
+								IValue value = null;
+
+								switch (vNode.Name)
+								{
+									case "state":
+									{
+										bool state = Convert.ToBoolean(Convert.ToInt32(vNode.InnerText));
+										value = new DigitalState(state, ctype.ResolveDisplay());
+									} break;
+									case "value":
+									{
+										string unit = vNode.Attributes["unit"].Value;
+										double analogValue = Convert.ToDouble(vNode.InnerText);
+										value = new AnalogValue(analogValue, unit, ctype.ResolveDisplay());
+									} break;
+									default: throw new XmlException("Invalid scan format.");
+								}
+
+								e.Raise.AddLast(new Write(vid, ctype, value));
+							}
+
+							foreach (XmlNode wNode in dNode.ChildNodes)
+							{
+								if (wNode.Name != "write") throw new XmlException("Invalid scan format");
+								
+								var vNode = wNode.FirstChild;
+								if (vNode == null) throw new XmlException("Invalid scan format.");
+
+								uint vid = Convert.ToUInt32(wNode.Attributes["vid"].Value);
+								CType ctype = wNode.Attributes["ctype"].Value.AsCType();
+								IValue value = null;
+
+								switch (vNode.Name)
+								{
+									case "state":
+									{
+										bool state = Convert.ToBoolean(Convert.ToInt32(vNode.InnerText));
+										value = new DigitalState(state, ctype.ResolveDisplay());
+									} break;
+									case "value":
+									{
+										string unit = vNode.Attributes["unit"].Value;
+										double analogValue = Convert.ToDouble(vNode.InnerText);
+										value = new AnalogValue(analogValue, unit, ctype.ResolveDisplay());
+									} break;
+									default: throw new XmlException("Invalid scan format.");
+								}
+
+								e.Expire.AddLast(new Write(vid, ctype, value));
+							}
+						}
+						catch { e?.Clean(); /* if one event is invalid, skip that one and continue on */ }
+						finally { e?.OnEventChanged(); }
 					}
 				}
 			});

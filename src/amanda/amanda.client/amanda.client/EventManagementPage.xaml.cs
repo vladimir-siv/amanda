@@ -1,15 +1,20 @@
 ﻿using System;
+using System.Collections.ObjectModel;
+using System.Threading.Tasks;
 
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
-using amanda.client.Extensions;
+using amanda.client.ViewModels;
+using amanda.client.Communication;
 
 namespace amanda.client
 {
 	[XamlCompilation(XamlCompilationOptions.Compile)]
 	public partial class EventManagementPage : ContentPage
 	{
+		public ObservableCollection<EventViewModel> Events => RemoteDevice.Events;
+
 		private bool isLoading;
 		public bool IsLoading
 		{
@@ -17,58 +22,50 @@ namespace amanda.client
 			set { if (value == isLoading) return; isLoading = value; OnPropertyChanged(); }
 		}
 
-		private Func<View> labelGenerator;
-		public Func<View> LabelGenerator
-		{
-			get { return labelGenerator; }
-			set { labelGenerator = value; OnPropertyChanged(); }
-		}
-
 		public EventManagementPage()
 		{
 			InitializeComponent();
 			BindingContext = this;
-
-			EventView.IsVisible = true;
-			
-			LabelGenerator = () =>
-			{
-				return new Label
-				{
-					HorizontalOptions = LayoutOptions.FillAndExpand,
-					HorizontalTextAlignment = TextAlignment.Center,
-					VerticalTextAlignment = TextAlignment.Center,
-					Text = "Test",
-
-					BackgroundColor = (Color)Resources["BackgroundColor"],
-					TextColor = (Color)Resources["TextColor"],
-					FontFamily = Resources["FontFamily"].PlatformResolve<string>(),
-					FontSize = Resources["FontSize"].PlatformResolve<double>()
-				};
-			};
-
-			Label lbl;
-
-			lbl = (Label)LabelGenerator();
-			lbl.Text = "Whatever1";
-			Events.Add(lbl);
-
-			lbl = (Label)LabelGenerator();
-			lbl.Text = "Whatever2";
-			Events.Add(lbl);
-
-			lbl = (Label)LabelGenerator();
-			lbl.Text = "Whatever3";
-			Events.Add(lbl);
-
-			lbl = (Label)LabelGenerator();
-			lbl.Text = "Whatever4";
-			Events.Add(lbl);
 		}
 
-		private async void OnItemTap(object sender, EventArgs e)
+		protected async override void OnAppearing()
 		{
-			await DisplayAlert("Item Tapped!", ((Label)sender).Text, "OK");
+			base.OnAppearing();
+
+			if (Events.Count == 0)
+			{
+				IsLoading = true;
+
+				Task alert = null;
+
+				try
+				{
+					string xml_scan = await RemoteDevice.Send(Protocol.ScanEvents);
+					await RemoteDevice.LoadEvents(xml_scan);
+				}
+				catch (Exception ex)
+				{
+					alert = DisplayAlert("Error", "Could not load the events. Reason:\r\n" + ex.Message, "OK");
+					return;
+				}
+				finally
+				{
+					IsLoading = false;
+					if (alert != null) await alert;
+				}
+			}
+
+			if (PageStack.Children.Contains(LoadingIndicator))
+				PageStack.Children.Remove(LoadingIndicator);
+
+			EventView.IsVisible = true;
+		}
+
+		private async void OnItemTapped(object sender, ItemTappedEventArgs e)
+		{
+			EventViewModel item = e.Item as EventViewModel;
+			if (item == null) return;
+			await DisplayAlert("Navigation", "Navigate to: " + item.Name, "OK");
 		}
 	}
 }

@@ -1,0 +1,57 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<ViewCell
+	xmlns="http://xamarin.com/schemas/2014/forms" 
+	xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+	x:Class="amanda.client.Views.Cells.EventCell"
+>
+	<ViewCell.View>
+		<Frame
+			CornerRadius="0"
+			Padding="1"
+			OutlineColor="DarkMagenta"
+			Margin="0, 0, 0, 5"
+		>
+			<Frame.Resources>
+				<ResourceDictionary>
+					<Color x:Key="BackgroundColor">Black</Color>
+					<Color x:Key="TextColor">White</Color>
+					
+					<Color x:Key="IdColor">Gold</Color>
+					
+					<OnPlatform x:Key="FontFamily" x:TypeArguments="x:String" iOS="MarkerFelt-Thin" Android="sans-serif-monospace" WinPhone="Segoe UI"/>
+					<OnPlatform x:Key="FontSize" x:TypeArguments="x:Double" iOS="12" Android="12" WinPhone="24"/>
+				</ResourceDictionary>
+			</Frame.Resources>
+			<Frame.Content>
+				<StackLayout Orientation="Horizontal" HorizontalOptions="FillAndExpand" Spacing="0">
+					<Label
+						HorizontalOptions="FillAndExpand"
+						VerticalOptions="FillAndExpand"
+						Text="{Binding Name}"
+						
+						HorizontalTextAlignment="Center"
+						VerticalTextAlignment="Center"
+						
+						BackgroundColor="{StaticResource BackgroundColor}"
+						TextColor="{StaticResource TextColor}"
+						FontFamily="{StaticResource FontFamily}"
+						FontSize="{StaticResource FontSize}"
+					/>
+					<Label
+						HorizontalOptions="FillAndExpand"
+						VerticalOptions="FillAndExpand"
+						Text="{Binding ID, StringFormat='[{0}]'}"
+						
+						HorizontalTextAlignment="Center"
+						VerticalTextAlignment="Center"
+						
+						BackgroundColor="{StaticResource BackgroundColor}"
+						TextColor="{StaticResource IdColor}"
+						FontFamily="{StaticResource FontFamily}"
+						FontSize="{StaticResource FontSize}"
+					/>
+				</StackLayout>
+			</Frame.Content>
+		</Frame>
+	</ViewCell.View>
+</ViewCell>

@@ -40,7 +40,7 @@ namespace amanda.client.ViewModels
 			{
 				Component.Value = value;
 				OnPropertyChanged();
-				OnValueChange(value, EventArgs.Empty);
+				OnValueChanged(value, EventArgs.Empty);
 			}
 		}
 
@@ -81,7 +81,7 @@ namespace amanda.client.ViewModels
 		public ComponentViewModel(Component component)
 		{
 			Component = component ?? throw new ArgumentNullException("Component cannot be null.");
-			component.Value.OnValueChange += OnValueChange;
+			component.Value.OnValueChanged += OnValueChanged;
 
 			commandIssued = false;
 			functionArgument = string.Empty;
@@ -90,10 +90,10 @@ namespace amanda.client.ViewModels
 		}
 		~ComponentViewModel()
 		{
-			Component.Value.OnValueChange -= OnValueChange;
+			Component.Value.OnValueChanged -= OnValueChanged;
 		}
 
-		private void OnValueChange(object sender, EventArgs e)
+		private void OnValueChanged(object sender, EventArgs e)
 		{
 			OnPropertyChanged(nameof(ValueText));
 			OnPropertyChanged(nameof(ValueColor));
