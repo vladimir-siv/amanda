@@ -85,6 +85,8 @@ namespace amanda.client.ViewModels
 
 		private async Task DeleteEvent()
 		{
+			bool success = false;
+
 			try
 			{
 				CommandIssued = true;
@@ -94,12 +96,12 @@ namespace amanda.client.ViewModels
 				if (deleteConfirmed)
 				{
 					string response = await RemoteDevice.Send(Protocol.DeleteEvent(ID));
-					if (response == Protocol.ActionSuccess) EventDeleted?.Invoke(this, ViewModelEventArgs.Information("Success"));
+					if (success = response == Protocol.ActionSuccess) EventDeleted?.Invoke(this, ViewModelEventArgs.Information("Success"));
 					else EventDeleted?.Invoke(this, ViewModelEventArgs.Error("The event was not deleted."));
 				}
 			}
 			catch (Exception ex) { EventDeleted?.Invoke(this, ViewModelEventArgs.Error("Failed to delete the event. Reason:\r\n" + ex.Message)); }
-			finally { CommandIssued = false; }
+			finally { if (!success) CommandIssued = false; }
 		}
 	}
 }

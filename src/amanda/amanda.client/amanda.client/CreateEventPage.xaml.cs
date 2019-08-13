@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
@@ -6,12 +7,15 @@ using Xamarin.Forms.Xaml;
 using amanda.client.Communication;
 using amanda.client.Infrastructure.Measuring;
 using amanda.client.Models.Components;
+using amanda.client.Models.Events;
 using amanda.client.ViewModels;
 using amanda.client.Views;
 using amanda.client.Extensions;
 
 namespace amanda.client
 {
+	using Condition = Models.Events.Condition;
+
 	[XamlCompilation(XamlCompilationOptions.Compile)]
 	public partial class CreateEventPage : ContentPage
 	{
@@ -325,7 +329,124 @@ namespace amanda.client
 
 		private async void OnCreateClick(object sender, EventArgs e)
 		{
-			
+			bool success = false;
+			Task alert = null;
+
+			try
+			{
+				btnCreate.IsEnabled = false;
+				IsCreating = true;
+
+				var event_xml = await Task.Run(() =>
+				{
+					var Event = new Event(0, Name);
+
+					for (int i = 0; i < Requirements.Count; ++i)
+					{
+						var ReqView = (StackView)((Frame)((StackLayout)Requirements[i]).Children[2]).Content;
+
+						var req = new Requirement();
+						Event.Requirements.AddLast(req);
+
+						for (int j = 0; j < ReqView.Count; ++j)
+						{
+							var CondViewStack = (StackLayout)((Frame)((StackLayout)ReqView[j]).Children[2]).Content;
+							var CondSensor = (Picker)CondViewStack.Children[0];
+							var CondView = (StackView)CondViewStack.Children[1];
+
+							var sensor = (ComponentViewModel)CondSensor.SelectedItem;
+							var cond = new Condition(sensor.ID, sensor.CType.AsCType());
+							req.Conditions.AddLast(cond);
+
+							for (int k = 0; k < CondView.Count; ++k)
+							{
+								var CmpViewStack = (StackLayout)CondView[k];
+								var cmp = (string)((Picker)CmpViewStack.Children[0]).SelectedItem;
+								var val = ((Entry)CmpViewStack.Children[1]).Text;
+
+								cond.Comparators.AddLast(new Comparator(Comparator.ToName(cmp), val.ValueConversion()));
+							}
+						}
+					}
+
+					for (int i = 0; i < RaiseActions.Count; ++i)
+					{
+						var actionStack = (StackLayout)((Frame)RaiseActions[i]).Content;
+						var element = (ComponentViewModel)((Picker)actionStack.Children[0]).SelectedItem;
+
+						var valueView = actionStack.Children[1];
+						IValue value = null;
+
+						if (valueView == null) continue;
+						else if (valueView is Picker)
+						{
+							value = DigitalState.FromString((string)((Picker)valueView).SelectedItem);
+						}
+						else if (valueView is StackLayout)
+						{
+							var valueStack = (StackLayout)valueView;
+							var analogValue = ((Entry)valueStack.Children[0]).Text;
+							var unit = (string)((Picker)valueStack.Children[0]).SelectedItem;
+							value = AnalogValue.FromString(analogValue + ' ' + unit);
+						}
+						else continue;
+						
+						var write = new Write(element.ID, element.CType.AsCType(), value);
+						Event.Raise.AddLast(write);
+					}
+
+					for (int i = 0; i < ExpireActions.Count; ++i)
+					{
+						var actionStack = (StackLayout)((Frame)ExpireActions[i]).Content;
+						var element = (ComponentViewModel)((Picker)actionStack.Children[0]).SelectedItem;
+
+						var valueView = actionStack.Children[1];
+						IValue value = null;
+
+						if (valueView == null) continue;
+						else if (valueView is Picker)
+						{
+							value = DigitalState.FromString((string)((Picker)valueView).SelectedItem);
+						}
+						else if (valueView is StackLayout)
+						{
+							var valueStack = (StackLayout)valueView;
+							var analogValue = ((Entry)valueStack.Children[0]).Text;
+							var unit = (string)((Picker)valueStack.Children[0]).SelectedItem;
+							value = AnalogValue.FromString(analogValue + ' ' + unit);
+						}
+						else continue;
+						
+						var write = new Write(element.ID, element.CType.AsCType(), value);
+						Event.Expire.AddLast(write);
+					}
+
+					return Protocol.CreateEvent(Event);
+				});
+
+				var response = await RemoteDevice.Send(event_xml);
+				if (success = response == Protocol.ActionSuccess) alert = DisplayAlert("Success", "Event was successfully created!", "OK");
+				else alert = DisplayAlert("Error", "The device could not create the event.", "OK");
+			}
+			catch (Exception ex) { alert = DisplayAlert("Error", "Could not create the event. Reason:\r\n" + ex.Message, "OK"); }
+			finally
+			{
+				IsCreating = false;
+
+				if (success)
+				{
+					try
+					{
+						var xml_scan = await RemoteDevice.Send(Protocol.ScanEvents);
+						await RemoteDevice.LoadEvents(xml_scan);
+					}
+					catch { }
+				}
+				else btnCreate.IsEnabled = true;
+
+				if (alert != null) await alert;
+				if (success) await Navigation.PopAsync();
+			}
 		}
 	}
 }

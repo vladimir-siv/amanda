@@ -136,4 +136,26 @@ namespace amanda.client.Infrastructure.Measuring
 			OnValueChanged?.Invoke(this, EventArgs.Empty);
 		}
 	}
+
+	public static class ValueConverter
+	{
+		public static double ValueConversion(this string str)
+		{
+			try
+			{
+				var ds = DigitalState.FromString(str);
+				return ds.Value ? 1.0 : 0.0;
+			}
+			catch { }
+
+			try
+			{
+				var av = AnalogValue.FromString(str);
+				return av.Value;
+			}
+			catch { }
+
+			return 0.0;
+		}
+	}
 }

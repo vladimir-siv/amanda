@@ -112,6 +112,11 @@ namespace amanda.client.Communication
 				{
 					xml.AppendFormat("<write vid=\"{0}\" ctype=\"{1}\">", write.ID, write.CType.AsProtocolString());
 
+					if (write.Value == null) xml.Append("<unknown></unknown>");
+					else if (write.Value is DigitalState) xml.AppendFormat("<state>{0}</state>", Convert.ToInt32(((DigitalState)write.Value).Value));
+					else if (write.Value is AnalogValue) xml.AppendFormat("<value unit=\"{0}\">{1:F2}</value>", ((AnalogValue)write.Value).Unit, ((AnalogValue)write.Value).Value);
+					else xml.Append("<unknown></unknown>");
+
 					xml.Append("</write>");
 				}
 				xml.Append("</expire>");
@@ -435,9 +440,15 @@ namespace amanda.client.Communication
 						finally { e?.OnEventChanged(); }
 					}
 
-					foreach (var e in Events)
+					for (int i = 0; i < Events.Count; ++i)
 					{
-						if (!ids.Contains(e.ID)) Events.Remove(e);
+						var e = Events[i];
+
+						if (!ids.Contains(e.ID))
+						{
+							Events.Remove(e);
+							--i;
+						}
 					}
 				}
 			});

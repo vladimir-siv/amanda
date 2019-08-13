@@ -235,8 +235,19 @@ namespace amanda.client
 		}
 		private async void OnEventDeleted(object sender, ViewModelEventArgs e)
 		{
-			if (e.MType == ViewModelEventArgs.MessageType.Error) await DisplayAlert("Error", e.Message, "OK");
-			else await DisplayAlert("Success", "The event was successfully deleted.", "OK");
+			if (e.MType == ViewModelEventArgs.MessageType.Information && e.Message == "Success")
+			{
+				try
+				{
+					var xml_scan = await RemoteDevice.Send(Protocol.ScanEvents);
+					await RemoteDevice.LoadEvents(xml_scan);
+				}
+				catch { }
+
+				await DisplayAlert("Success", "The event was successfully deleted.", "OK");
+				await Navigation.PopAsync();
+			}
+			else await DisplayAlert("Error", e.Message, "OK");
 		}
 	}
 }

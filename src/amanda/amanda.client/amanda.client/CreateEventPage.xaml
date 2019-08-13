@@ -184,10 +184,10 @@
 				<BoxView HorizontalOptions="FillAndExpand" HeightRequest="1" Margin="20, 5, 20, 5" Color="{StaticResource HeadingColor}"/>
 				<StackLayout Margin="30, 0, 30, 0" Orientation="Horizontal" HorizontalOptions="CenterAndExpand">
 					<Button
+						x:Name="btnCreate"
 						HorizontalOptions="Center"
 						Text="Create!"
 						Clicked="OnCreateClick"
-						IsEnabled="{Binding !IsCreating}"
 						
 						BackgroundColor="{StaticResource ComponentBackgroundColor}"
 						TextColor="{StaticResource TextColor}"
