@@ -16,17 +16,17 @@ namespace amanda.client.ViewModels
 		public uint ID
 		{
 			get { return Component.ID; }
-			set { Component.ID = value; OnPropertyChanged(); }
+			set { Component.ID = value; OnPropertyChanged(); Text = string.Empty; }
 		}
 		public string CType
 		{
 			get { return Component.CType.AsProtocolString(); }
-			set { Component.CType = value.AsCType(); OnPropertyChanged(); }
+			set { Component.CType = value.AsCType(); OnPropertyChanged(); Text = string.Empty; }
 		}
 		public string Description
 		{
 			get { return Component.Description; }
-			set { Component.Description = value; OnPropertyChanged(); }
+			set { Component.Description = value; OnPropertyChanged(); Text = string.Empty; }
 		}
 		public IEnumerable<string> Commands
 		{
@@ -42,6 +42,12 @@ namespace amanda.client.ViewModels
 				OnPropertyChanged();
 				OnValueChanged(value, EventArgs.Empty);
 			}
+		}
+
+		public string Text
+		{
+			get { return Description + "[" + ID + ":" + CType + "]"; }
+			private set { OnPropertyChanged(); }
 		}
 
 		public string ValueText => Value.Display().Value;

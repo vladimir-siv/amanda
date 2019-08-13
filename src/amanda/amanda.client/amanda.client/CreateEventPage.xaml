@@ -2,13 +2,206 @@
 <ContentPage
 	xmlns="http://xamarin.com/schemas/2014/forms"
 	xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+	xmlns:views="clr-namespace:amanda.client.Views"
 	x:Class="amanda.client.CreateEventPage"
+	Title="Amanda"
+	BackgroundColor="Black"
 >
+	<ContentPage.Resources>
+		<ResourceDictionary>
+			<Color x:Key="ComponentBackgroundColor">#4f514b</Color>
+			<Color x:Key="BackgroundColor">Black</Color>
+			<Color x:Key="TextColor">White</Color>
+			<Color x:Key="HeadingColor">Magenta</Color>
+			<Color x:Key="SubheadingColor">DarkSeaGreen</Color>
+			
+			<Color x:Key="IdColor">Gold</Color>
+			<Color x:Key="NameColor">DeepSkyBlue</Color>
+			<Color x:Key="RepeatColor">Green</Color>
+
+			<OnPlatform x:Key="ControlWidth" x:TypeArguments="x:Double" iOS="36" Android="36" WinPhone="48"/>
+			<OnPlatform x:Key="ControlHeight" x:TypeArguments="x:Double" iOS="36" Android="36" WinPhone="48"/>
+			<OnPlatform x:Key="FontFamily" x:TypeArguments="x:String" iOS="MarkerFelt-Thin" Android="sans-serif-monospace" WinPhone="Segoe UI"/>
+			<OnPlatform x:Key="FontSize" x:TypeArguments="x:Double" iOS="12" Android="12" WinPhone="24"/>
+		</ResourceDictionary>
+	</ContentPage.Resources>
 	<ContentPage.Content>
-		<StackLayout>
-			<Label Text="Welcome to Xamarin.Forms!"
-			VerticalOptions="CenterAndExpand" 
-			HorizontalOptions="CenterAndExpand" />
-		</StackLayout>
+		<ScrollView Margin="0, 0, 0, 20">
+			<StackLayout x:Name="PageStack">
+				<Label
+					HorizontalOptions="FillAndExpand"
+					Text="Create New Event"
+				
+					HorizontalTextAlignment="Center"
+					VerticalTextAlignment="Center"
+				
+					Margin="0, 10, 0, 0"
+					HeightRequest="{StaticResource ControlHeight}"
+					TextColor="{StaticResource TextColor}"
+					FontFamily="{StaticResource FontFamily}"
+					FontSize="{StaticResource FontSize}"
+				/>
+				
+				<Label
+					HorizontalOptions="FillAndExpand"
+					Text="Details"
+					
+					HorizontalTextAlignment="Start"
+					VerticalTextAlignment="Center"
+					
+					Margin="20, 10, 20, 0"
+					BackgroundColor="{StaticResource BackgroundColor}"
+					TextColor="{StaticResource HeadingColor}"
+					FontFamily="{StaticResource FontFamily}"
+					FontSize="{StaticResource FontSize}"
+				/>
+				<BoxView HorizontalOptions="FillAndExpand" HeightRequest="1" Margin="20, 5, 20, 5" Color="{StaticResource HeadingColor}"/>
+				<StackLayout Margin="30, 0, 30, 0">
+					<Entry
+						x:Name="tbName"
+						HorizontalOptions="FillAndExpand"
+						VerticalOptions="FillAndExpand"
+						Placeholder="Name"
+						Text="{Binding Name}"
+						
+						HorizontalTextAlignment="Start"
+						BackgroundColor="{StaticResource ComponentBackgroundColor}"
+						TextColor="{StaticResource NameColor}"
+						FontFamily="{StaticResource FontFamily}"
+						FontSize="{StaticResource FontSize}"
+					/>
+					<Entry
+						x:Name="lblRepeat"
+						HorizontalOptions="FillAndExpand"
+						VerticalOptions="FillAndExpand"
+						Placeholder="Repeat"
+						Text="{Binding Repeat}"
+						
+						HorizontalTextAlignment="Start"
+						BackgroundColor="{StaticResource ComponentBackgroundColor}"
+						TextColor="{StaticResource RepeatColor}"
+						FontFamily="{StaticResource FontFamily}"
+						FontSize="{StaticResource FontSize}"
+					/>
+				</StackLayout>
+				
+				<Label
+					HorizontalOptions="FillAndExpand"
+					Text="Requirements"
+					
+					HorizontalTextAlignment="Start"
+					VerticalTextAlignment="Center"
+					
+					Margin="20, 20, 20, 0"
+					BackgroundColor="{StaticResource BackgroundColor}"
+					TextColor="{StaticResource HeadingColor}"
+					FontFamily="{StaticResource FontFamily}"
+					FontSize="{StaticResource FontSize}"
+				/>
+				<BoxView HorizontalOptions="FillAndExpand" HeightRequest="1" Margin="20, 5, 20, 5" Color="{StaticResource HeadingColor}"/>
+				<StackLayout Margin="30, 0, 30, 0">
+					<views:StackView
+						x:Name="Requirements"
+						Generator="{Binding RequirementGenerator}"
+						Selectable="False"
+						UserControllable="True"
+					/>
+				</StackLayout>
+				
+				<Label
+					HorizontalOptions="FillAndExpand"
+					Text="Actions"
+					
+					HorizontalTextAlignment="Start"
+					VerticalTextAlignment="Center"
+					
+					Margin="20, 20, 20, 0"
+					BackgroundColor="{StaticResource BackgroundColor}"
+					TextColor="{StaticResource HeadingColor}"
+					FontFamily="{StaticResource FontFamily}"
+					FontSize="{StaticResource FontSize}"
+				/>
+				<BoxView HorizontalOptions="FillAndExpand" HeightRequest="1" Margin="20, 5, 20, 5" Color="{StaticResource HeadingColor}"/>
+				<StackLayout Margin="30, 0, 30, 0">
+					<Label
+						HorizontalOptions="FillAndExpand"
+						Text="Raise Actions"
+						
+						HorizontalTextAlignment="Start"
+						VerticalTextAlignment="Center"
+						
+						Margin="10, 0, 10, 0"
+						BackgroundColor="{StaticResource BackgroundColor}"
+						TextColor="{StaticResource SubheadingColor}"
+						FontFamily="{StaticResource FontFamily}"
+						FontSize="{StaticResource FontSize}"
+					/>
+					<BoxView HorizontalOptions="FillAndExpand" HeightRequest="1" Margin="10, 5, 10, 5" Color="{StaticResource SubheadingColor}"/>
+					<views:StackView
+						x:Name="RaiseActions"
+						Generator="{Binding ActionGenerator}"
+						Selectable="False"
+						UserControllable="True"
+						Margin="10, 0, 10, 0"
+					/>
+					
+					<Label
+						HorizontalOptions="FillAndExpand"
+						Text="Expire Actions"
+						
+						HorizontalTextAlignment="Start"
+						VerticalTextAlignment="Center"
+						
+						Margin="10, 0, 10, 0"
+						BackgroundColor="{StaticResource BackgroundColor}"
+						TextColor="{StaticResource SubheadingColor}"
+						FontFamily="{StaticResource FontFamily}"
+						FontSize="{StaticResource FontSize}"
+					/>
+					<BoxView HorizontalOptions="FillAndExpand" HeightRequest="1" Margin="10, 5, 10, 5" Color="{StaticResource SubheadingColor}"/>
+					<views:StackView
+						x:Name="ExpireActions"
+						Generator="{Binding ActionGenerator}"
+						Selectable="False"
+						UserControllable="True"
+						Margin="10, 0, 10, 0"
+					/>
+				</StackLayout>
+				
+				<Label
+					HorizontalOptions="FillAndExpand"
+					Text="Control"
+					
+					HorizontalTextAlignment="Start"
+					VerticalTextAlignment="Center"
+					
+					Margin="20, 20, 20, 0"
+					BackgroundColor="{StaticResource BackgroundColor}"
+					TextColor="{StaticResource HeadingColor}"
+					FontFamily="{StaticResource FontFamily}"
+					FontSize="{StaticResource FontSize}"
+				/>
+				<BoxView HorizontalOptions="FillAndExpand" HeightRequest="1" Margin="20, 5, 20, 5" Color="{StaticResource HeadingColor}"/>
+				<StackLayout Margin="30, 0, 30, 0" Orientation="Horizontal" HorizontalOptions="CenterAndExpand">
+					<Button
+						HorizontalOptions="Center"
+						Text="Create!"
+						Clicked="OnCreateClick"
+						IsEnabled="{Binding !IsCreating}"
+						
+						BackgroundColor="{StaticResource ComponentBackgroundColor}"
+						TextColor="{StaticResource TextColor}"
+						FontFamily="{StaticResource FontFamily}"
+						FontSize="{StaticResource FontSize}"
+						HeightRequest="{StaticResource ControlHeight}"
+					/>
+					<ActivityIndicator
+						HorizontalOptions="Center"
+						VerticalOptions="Center"
+						IsRunning="{Binding IsCreating}"
+					/>
+				</StackLayout>
+			</StackLayout>
+		</ScrollView>
 	</ContentPage.Content>
 </ContentPage>

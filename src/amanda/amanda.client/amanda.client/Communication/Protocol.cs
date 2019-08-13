@@ -142,6 +142,9 @@ namespace amanda.client.Communication
 		public static ObservableCollection<ComponentViewModel> Components { get; } = new ObservableCollection<ComponentViewModel>();
 		public static ObservableCollection<EventViewModel> Events { get; } = new ObservableCollection<EventViewModel>();
 
+		public static List<ComponentViewModel> Sensors { get; private set; } = null;
+		public static List<ComponentViewModel> Elements { get; private set; } = null;
+
 		private static bool started = false;
 		private static bool collect = false;
 		private static Atomic<bool> cansend = new Atomic<bool>(false);
@@ -263,6 +266,21 @@ namespace amanda.client.Communication
 							else Components.Add(new ComponentViewModel(new Component(vid, ctype, description, commands, value)));
 						}
 						catch { /* if one component is invalid, skip that one and continue on */ }
+					}
+
+					if (Sensors == null || Elements == null && Components.Count > 0) // just an optimization!
+					{
+						Sensors = new List<ComponentViewModel>(Components.Count);
+						Elements = new List<ComponentViewModel>(Components.Count);
+
+						for (int i = 0; i < Components.Count; ++i)
+						{
+							var ctype = Components[i].CType.AsCType();
+
+							if (ctype.Is(CType.None)) continue;
+							else if (ctype.IsAny(CType.Sensor)) Sensors.Add(Components[i]);
+							else if (ctype.IsAny(CType.Element)) Elements.Add(Components[i]);
+						}
 					}
 				}
 			});
@@ -428,6 +446,14 @@ namespace amanda.client.Communication
 		public static ComponentViewModel FindComponent(uint id, CType ctype)
 		{
 			return Components.FirstOrDefault(c => c.ID == id && c.CType.AsCType() == ctype);
+		}
+
+		public static void ClearCache()
+		{
+			Components.Clear();
+			Events.Clear();
+			Sensors = null;
+			Elements = null;
 		}
 	}
 }

@@ -24,7 +24,7 @@
 				
 				HorizontalTextAlignment="Center"
 				VerticalTextAlignment="Center"
-				BackgroundColor="Black"
+				
 				Margin="0, 10, 0, 0"
 				HeightRequest="{StaticResource ControlHeight}"
 				TextColor="{StaticResource TextColor}"

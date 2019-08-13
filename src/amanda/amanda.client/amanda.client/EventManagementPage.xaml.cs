@@ -42,12 +42,13 @@ namespace amanda.client
 
 			if (Events.Count == 0)
 			{
-				IsLoading = true;
-
 				Task alert = null;
 
 				try
 				{
+					IsLoading = true;
+					CommandIssued = true;
+
 					string xml_scan;
 
 					if (RemoteDevice.Components.Count == 0)
@@ -58,6 +59,8 @@ namespace amanda.client
 
 					xml_scan = await RemoteDevice.Send(Protocol.ScanEvents);
 					await RemoteDevice.LoadEvents(xml_scan);
+
+					CommandIssued = false;
 				}
 				catch (Exception ex)
 				{

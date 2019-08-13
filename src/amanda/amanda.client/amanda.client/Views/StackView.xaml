@@ -12,6 +12,7 @@
 			<Color x:Key="SelectedColor">Navy</Color>
 			
 			<OnPlatform x:Key="ControlHeight" x:TypeArguments="x:Double" iOS="36" Android="36" WinPhone="48"/>
+			<OnPlatform x:Key="ControlWidth" x:TypeArguments="x:Double" iOS="36" Android="36" WinPhone="48"/>
 			<OnPlatform x:Key="FontFamily" x:TypeArguments="x:String" iOS="MarkerFelt-Thin" Android="sans-serif-monospace" WinPhone="Segoe UI"/>
 			<OnPlatform x:Key="FontSize" x:TypeArguments="x:Double" iOS="12" Android="12" WinPhone="24"/>
 		</ResourceDictionary>
@@ -28,11 +29,12 @@
 					Text="+"
 					Clicked="OnAddTap"
 					
-					BackgroundColor="{StaticResource ComponentBackgroundColor}"
-					TextColor="{StaticResource TextColor}"
+					BackgroundColor="LightBlue"
+					TextColor="Black"
 					FontFamily="{StaticResource FontFamily}"
 					FontSize="{StaticResource FontSize}"
 					HeightRequest="{StaticResource ControlHeight}"
+					WidthRequest="{StaticResource ControlWidth}"
 				/>
 				<Button
 					x:Name="btnRemove"
@@ -40,11 +42,12 @@
 					Text="-"
 					Clicked="OnRemoveTap"
 					
-					BackgroundColor="{StaticResource ComponentBackgroundColor}"
-					TextColor="{StaticResource TextColor}"
+					BackgroundColor="IndianRed"
+					TextColor="Black"
 					FontFamily="{StaticResource FontFamily}"
 					FontSize="{StaticResource FontSize}"
 					HeightRequest="{StaticResource ControlHeight}"
+					WidthRequest="{StaticResource ControlWidth}"
 				/>
 			</StackLayout>
 		</StackLayout>

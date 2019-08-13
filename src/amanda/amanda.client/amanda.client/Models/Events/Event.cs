@@ -88,6 +88,20 @@ namespace amanda.client.Models.Events
 
 			throw new FormatException("No such comparator found.");
 		}
+		public static string ToName(string op)
+		{
+			switch (op)
+			{
+				case "=": return "equ";
+				case "≠": return "neq";
+				case ">": return "gtr";
+				case "<": return "lss";
+				case "≥": return "geq";
+				case "≤": return "leq";
+			}
+
+			throw new FormatException("No such comparator found.");
+		}
 
 		public string Name { get; }
 		public double Value { get; set; }

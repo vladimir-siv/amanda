@@ -62,6 +62,16 @@ namespace amanda.client.ViewModels
 			isConnecting = false;
 			connect = new Command(async () => await TryConnect(), () => !IsConnecting);
 			skip = new Command(() => SkipConnection?.Invoke(this, ViewModelEventArgs.Empty), () => !IsConnecting);
+
+			ConnectionEstablished += OnConnectionEstablished;
+		}
+
+		private void OnConnectionEstablished(ViewModel sender, ViewModelEventArgs e)
+		{
+			if (e.MType == ViewModelEventArgs.MessageType.Information && e.Message == "Success")
+			{
+				RemoteDevice.ClearCache();
+			}
 		}
 		
 		private async Task TryConnect()
