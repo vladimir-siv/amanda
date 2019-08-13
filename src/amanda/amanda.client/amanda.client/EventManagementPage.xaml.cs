@@ -76,8 +76,6 @@ namespace amanda.client
 
 			if (PageStack.Children.Contains(LoadingIndicator))
 				PageStack.Children.Remove(LoadingIndicator);
-
-			EventView.IsVisible = true;
 		}
 
 		private async void OnItemTapped(object sender, ItemTappedEventArgs e)

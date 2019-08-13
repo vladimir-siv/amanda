@@ -57,8 +57,7 @@ namespace amanda.client
 
 			if (PageStack.Children.Contains(LoadingIndicator))
 				PageStack.Children.Remove(LoadingIndicator);
-
-			ComponentView.IsVisible = true;
+			
 			RemoteDevice.CollectorFailed += CollectorFailed;
 			RemoteDevice.RunCollector();
 		}

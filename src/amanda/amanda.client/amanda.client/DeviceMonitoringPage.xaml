@@ -32,7 +32,7 @@
 				FontSize="{StaticResource FontSize}"
 			/>
 			<ActivityIndicator x:Name="LoadingIndicator" Margin="0, 5, 0, 5" IsRunning="{Binding IsLoading}"/>
-			<StackLayout x:Name="ComponentView" IsVisible="False">
+			<StackLayout x:Name="ComponentView" VerticalOptions="FillAndExpand">
 				<ListView
 					ItemsSource="{Binding Components}"
 					CachingStrategy="RecycleElement"
