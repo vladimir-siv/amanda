@@ -1,0 +1,46 @@
+<event repeat="0"> // event occurrence is defined by going from true to false on requirements (counter is incremented only when event is ended - event is expired)
+	<requirements> // applies OR between packs
+		<pack> // applies AND between conditions
+			<condition vid="2" ctype="AS"> // applies AND between comparators
+				<gtr>128</gtr>
+				<lss>256</lss>
+			</condition>
+			<condition vid="3" ctype="AS">
+				<geq>128</geq>
+				<leq>256</leq>
+			</condition>
+		</pack>
+		<pack>
+			<condition vid="1" ctype="DS">
+				<equ>1</equ>
+			</condition>
+			<condition vid="2" ctype="DS">
+				<neq>0</neq>
+			</condition>
+		</pack>
+		<pack>
+			<condition vid="1" ctype="AS"> // AS#1 is TIMER! Rethink about a good solution (maybe this one is good) ?
+				<geq>1000</geq>
+			</condition>
+		</pack>
+	</requirements>
+	<actions>
+		<raise>
+			<write vid="1" ctype="AE">
+				<value unit="V">3.5</value>
+			</write>
+			<execute vid="2" ctype="DE"> // NOT YET SUPPORTED! - NOT VALID ANYMORE! COMMANDS ARE NOW SUPPORTED THROUGH TASKS
+				<command name="blink"><arg>1000</arg></command>
+				<command name="other"></command>
+			</execute>
+		</raise>
+		<expire>
+			<write vid="1" ctype="DE">
+				<state>1</state>
+			</write>
+			<execute vid="2" ctype="DE"> // NOT YET SUPPORTED! - NOT VALID ANYMORE! COMMANDS ARE NOW SUPPORTED THROUGH TASKS
+				<command name="stop"></command>
+			</execute>
+		</expire>
+	</actions>
+</event>

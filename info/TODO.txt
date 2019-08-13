@@ -1,0 +1,21 @@
+ == OPEN TASKS ==
+-Synchronize code (for eg. component write/read...)
+-Optimize Exception::what() [strings]
+-Check if any casts are causing any problems
+-Think about having events only on SD card (not in RAM) and reading each event from file upon checking (yes, it will be slower but maybe not that much?)
+
+ == FEATURES ==
+-Evaluate LDR lux unit conversion function
+-Support command execution in events (possibly a good solution is to save the command as a task in a file associated with the event and read it upon raise/expire, parse and execute)
+-Rework sleeping! This shit just can't get fixed...
+
+ == MAINTENANCE ==
+-Reorganize code (good portion of code can probably go to amanda.core or even amanda.concepts; also create amanda.platform shared project and put everything from amanda.device except .inos there if possible)
+
+ == TRIAGE ==
+-HTTPClient::respond(double), maybe support 'int base' as well (check how it is done on other streams, because they by default take 2)
+-Check RequestBodyParser in server/request.cpp, and rethink if there is another solution to the action naming problem (the name after the colon, eg: <action process="Event/create:my-ev">...); currently the 'problem' is 'void RequestBodyParser::attribute_spec_end()', line with 'String64 name = action_name;' (119 at the moment), name must be copied for later use... Avoid copying somehow?
+-Create another thread which polls events (in that case, that thread and server thread [loop] need synchronization)
+-Maybe implement xor-doubly linked vlist?
+-Somehow optimize HardwareController::find() [unimportant]
+-Somehow support real-time server notifications instead of polling the server?

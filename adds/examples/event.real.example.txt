@@ -1,0 +1,26 @@
+<event repeat="0">
+	<requirements>
+		<pack>
+			<condition vid="4" ctype="AS"> // LDR
+				<lss>100.0</lss>
+			</condition>
+			<condition vid="3" ctype="DS"> // PIR
+				<equ>1</equ>
+			</condition>
+		</pack>
+	</requirements>
+	<actions>
+		<raise>
+			<write vid="3" ctype="DE"> // LED3
+				<state>1</state>
+			</write>
+		</raise>
+		<expire>
+			<write vid="3" ctype="DE"> // LED3
+				<state>0</state>
+			</write>
+		</expire>
+	</actions>
+</event>
+
+"<event repeat=\"0\"><requirements><pack><condition vid=\"4\" ctype=\"AS\"><lss>100.0</lss></condition><condition vid=\"3\" ctype=\"DS\"><equ>1</equ></condition></pack></requirements><actions><raise><write vid=\"3\" ctype=\"DE\"><state>1</state></write></raise><expire><write vid=\"3\" ctype=\"DE\"><state>0</state></write></expire></actions></event>"

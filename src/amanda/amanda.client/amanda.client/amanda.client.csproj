@@ -2,6 +2,20 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <ApplicationIcon>Resources\amanda.ico</ApplicationIcon>
+    <Authors>Vladimir Sivčev</Authors>
+    <Company>NanoTechnologies</Company>
+    <Product>Amanda</Product>
+    <Description>Client side application for Amanda system.</Description>
+    <Copyright>Copyright ©  2019</Copyright>
+    <PackageLicenseUrl>https://github.com/vladimir-siv/amanda/blob/master/LICENSE.txt</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/vladimir-siv/amanda</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/vladimir-siv/amanda</RepositoryUrl>
+    <RepositoryType>Github opensource</RepositoryType>
+    <PackageTags>Amanda Embedded Cross-Platform</PackageTags>
+    <NeutralLanguage>en-US</NeutralLanguage>
+    <PackageReleaseNotes>Initial release.</PackageReleaseNotes>
+    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -19,6 +33,11 @@
     </Compile>
     <Compile Update="MasterDetailPage1MenuItem.cs">
       <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Properties\Resources.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Update="Views\Cells\MenuOptionCell.xaml.cs">
       <DependentUpon>MenuOptionCell.xaml</DependentUpon>
@@ -46,6 +65,10 @@
     </EmbeddedResource>
     <EmbeddedResource Update="MenuPage.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Update="Views\Cells\ComponentCell.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>

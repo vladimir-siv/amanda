@@ -1,2 +1,2 @@
 # amanda
-Arduino Monitoring And Notifying Device Augmentation
+Acquisition Monitoring And Notifying Device Augmentation
