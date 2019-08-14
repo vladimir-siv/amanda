@@ -11,7 +11,7 @@
 		<ResourceDictionary>
 			<Color x:Key="ComponentBackgroundColor">#4f514b</Color>
 			<Color x:Key="TextColor">White</Color>
-			<OnPlatform x:Key="RowHeight" x:TypeArguments="x:Int32" iOS="36" Android="36" WinPhone="48"/>
+			<OnPlatform x:Key="RowHeight" x:TypeArguments="x:Int32" iOS="36" Android="36" WinPhone="56"/>
 			<OnPlatform x:Key="ControlHeight" x:TypeArguments="x:Double" iOS="36" Android="36" WinPhone="48"/>
 			<OnPlatform x:Key="FontFamily" x:TypeArguments="x:String" iOS="MarkerFelt-Thin" Android="sans-serif-monospace" WinPhone="Segoe UI"/>
 			<OnPlatform x:Key="FontSize" x:TypeArguments="x:Double" iOS="12" Android="12" WinPhone="24"/>

@@ -21,6 +21,12 @@ namespace amanda.client
 			get { return isLoading; }
 			set { if (value == isLoading) return; isLoading = value; OnPropertyChanged(); }
 		}
+
+		public bool HasComponents
+		{
+			get { return Components.Count > 0; }
+			private set { OnPropertyChanged(); }
+		}
 		
         public DeviceMonitoringPage()
         {
@@ -57,14 +63,16 @@ namespace amanda.client
 
 			if (PageStack.Children.Contains(LoadingIndicator))
 				PageStack.Children.Remove(LoadingIndicator);
-			
+
 			RemoteDevice.CollectorFailed += CollectorFailed;
+
 			RemoteDevice.RunCollector();
+
+			HasComponents = true;
 		}
 
 		protected override void OnDisappearing()
 		{
-			RemoteDevice.PauseCollector();
 			RemoteDevice.CollectorFailed -= CollectorFailed;
 			base.OnDisappearing();
 		}

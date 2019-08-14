@@ -82,12 +82,10 @@ namespace amanda.client
 		{
 			base.OnAppearing();
 			RemoteDevice.CollectorFailed += CollectorFailed;
-			RemoteDevice.RunCollector();
 		}
 
 		protected override void OnDisappearing()
 		{
-			RemoteDevice.PauseCollector();
 			RemoteDevice.CollectorFailed -= CollectorFailed;
 			base.OnDisappearing();
 		}

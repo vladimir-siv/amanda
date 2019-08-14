@@ -9,7 +9,7 @@
 			CornerRadius="0"
 			Padding="1"
 			BorderColor="DarkMagenta"
-			Margin="0, 0, 0, 5"
+			Margin="0, 0, 1, 5"
 		>
 			<Frame.Resources>
 				<ResourceDictionary>

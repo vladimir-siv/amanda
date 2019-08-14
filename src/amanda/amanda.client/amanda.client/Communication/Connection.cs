@@ -2,7 +2,7 @@
 {
 	public class Connection
 	{
-		public static void Inject() { Dependency.Inject(new Connection("192.168.56.177")); }
+		public static void Inject() { Dependency.Inject(new Connection()); }
 
 		public string Address { get; set; }
 		public int Port { get; set; }

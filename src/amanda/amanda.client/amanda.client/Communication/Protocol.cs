@@ -21,7 +21,7 @@ namespace amanda.client.Communication
 
 	public static class Protocol
 	{
-		public const double RefreshSpeed = 2500;
+		public const double RefreshSpeed = 500;
 
 		public const string HelloMessage = "<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"no\"?><action task=\"Echo/hello\"></action>";
 		public const string HelloReply = "<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"no\"?><message>Hello World.</message>";

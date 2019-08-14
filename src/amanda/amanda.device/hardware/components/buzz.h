@@ -16,13 +16,17 @@ class BUZZ : public AnalogElement
 	
 	public: virtual void play(int frequency, unsigned long duration = 0ul)
 	{
+		System::lock();
 		if (_playing != nullptr && _playing != this) _playing->stop();
 		_playing = this;
 		tone(_pin, frequency, duration);
+		System::unlock();
 	}
 	public: virtual void stop()
 	{
+		System::lock();
 		if (_playing == this) noTone(_pin);
+		System::unlock();
 	}
 };
 

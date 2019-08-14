@@ -2,7 +2,8 @@
 
 #include <Arduino.h>
 #include <SPI/src/SPI.h>
-#include <UIPEthernet/UIPEthernet.h>
+//#include <UIPEthernet/UIPEthernet.h>
+#include <Ethernet/src/Ethernet.h>
 
 #include <thread.h>
 
@@ -117,11 +118,27 @@ namespace ethernet
 				)
 			);
 
+			System::lock();
 			while (!fs.eos()) _client.write(fs.advance());
+			System::unlock();
 		}
 		
-		public: size_t respond(uint8_t data) { send_header(); return _client.write(data); }
-		public: size_t respond(const uint8_t* buf, size_t size) { send_header(); return _client.write(buf, size); }
+		public: size_t respond(uint8_t data)
+		{
+			send_header();
+			System::lock();
+			auto s = _client.write(data);
+			System::unlock();
+			return s;
+		}
+		public: size_t respond(const uint8_t* buf, size_t size)
+		{
+			send_header();
+			System::lock();
+			auto s = _client.write(buf, size);
+			System::unlock();
+			return s;
+		}
 		
 		public: size_t respond(char data) { return respond((uint8_t)data); }
 		public: size_t respond(const char* str) { return respond((const uint8_t*)str, strlen(str)); }
@@ -237,7 +254,9 @@ namespace ethernet
 				)
 			);
 
+			System::lock();
 			while (!fs.eos()) _client.write(fs.advance());
+			System::unlock();
 		}
 		public: void respond_blank()
 		{
@@ -264,7 +283,9 @@ namespace ethernet
 				)
 			);
 
+			System::lock();
 			while (!fs.eos()) _client.write(fs.advance());
+			System::unlock();
 		}
 		
 		// OutputStream INTERFACE

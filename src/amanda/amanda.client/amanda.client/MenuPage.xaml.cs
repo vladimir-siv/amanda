@@ -3,6 +3,8 @@
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
+using amanda.client.Communication;
+
 namespace amanda.client
 {
 	[XamlCompilation(XamlCompilationOptions.Compile)]
@@ -11,6 +13,11 @@ namespace amanda.client
 		public MenuPage()
 		{
 			InitializeComponent();
+		}
+
+		protected override void OnAppearing()
+		{
+			RemoteDevice.PauseCollector();
 		}
 
 		private async void DeviceMonitoringTapped(object sender, EventArgs e)

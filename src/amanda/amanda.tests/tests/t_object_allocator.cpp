@@ -5,6 +5,11 @@
 
 #include <string>
 
+void insufficient_memory()
+{
+	throw AssertError("Insufficient memory");
+}
+
 void _object_allocator()
 {
 	struct SimplePair

@@ -11,6 +11,6 @@ class TMR final : public AnalogSensor
 	private: explicit TMR() : AnalogSensor(0) { }
 	public: virtual const __FlashStringHelper* description() const override { return F("timer"); }
 	
-	public: virtual AnalogValue read() const { return System::millis(); }
+	public: virtual AnalogValue read() const override { return System::millis(); }
 	public: virtual unit s_unit() const override { char lbl[] { 'm', 's', 0 }; unit u(lbl); return u; }
 };

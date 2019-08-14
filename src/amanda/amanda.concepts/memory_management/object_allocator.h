@@ -6,6 +6,8 @@
 
 #include "allocator.h"
 
+extern void insufficient_memory();
+
 template <typename T, size_t size = 32>
 class ObjectAllocator : public Allocator<T>
 {
@@ -49,7 +51,12 @@ class ObjectAllocator : public Allocator<T>
 	
 	public: virtual T* alloc() volatile override
 	{
-		if (_first == nullptr) return nullptr;
+		if (_first == nullptr)
+		{
+			insufficient_memory();
+			return nullptr;
+		}
+
 		volatile Chunk* chunk = _first;
 
 		_first = _first->next;

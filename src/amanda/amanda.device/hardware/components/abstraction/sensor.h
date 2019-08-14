@@ -30,7 +30,13 @@ class DigitalSensor : public ISensor
 	public: virtual Type ctype() const override { return (Type)(ISensor::ctype() | Type::DIGITAL); }
 	public: virtual const __FlashStringHelper* description() const override { return F("digital sensor"); }
 	
-	public: virtual DigitalState read() const { return digitalRead(_pin); };
+	public: virtual DigitalState read() const
+	{
+		System::lock();
+		auto result = (DigitalState)digitalRead(_pin);
+		System::unlock();
+		return result;
+	};
 };
 
 class AnalogSensor : public ISensor
@@ -53,6 +59,12 @@ class AnalogSensor : public ISensor
 	public: virtual Type ctype() const override { return (Type)(ISensor::ctype() | Type::ANALOG); }
 	public: virtual const __FlashStringHelper* description() const override { return F("analog sensor"); }
 	
-	public: virtual AnalogValue read() const { return (AnalogValue)analogRead(_pin); }
+	public: virtual AnalogValue read() const
+	{
+		System::lock();
+		auto result = (AnalogValue)analogRead(_pin);
+		System::unlock();
+		return result;
+	}
 	public: virtual unit s_unit() const { unit u; u.to_default(); return u; }
 };

@@ -1,6 +1,7 @@
 ﻿#include <SPI.h>
 #include <SD.h>
-#include <UIPEthernet.h>
+//#include <UIPEthernet.h>
+#include <Ethernet.h>
 
 #include <system.h>
 #include <structures/specialized/vlist.h>
@@ -42,6 +43,19 @@ LDR ldr(A15);
 
 PIR pir(36);
 
+void insufficient_memory()
+{
+	cli();
+
+	while (true)
+	{
+		digitalWrite(13, HIGH);
+		delay(500);
+		digitalWrite(13, LOW);
+		delay(500);
+	}
+}
+
 void setup()
 {
 	System::init();
@@ -60,7 +74,7 @@ void setup()
 	_LOG(F("EVENTS"), F("Storage initialized at \""), e_handler.EV_ROOT_DIR, F("\" with system information at \""), e_handler.EV_SYS_INFO, F("\""));
 	_LOG(F("EVENTS"), F("Designator continuing from: "), e_handler.designator());
 
-	ethernet::begin(IPAddress(192, 168, 56, 177));
+	ethernet::begin(IPAddress(192, 168, 1, 177));
 	server.begin();
 	server.bind(controller);
 

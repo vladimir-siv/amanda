@@ -31,7 +31,14 @@ class DigitalElement : public IElement
 	public: virtual Type ctype() const override { return (Type)(IElement::ctype() | Type::DIGITAL); }
 	public: virtual const __FlashStringHelper* description() const override { return F("digital element"); }
 	
-	public: virtual void write(DigitalState state) const { if (state == _current) return; _current = state; digitalWrite(_pin, state); };
+	public: virtual void write(DigitalState state) const
+	{
+		if (state == _current) return;
+		System::lock();
+		_current = state;
+		digitalWrite(_pin, state);
+		System::unlock();
+	};
 	public: virtual DigitalState current_state() const { return _current; }
 	public: virtual void toggle() { write(!_current); }
 };
@@ -57,7 +64,13 @@ class AnalogElement : public IElement
 	public: virtual Type ctype() const override { return (Type)(IElement::ctype() | Type::ANALOG); }
 	public: virtual const __FlashStringHelper* description() const override { return F("analog element"); }
 	
-	public: virtual void write(AnalogValue value) const { _current = value; analogWrite(_pin, value); }
+	public: virtual void write(AnalogValue value) const
+	{
+		System::lock();
+		_current = value;
+		analogWrite(_pin, value);
+		System::unlock();
+	}
 	public: virtual AnalogValue current_value() const { return _current; }
 	public: virtual unit e_unit() const { unit u; u.to_default(); return u; }
 };

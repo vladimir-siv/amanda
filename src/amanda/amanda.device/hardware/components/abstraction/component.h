@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Arduino.h>
+#include <system.h>
 #include "../../../common/units.h"
 #include "../../../lib/string64.h"
 
