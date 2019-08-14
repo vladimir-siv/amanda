@@ -171,7 +171,7 @@ namespace amanda.client.Communication
 					{
 						try
 						{
-							string xml_scan = await Send(Protocol.ScanHardware);
+							var xml_scan = await Send(Protocol.ScanHardware);
 							await LoadComponents(xml_scan);
 						}
 						catch (Exception ex)
@@ -267,8 +267,12 @@ namespace amanda.client.Communication
 							// TODO: Somehow optimize this search (maybe it's not even possible - at least not in an ok way)
 							var search = Components.FirstOrDefault(c => c.ID == vid && c.CType.AsCType() == ctype);
 
-							if (search != null) search.Value.Write(value.Read());
-							else Components.Add(new ComponentViewModel(new Component(vid, ctype, description, commands, value)));
+							if (search == null)
+							{
+								var cvm = new ComponentViewModel(new Component(vid, ctype, description, commands, value));
+								Device.BeginInvokeOnMainThread(() => Components.Add(cvm));
+							}
+							else search.Value.Write(value.Read());
 						}
 						catch { /* if one component is invalid, skip that one and continue on */ }
 					}
@@ -330,7 +334,8 @@ namespace amanda.client.Communication
 							else
 							{
 								e = new Event(id, name);
-								Events.Add(new EventViewModel(e));
+								var evm = new EventViewModel(e);
+								Device.BeginInvokeOnMainThread(() => Events.Add(evm));
 							}
 							
 							var eNode = ehNode.FirstChild;
@@ -440,16 +445,25 @@ namespace amanda.client.Communication
 						finally { e?.OnEventChanged(); }
 					}
 
+					var delete = new LinkedList<EventViewModel>();
+
 					for (int i = 0; i < Events.Count; ++i)
 					{
 						var e = Events[i];
 
 						if (!ids.Contains(e.ID))
 						{
-							Events.Remove(e);
-							--i;
+							delete.AddLast(e);
 						}
 					}
+
+					Device.BeginInvokeOnMainThread(() =>
+					{
+						foreach (var e in delete)
+						{
+							Events.Remove(e);
+						}
+					});
 				}
 			});
 		}

@@ -45,7 +45,7 @@ PIR pir(36);
 
 void insufficient_memory()
 {
-	cli();
+	System::lock();
 
 	while (true)
 	{
@@ -119,5 +119,3 @@ void loop()
 	client.stop();
 	//_LOG(F("SERVER"), F("Client request processed"));
 }
-
-//*/

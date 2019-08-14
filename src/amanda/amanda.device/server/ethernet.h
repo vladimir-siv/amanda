@@ -76,7 +76,7 @@ namespace ethernet
 		public: HTTPServer* get_handling_server() const { return _server; }
 		
 		public: void inquire_request() { next(); }
-		public: void stop() { respond_blank(); _client.stop(); }
+		public: void stop() { respond_blank(); Thread::delay(1); _client.stop(); }
 		
 		public: uint8_t connected() const { return const_cast<EthernetClient&>(_client).connected(); }
 		public: int available() const { return const_cast<EthernetClient&>(_client).available(); }
