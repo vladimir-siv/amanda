@@ -1,10 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Package xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10" xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest" xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10" IgnorableNamespaces="uap mp">
-  <Identity Name="f5f92e4d-a0b4-4dd5-9f95-60b09a1ed940" Publisher="CN=12871744-875b-442e-b0fe-ab93747adf9b" Version="1.0.0.0" />
+  <Identity Name="nanotech.amanda.client" Publisher="C=Serbia, S=Vojvodina, L=Kikinda, O=NanoTechnologies, OU=Production, CN=vladimir-siv" Version="1.0.0.0" />
   <mp:PhoneIdentity PhoneProductId="ec0cc741-fd3e-485c-81be-68815c480690" PhonePublisherId="00000000-0000-0000-0000-000000000000" />
   <Properties>
     <DisplayName>amanda.client.UWP</DisplayName>
-    <PublisherDisplayName>12871744-875b-442e-b0fe-ab93747adf9b</PublisherDisplayName>
+    <PublisherDisplayName>vladimir-siv</PublisherDisplayName>
     <Logo>Assets\StoreLogo.png</Logo>
   </Properties>
   <Dependencies>

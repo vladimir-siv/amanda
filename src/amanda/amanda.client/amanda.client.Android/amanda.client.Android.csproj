@@ -20,6 +20,9 @@
     <AndroidHttpClientHandlerType>Xamarin.Android.Net.AndroidClientHandler</AndroidHttpClientHandlerType>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
+    <AndroidKeyStore>true</AndroidKeyStore>
+    <AndroidSigningKeyStore>D:\Desktop\projects\amanda\src\amanda\amanda.client\amanda.client.Android\NanoTech.keystore</AndroidSigningKeyStore>
+    <AndroidSigningKeyAlias>te-15557c7e-18d0-4d00-b1d8-0e41d89b2142</AndroidSigningKeyAlias>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
