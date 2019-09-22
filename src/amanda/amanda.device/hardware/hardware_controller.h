@@ -6,7 +6,6 @@
 #include "../common/data/stream.h"
 
 #include "../xml/api.h"
-#include "../lib/string_builder.h"
 
 #include <dependency.h>
 #include <structures/specialized/vlist.h>

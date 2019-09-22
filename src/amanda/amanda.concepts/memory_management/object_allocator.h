@@ -2,7 +2,6 @@
 
 #include "../assert/static.h"
 #include "../types/def.h"
-#include "../structures/bitvector.h"
 
 #include "allocator.h"
 

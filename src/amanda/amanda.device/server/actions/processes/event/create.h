@@ -5,6 +5,8 @@
 #include "../../../events/event_handler.h"
 #include "../../../../common/data/flash_stream.h"
 
+// template: "<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"no\"?><action process=\"Event/create:{event-name}\">{inner-event-xml}</action>"
+
 class EventCreateProcess : public Process
 {
 	public: static EventCreateProcess* instance() { static EventCreateProcess proc; return &proc; }
